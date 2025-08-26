@@ -1,0 +1,33 @@
+/* Example CSS for Cart component */
+.cart-container {
+  padding: 1rem;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+}
+
+.cart-item:last-child {
+  border-bottom: none;
+}
+
+.cart-item-name {
+  font-weight: 600;
+}
+
+.cart-item-quantity {
+  margin-left: 1rem;
+  color: #555;
+}
+
+.cart-total {
+  font-weight: 700;
+  text-align: right;
+  margin-top: 1rem;
+}
