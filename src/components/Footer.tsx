@@ -2,15 +2,15 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
-    Facebook,
-    Instagram,
-    Linkedin,
-    Phone,
-    Mail,
-    MapPin,
-    Clock,
-    Send
-} from 'lucide-react';
+    LuFacebook,
+    LuInstagram,
+    LuLinkedin,
+    LuPhone,
+    LuMail,
+    LuMapPin,
+    LuClock,
+    LuSend
+} from 'react-icons/lu';
 
 // Custom WhatsApp Icon Component
 const WhatsappIcon = ({ className }: { className?: string }) => (
@@ -34,7 +34,7 @@ const XIcon = ({ className }: { className?: string }) => (
         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
     </svg>
 );
-import medHelmLogo from '@/assets/medhelm-logo.svg';
+import medHelmLogo from '../assets/medhelm-logo.svg';
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
@@ -76,23 +76,28 @@ const Footer = () => {
     };
 
     return (
-        <footer className="bg-primary text-primary-foreground">
+        <footer className="bg-gradient-to-br from-primary via-primary to-primary/90 text-primary-foreground relative overflow-hidden">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 opacity-5">
+                <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(255,255,255,0.15)_1px,transparent_0)] bg-[length:20px_20px]"></div>
+            </div>
+
             {/* Newsletter section */}
-            <div className="bg-primary/90 py-12">
+            <div className="relative bg-gradient-to-r from-primary/95 to-primary/85 py-16">
                 <div className="container mx-auto px-4">
                     <div className="text-center max-w-2xl mx-auto">
-                        <h3 className="text-2xl font-bold mb-4 text-accent-foreground">
+                        <h3 className="text-xl md:text-2xl font-bold mb-6 bg-gradient-to-r from-white to-white/90 bg-clip-text text-transparent font-['Inter','system-ui','-apple-system','sans-serif']">
                             Stay Updated on Medical Supplies
                         </h3>
-                        <p className="text-accent-foreground/80 mb-6">
+                        <p className="text-primary-foreground/90 mb-8 text-sm md:text-base leading-relaxed font-light">
                             Get the latest updates on new products, special offers, and healthcare tips
                             delivered directly to your inbox.
                         </p>
-                        <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+                        <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4 max-w-lg mx-auto">
                             <Input
                                 type="email"
                                 placeholder="Enter your email address"
-                                className="bg-white text-foreground"
+                                className="bg-white/10 backdrop-blur-sm border-white/20 text-white placeholder:text-white/70 h-12 text-lg rounded-xl focus:bg-white/15 focus:border-white/30 transition-all duration-300"
                                 value={email}
                                 onChange={e => setEmail(e.target.value)}
                                 disabled={status === 'loading'}
@@ -101,134 +106,164 @@ const Footer = () => {
                             />
                             <Button
                                 type="submit"
-                                className="bg-primary hover:bg-primary-light text-white"
+                                className="bg-gradient-to-r from-secondary to-secondary/90 hover:from-secondary/90 hover:to-secondary text-secondary-foreground h-12 px-8 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                                 disabled={status === 'loading'}
                             >
-                                <Send className="mr-2 h-4 w-4" />
+                                <LuSend className="mr-2 h-5 w-5" />
                                 {status === 'loading' ? 'Subscribing...' : 'Subscribe'}
                             </Button>
                         </form>
                         {message && (
-                            <div className={`mt-4 text-sm ${status === 'success' ? 'text-green-300' : 'text-red-300'}`}>{message}</div>
+                            <div className={`mt-6 text-lg font-medium ${status === 'success' ? 'text-green-300' : 'text-red-300'}`}>
+                                {message}
+                            </div>
                         )}
                     </div>
                 </div>
             </div>
 
             {/* Main footer */}
-            <div className="py-16">
+            <div className="relative py-12 md:py-16">
                 <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
                         {/* Company info */}
                         <div className="lg:col-span-1">
-                            <div className="flex items-center gap-3">
-                                <img src={medHelmLogo} className="h-24 w-24 drop-shadow-xl" alt="Medhelm Supplies Logo" />
+                            <div className="flex items-center gap-4 mb-6">
+                                <img src={medHelmLogo} alt="MEDHELM Supplies Logo" className="h-20 w-auto drop-shadow-lg" style={{ maxHeight: '5rem' }} />
                                 <div>
-                                    <h3 className="text-xl font-bold">MEDHELM</h3>
-                                    <p className="text-sm opacity-80">SUPPLIES</p>
+                                    <h3 className="text-2xl font-extrabold bg-gradient-to-r from-white to-white/90 bg-clip-text text-transparent font-['Inter','system-ui','-apple-system','sans-serif']">
+                                        MEDHELM
+                                    </h3>
+                                    <p className="text-lg font-semibold" style={{ color: '#E53935' }}>
+                                        S U P P L I E S
+                                    </p>
                                 </div>
                             </div>
-                            <p className="text-primary-foreground/80 mb-6 leading-relaxed">
+                            <p className="text-primary-foreground/80 mb-8 leading-relaxed text-sm md:text-base font-light">
                                 Your trusted partner for quality medical supplies and equipment in Kenya.
                             </p>
-                            <div className="flex gap-3">
+                            <div className="flex flex-wrap gap-6">
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="hover:bg-white/10 p-2"
+                                    className="hover:bg-white/20 p-4 rounded-2xl transition-all duration-300 hover:scale-125 hover:shadow-xl hover:shadow-white/20 bg-white/5 backdrop-blur-sm"
                                     asChild
                                 >
-                                    <a href="https://facebook.co.ke/medhelmsupplies" target="_blank" rel="noopener noreferrer">
-                                        <Facebook className="h-4 w-4" />
+                                    <a href="https://facebook.com/MedhelmSupplies" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Facebook">
+                                        <LuFacebook className="h-8 w-8" />
                                     </a>
                                 </Button>
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="hover:bg-white/10 p-2"
+                                    className="hover:bg-white/20 p-4 rounded-2xl transition-all duration-300 hover:scale-125 hover:shadow-xl hover:shadow-white/20 bg-white/5 backdrop-blur-sm"
                                     asChild
                                 >
-                                    <a href="https://x.co.ke/medhelmsupplies" target="_blank" rel="noopener noreferrer">
-                                        <XIcon className="h-4 w-4" />
+                                    <a href="https://x.com/MedhelmSupplies" target="_blank" rel="noopener noreferrer" aria-label="Follow us on X (Twitter)">
+                                        <XIcon className="h-8 w-8" />
                                     </a>
                                 </Button>
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="hover:bg-white/10 p-2"
+                                    className="hover:bg-white/20 p-4 rounded-2xl transition-all duration-300 hover:scale-125 hover:shadow-xl hover:shadow-white/20 bg-white/5 backdrop-blur-sm"
                                     asChild
                                 >
-                                    <a href="https://instagram.co.ke/medhelmsupplies" target="_blank" rel="noopener noreferrer">
-                                        <Instagram className="h-4 w-4" />
+                                    <a href="https://instagram.com/medhelmsupplies" target="_blank" rel="noopener noreferrer" aria-label="Follow us on Instagram">
+                                        <LuInstagram className="h-8 w-8" />
                                     </a>
                                 </Button>
                                 <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="hover:bg-white/10 p-2"
+                                    className="hover:bg-white/20 p-4 rounded-2xl transition-all duration-300 hover:scale-125 hover:shadow-xl hover:shadow-white/20 bg-white/5 backdrop-blur-sm"
                                     asChild
                                 >
-                                    <a href="https://linkedin.co.ke/company/medhelmsupplies" target="_blank" rel="noopener noreferrer">
-                                        <Linkedin className="h-4 w-4" />
+                                    <a href="https://linkedin.com/company/medhelm-supplies" target="_blank" rel="noopener noreferrer" aria-label="Connect with us on LinkedIn">
+                                        <LuLinkedin className="h-8 w-8" />
                                     </a>
                                 </Button>
                             </div>
                         </div>
 
-                        {/* Quick links */}
+                        {/* Quick links - Grid Layout */}
                         <div>
-                            <h4 className="text-lg font-semibold mb-6">Quick Links</h4>
-                            <ul className="space-y-3">
-                                <li><Link to="/" className="text-primary-foreground/80 hover:text-white transition-colors">Home</Link></li>
-                                <li><a href="/#products" className="text-primary-foreground/80 hover:text-white transition-colors">Products</a></li>
-                                <li><a href="/#categories" className="text-primary-foreground/80 hover:text-white transition-colors">Categories</a></li>
-                                <li><Link to="/about" className="text-primary-foreground/80 hover:text-white transition-colors">About Us</Link></li>
-                                <li><Link to="/contact" className="text-primary-foreground/80 hover:text-white transition-colors">Contact</Link></li>
-                                <li><a href="/#reviews" className="text-primary-foreground/80 hover:text-white transition-colors">Reviews</a></li>
-                            </ul>
+                            <h4 className="text-lg md:text-xl font-extrabold mb-8 bg-gradient-to-r from-white to-white/90 bg-clip-text text-transparent font-['Inter','system-ui','-apple-system','sans-serif']">
+                                Quick Links
+                            </h4>
+                            <div className="grid grid-cols-2 gap-4">
+                                <Link to="/" className="text-primary-foreground/80 hover:text-white transition-all duration-300 hover:translate-x-2 text-sm md:text-base font-light py-2 px-3 rounded-lg hover:bg-white/5">
+                                    Home
+                                </Link>
+                                <a href="/#products" className="text-primary-foreground/80 hover:text-white transition-all duration-300 hover:translate-x-2 text-sm md:text-base font-light py-2 px-3 rounded-lg hover:bg-white/5">
+                                    Products
+                                </a>
+                                <a href="/#categories" className="text-primary-foreground/80 hover:text-white transition-all duration-300 hover:translate-x-2 text-sm md:text-base font-light py-2 px-3 rounded-lg hover:bg-white/5">
+                                    Categories
+                                </a>
+                                <a href="/#reviews" className="text-primary-foreground/80 hover:text-white transition-all duration-300 hover:translate-x-2 text-sm md:text-base font-light py-2 px-3 rounded-lg hover:bg-white/5">
+                                    Reviews
+                                </a>
+                            </div>
                         </div>
 
-                        {/* Customer service */}
+                        {/* Customer service - Grid Layout */}
                         <div>
-                            <h4 className="text-lg font-semibold mb-6">Customer Service</h4>
-                            <ul className="space-y-3">
-                                <li><Link to="/track-order" className="text-primary-foreground/80 hover:text-white transition-colors">Track Your Order</Link></li>
-                                <li><Link to="/returns" className="text-primary-foreground/80 hover:text-white transition-colors">Returns & Refunds</Link></li>
-                                <li><Link to="/delivery-policy" className="text-primary-foreground/80 hover:text-white transition-colors">Delivery Policy</Link></li>
-                                <li><Link to="/terms" className="text-primary-foreground/80 hover:text-white transition-colors">Terms & Conditions</Link></li>
-                                <li><Link to="/privacy" className="text-primary-foreground/80 hover:text-white transition-colors">Privacy Policy</Link></li>
-                                <li><Link to="/cookies" className="text-primary-foreground/80 hover:text-white transition-colors">Cookie Notice</Link></li>
-                            </ul>
+                            <h4 className="text-lg md:text-xl font-bold mb-8 bg-gradient-to-r from-white to-white/90 bg-clip-text text-transparent font-['Inter','system-ui','-apple-system','sans-serif']">
+                                Customer Service
+                            </h4>
+                            <div className="grid grid-cols-2 gap-4">
+                                <Link to="/track-order" className="text-primary-foreground/80 hover:text-white transition-all duration-300 hover:translate-x-2 text-sm md:text-base font-light py-2 px-3 rounded-lg hover:bg-white/5">
+                                    Track Your Order
+                                </Link>
+                                <Link to="/returns" className="text-primary-foreground/80 hover:text-white transition-all duration-300 hover:translate-x-2 text-sm md:text-base font-light py-2 px-3 rounded-lg hover:bg-white/5">
+                                    Returns & Refunds
+                                </Link>
+                                <Link to="/delivery-policy" className="text-primary-foreground/80 hover:text-white transition-all duration-300 hover:translate-x-2 text-sm md:text-base font-light py-2 px-3 rounded-lg hover:bg-white/5">
+                                    Delivery Policy
+                                </Link>
+                                <Link to="/terms" className="text-primary-foreground/80 hover:text-white transition-all duration-300 hover:translate-x-2 text-sm md:text-base font-light py-2 px-3 rounded-lg hover:bg-white/5">
+                                    Terms & Conditions
+                                </Link>
+                                <Link to="/privacy" className="text-primary-foreground/80 hover:text-white transition-all duration-300 hover:translate-x-2 text-sm md:text-base font-light py-2 px-3 rounded-lg hover:bg-white/5">
+                                    Privacy Policy
+                                </Link>
+                                <Link to="/cookies" className="text-primary-foreground/80 hover:text-white transition-all duration-300 hover:translate-x-2 text-sm md:text-base font-light py-2 px-3 rounded-lg hover:bg-white/5">
+                                    Cookie Notice
+                                </Link>
+                            </div>
                         </div>
 
                         {/* Contact info */}
-                        <div>
-                            <h4 className="text-lg font-semibold mb-6">Contact Us</h4>
+                        <div className="lg:col-span-1">
+                            <h4 className="text-lg md:text-xl font-bold mb-8 bg-gradient-to-r from-white to-white/90 bg-clip-text text-transparent font-['Inter','system-ui','-apple-system','sans-serif']">
+                                Contact Us
+                            </h4>
                             <div className="space-y-4">
-                                <div className="flex items-start gap-3">
-                                    <MapPin className="h-5 w-5 mt-1 text-secondary" />
+                                <div className="flex items-start gap-2 p-2 rounded-xl bg-transparent backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
+                                    <LuMapPin className="h-7 w-7 mt-1 text-secondary flex-shrink-0" />
                                     <div>
-                                        <p className="text-primary-foreground/80">
+                                        <p className="text-primary-foreground/90 font-medium text-sm md:text-base">
                                             Kiambu Town, Kenya<br />
                                             Opposite Kiambu Level 5 Hospital
                                         </p>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-3">
-                                    <Phone className="h-5 w-5 text-secondary" />
-                                    <p className="text-primary-foreground/80">+254 746 020 323</p>
+                                <div className="flex items-center gap-2 p-2 rounded-xl bg-transparent backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
+                                    <LuPhone className="h-7 w-7 text-secondary flex-shrink-0" />
+                                    <p className="text-primary-foreground/90 font-medium text-sm md:text-base">+254 746 020 323</p>
                                 </div>
 
-                                <div className="flex items-center gap-3">
-                                    <Mail className="h-5 w-5 text-secondary" />
-                                    <p className="text-primary-foreground/80">info@medhelmsupplies.co.ke</p>
+                                <div className="flex items-center gap-4 p-4 rounded-xl bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
+                                    <LuMail className="h-7 w-7 text-secondary flex-shrink-0" />
+                                    <p className="text-primary-foreground/90 font-medium text-lg">info@medhelmsupplies.co.ke</p>
                                 </div>
 
-                                <div className="flex items-start gap-3">
-                                    <Clock className="h-5 w-5 mt-1 text-secondary" />
+                                <div className="flex items-start gap-4 p-4 rounded-xl bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all duration-300">
+                                    <LuClock className="h-7 w-7 mt-1 text-secondary flex-shrink-0" />
                                     <div>
-                                        <p className="text-primary-foreground/80">
+                                        <p className="text-primary-foreground/90 font-medium text-lg">
                                             Mon - Fri: 8:00 AM - 6:00 PM<br />
                                             Sat: 9:00 AM - 4:00 PM<br />
                                             Sun: Emergency only
@@ -237,45 +272,45 @@ const Footer = () => {
                                 </div>
                             </div>
                         </div>
-
-                        {/* ...existing code... */}
                     </div>
                 </div>
             </div>
 
             {/* Bottom bar */}
-            <div className="border-t border-white/10 py-6">
+            <div className="relative py-8">
                 <div className="container mx-auto px-4">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-                        <p className="text-primary-foreground/60 text-sm">
+                    <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+                        <p className="text-primary-foreground/70 text-lg font-light">
                             © 2025 MEDHELM SUPPLIES. All rights reserved.
                         </p>
-                        {/* Developer info (moved here) */}
-                        <div className="flex items-center gap-3 mb-2">
-                            <span className="text-lg font-normal text-primary-foreground/60">Developer</span>
+                        {/* Developer info */}
+                        <div className="flex items-center gap-6">
+                            <span className="text-lg font-medium text-primary-foreground/70">Developer</span>
                             <a
                                 href="https://wa.me/254726238126"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="hover:text-green-400 transition-colors"
-                                title="WhatsApp"
+                                className="hover:text-green-400 transition-all duration-300 hover:scale-125 p-4 rounded-2xl hover:bg-white/20 hover:shadow-xl hover:shadow-green-400/20 bg-white/5 backdrop-blur-sm"
+                                title="Contact via WhatsApp"
+                                aria-label="Contact developer via WhatsApp"
                             >
-                                <WhatsappIcon className="h-5 w-5" />
+                                <WhatsappIcon className="h-8 w-8" />
                             </a>
                             <a
                                 href="mailto:onyangoantone1@gmail.com"
-                                className="hover:text-red-400 transition-colors"
-                                title="Gmail"
+                                className="hover:text-red-400 transition-all duration-300 hover:scale-125 p-4 rounded-2xl hover:bg-white/20 hover:shadow-xl hover:shadow-red-400/20 bg-white/5 backdrop-blur-sm"
+                                title="Send email"
+                                aria-label="Send email to developer"
                             >
-                                <Mail className="h-5 w-5" />
+                                <LuMail className="h-8 w-8" />
                             </a>
                         </div>
-                        <div className="flex gap-6 text-sm text-primary-foreground/60">
-                            <span>Payments:</span>
-                            <span>M-Pesa</span>
-                            <span>Airtel Money</span>
-                            <span>PayPal</span>
-                            <span>Bank Transfer</span>
+                        <div className="flex flex-wrap justify-center md:justify-start gap-4 text-lg text-primary-foreground/70 font-medium">
+                            <span className="w-full md:w-auto font-semibold text-white mb-1 md:mb-0">Payments:</span>
+                            <span className="hover:text-white transition-colors cursor-pointer px-3 py-1 rounded-md bg-white/10">M-Pesa</span>
+                            <span className="hover:text-white transition-colors cursor-pointer px-3 py-1 rounded-md bg-white/10">Airtel Money</span>
+                            <span className="hover:text-white transition-colors cursor-pointer px-3 py-1 rounded-md bg-white/10">PayPal</span>
+                            <span className="hover:text-white transition-colors cursor-pointer px-3 py-1 rounded-md bg-white/10">Bank Transfer</span>
                         </div>
                     </div>
                 </div>

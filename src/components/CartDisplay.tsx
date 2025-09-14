@@ -1,5 +1,5 @@
 import { useCart } from '@/context/cartContext';
-import { Trash2, Plus, Minus } from 'lucide-react';
+import { LuTrash2, LuPlus, LuMinus } from 'react-icons/lu';
 import { useState } from 'react';
 
 const CartDisplay = () => {
@@ -82,7 +82,7 @@ const CartDisplay = () => {
                     title="Decrease quantity"
                     disabled={item.quantity <= 1}
                   >
-                    <Minus size={16} />
+                    <LuMinus size={16} />
                   </button>
                   <span className="w-8 text-center font-medium">{item.quantity}</span>
                   <button
@@ -91,7 +91,7 @@ const CartDisplay = () => {
                     aria-label={`Increase quantity of ${item.product.name}`}
                     title="Increase quantity"
                   >
-                    <Plus size={16} />
+                    <LuPlus size={16} />
                   </button>
                 </div>
                 <div className="text-primary font-bold w-20 text-right">KES {(item.product.price * item.quantity).toLocaleString()}</div>
@@ -101,7 +101,7 @@ const CartDisplay = () => {
                   aria-label={`Remove ${item.product.name} from cart`}
                   title="Remove item"
                 >
-                  <Trash2 size={18} />
+                  <LuTrash2 size={18} />
                 </button>
               </div>
             ))}

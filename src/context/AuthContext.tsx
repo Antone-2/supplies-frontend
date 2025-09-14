@@ -70,7 +70,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         isLoading: false,
       };
     case 'UPDATE_USER':
-      return { ...state, user: action.payload };
+      return { ...state, user: action.payload, isAuthenticated: true };
     case 'SET_LOADING':
       return { ...state, isLoading: action.payload };
     default:
@@ -95,7 +95,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   const login = async (email: string, password: string) => {
     dispatch({ type: 'LOGIN_START' });
     try {
-      const response = await apiClient.post('/auth/signin', { email, password });
+      const response = await apiClient.post('/auth/login', { email, password });
       const { user, token } = response.data;
 
       localStorage.setItem('token', token);
@@ -109,18 +109,14 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
   };
 
   const register = async (userData: any) => {
-    dispatch({ type: 'LOGIN_START' });
+    dispatch({ type: 'SET_LOADING', payload: true });
     try {
-      const response = await apiClient.post('/auth/register', userData);
-      const { user, token } = response.data;
-
-      localStorage.setItem('token', token);
-      apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-      dispatch({ type: 'LOGIN_SUCCESS', payload: { user, token } });
+      await apiClient.post('/auth/register', userData);
+      // Registration successful, but user not logged in until email verification
     } catch (error) {
-      dispatch({ type: 'LOGIN_FAILURE' });
       throw error;
+    } finally {
+      dispatch({ type: 'SET_LOADING', payload: false });
     }
   };
 

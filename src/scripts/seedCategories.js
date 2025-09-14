@@ -72,7 +72,7 @@ async function seedCategories() {
         // Insert new categories
         await Category.insertMany(categories);
 
-        console.log('Categories seeded successfully!');
+        // ...existing code...
         process.exit(0);
     } catch (error) {
         console.error('Error seeding categories:', error);

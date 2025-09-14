@@ -68,7 +68,7 @@ const productSchema = new Schema(
       min: 0,
     },
   },
-  { timestamps: true ,toJSON: { virtuals: true },toObject: { virtuals: true } }
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
 
@@ -78,7 +78,7 @@ productSchema.virtual('reviews', {
   foreignField: 'productId',
 });
 
-productSchema.pre(['find','findOne'],function (){
+productSchema.pre(['find', 'findOne'], function () {
   this.populate('reviews')
 })
 

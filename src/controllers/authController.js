@@ -9,11 +9,11 @@ const User = require('../models/User');
 
 async function registerUser(req, res) {
     try {
-        console.log('registerUser called', req.body);
+        // ...existing code...
         const { username, email, password, firstName, lastName } = req.body;
 
         if (!username || !email || !password) {
-            console.log('Missing required fields');
+            // ...existing code...
             return res.status(400).json({ error: 'All fields are required' });
         }
 
@@ -28,14 +28,14 @@ async function registerUser(req, res) {
 
         // Check if user already exists
         const existing = await User.findOne({ email });
-        console.log('Existing user:', existing);
+        // ...existing code...
         if (existing) {
             return res.status(400).json({ error: 'User already exists' });
         }
 
         // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
-        console.log('Password hashed');
+        // ...existing code...
 
         // Use 'name' field for User model
         const name = firstName && lastName ? `${firstName} ${lastName}` : username;
@@ -56,7 +56,7 @@ async function registerUser(req, res) {
             user.verified = user.isVerified = user.verified || user.isVerified;
             await user.save();
         }
-        console.log('User created:', user.email);
+        // ...existing code...
 
         res.status(201).json({
             message: 'User registered successfully',
@@ -78,18 +78,18 @@ async function registerUser(req, res) {
 
 async function loginUser(req, res) {
     try {
-        console.log('loginUser called', req.body);
+        // ...existing code...
         const { email, password } = req.body;
 
         const user = await User.findOne({ email });
-        console.log('User found:', user);
+        // ...existing code...
         if (!user) {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
 
         // Compare passwords
         const isMatch = await bcrypt.compare(password, user.password);
-        console.log('Password match:', isMatch);
+        // ...existing code...
         if (!isMatch) {
             return res.status(401).json({ error: 'Invalid email or password' });
         }
@@ -97,14 +97,14 @@ async function loginUser(req, res) {
         // Check if user is verified (support both fields for test compatibility)
         // If either is true, allow login
         if (!(user.verified || user.isVerified)) {
-            console.log('User not verified');
+            // ...existing code...
             // Test expects 400 for unverified user
             return res.status(400).json({ error: 'Please verify your email before logging in.' });
         }
 
         // Generate token
         const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        console.log('Token generated');
+        // ...existing code...
 
         res.json({
             token,

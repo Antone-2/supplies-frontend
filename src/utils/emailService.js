@@ -16,13 +16,13 @@ const sendEmail = async (to, subject, html) => {
 
         // Send the email
         await transporter.sendMail({
-            from: process.env.EMAIL_FROM,
+            from: process.env.EMAIL_FROM || '"Medhelm Supplies" <info@medhelmsupplies.co.ke>',
             to,
             subject,
             html,
         });
 
-        console.log('Email sent successfully');
+        // ...existing code...
     } catch (error) {
         console.error('Email sending failed:', error);
         throw new Error('Email could not be sent');

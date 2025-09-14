@@ -1,22 +1,21 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Truck, Clock, MapPin, Shield } from 'lucide-react';
-import Header from '@/components/Header';
+import { LuTruck, LuClock, LuMapPin, LuShield } from 'react-icons/lu';
+// ...existing code...
 import Footer from '@/components/Footer';
 
 const DeliveryPolicy = () => {
     return (
         <div className="min-h-screen">
-            <Header />
             <main className="container mx-auto px-4 py-8">
                 <div className="max-w-4xl mx-auto">
                     <h1 className="text-3xl font-bold mb-8">Delivery Policy</h1>
 
-                    <div className="grid gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <Truck className="h-5 w-5" />
+                                    <LuTruck className="h-5 w-5" />
                                     Delivery Options
                                 </CardTitle>
                                 <CardDescription>
@@ -24,10 +23,10 @@ const DeliveryPolicy = () => {
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
                                     <div className="p-4 border rounded-lg">
                                         <div className="flex items-center gap-2 mb-3">
-                                            <Clock className="h-5 w-5 text-primary" />
+                                            <LuClock className="h-5 w-5 text-primary" />
                                             <h3 className="font-medium">Standard Delivery</h3>
                                         </div>
                                         <p className="text-sm text-muted-foreground mb-2">3-5 business days</p>
@@ -36,7 +35,7 @@ const DeliveryPolicy = () => {
                                     </div>
                                     <div className="p-4 border rounded-lg">
                                         <div className="flex items-center gap-2 mb-3">
-                                            <Truck className="h-5 w-5 text-primary" />
+                                            <LuTruck className="h-5 w-5 text-primary" />
                                             <h3 className="font-medium">Express Delivery</h3>
                                         </div>
                                         <p className="text-sm text-muted-foreground mb-2">1-2 business days</p>
@@ -45,7 +44,7 @@ const DeliveryPolicy = () => {
                                     </div>
                                     <div className="p-4 border rounded-lg">
                                         <div className="flex items-center gap-2 mb-3">
-                                            <Shield className="h-5 w-5 text-primary" />
+                                            <LuShield className="h-5 w-5 text-primary" />
                                             <h3 className="font-medium">Emergency Delivery</h3>
                                         </div>
                                         <p className="text-sm text-muted-foreground mb-2">Same day delivery</p>
@@ -54,7 +53,7 @@ const DeliveryPolicy = () => {
                                     </div>
                                     <div className="p-4 border rounded-lg">
                                         <div className="flex items-center gap-2 mb-3">
-                                            <MapPin className="h-5 w-5 text-primary" />
+                                            <LuMapPin className="h-5 w-5 text-primary" />
                                             <h3 className="font-medium">Pickup Service</h3>
                                         </div>
                                         <p className="text-sm text-muted-foreground mb-2">Free pickup</p>
@@ -70,7 +69,7 @@ const DeliveryPolicy = () => {
                                 <CardTitle>Delivery Areas</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="grid grid-cols-2 md:grid-cols-2 gap-6">
                                     <div>
                                         <h3 className="font-medium mb-3 text-green-600">Free Delivery Zones</h3>
                                         <ul className="space-y-1 text-sm">

@@ -1,127 +1,116 @@
-import Header from '@/components/Header';
 import medHelmLogo from '@/assets/medhelm-logo.svg';
 import Footer from '@/components/Footer';
 import MobileBottomNav from '@/components/MobileBottomNav';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import {
-    Award,
-    Users,
-    MapPin,
-    Clock,
-    ShieldCheck,
-    Heart,
-    Target,
-    Eye
-} from 'lucide-react';
+    LuAward,
+    LuUsers,
+    LuMapPin,
+    LuClock,
+    LuShieldCheck,
+    LuHeart,
+    LuTarget,
+    LuEye
+} from 'react-icons/lu';
 
 const About = () => {
     const values = [
         {
-            icon: Heart,
-            title: "Patient-Centered Care",
-            description: "Everything we do is focused on improving patient outcomes and healthcare delivery."
+            icon: LuHeart,
+            title: "Patient Care",
+            description: "Focused on improving patient outcomes."
         },
         {
-            icon: ShieldCheck,
-            title: "Quality Assurance",
-            description: "We maintain the highest standards in product quality and regulatory compliance."
+            icon: LuShieldCheck,
+            title: "Quality First",
+            description: "Highest standards in product quality."
         },
         {
-            icon: Users,
-            title: "Partnership",
-            description: "We build lasting relationships with healthcare providers through trust and reliability."
+            icon: LuUsers,
+            title: "Trusted Partners",
+            description: "Building lasting healthcare relationships."
         },
         {
-            icon: Target,
+            icon: LuTarget,
             title: "Innovation",
-            description: "We continuously seek innovative solutions to meet evolving healthcare needs."
+            description: "Seeking solutions for healthcare needs."
         }
     ];
 
     const milestones = [
-        { year: "2024", event: "MEDHELM Supplies founded in Kiambu" },
-        { year: "2024", event: "Expanded to serve Nairobi CBD area" },
-        { year: "2024", event: "Reached 10+ healthcare provider clients" },
-        { year: "2024", event: "Launched 24/7 emergency supply service" },
-        { year: "2024", event: "ISO certification achieved" },
-        { year: "2025", event: "Online platform launch" }
+        { year: "2024", event: "Founded in Kiambu" },
+        { year: "2024", event: "Expanded to Nairobi" },
+        { year: "2024", event: "10+ healthcare clients" },
+        { year: "2024", event: "24/7 emergency service" },
+        { year: "2024", event: "ISO certified" },
+        { year: "2025", event: "Online platform launched" }
     ];
 
     return (
-        <div className="min-h-screen">
-            <Header />
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
 
             {/* Hero Section */}
-            <section className="bg-gradient-to-br from-primary via-primary-light to-accent text-white py-20">
-                <div className="container mx-auto px-4">
-                    <div className="max-w-3xl mx-auto text-center">
-                        <img src={medHelmLogo} alt="Medhelm Supplies Logo" className="mx-auto mb-6 h-20" />
-                        <Badge className="bg-secondary text-secondary-foreground mb-6">
-                            About MEDHELM SUPPLIES
-                        </Badge>
-                        <h1 className="text-4xl md:text-5xl font-bold mb-6">
-                            Your Trusted Medical Supply Partner
-                        </h1>
-                        <p className="text-xl text-white/90 leading-relaxed">
-                            Since 2024, we've been dedicated to providing healthcare providers in Kenya
-                            with premium medical supplies and equipment, ensuring quality care reaches every patient.
-                        </p>
-                    </div>
+            <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 text-white py-16 px-4">
+                <div className="container mx-auto max-w-4xl text-center">
+                    <img src={medHelmLogo} alt="Medhelm Supplies Logo" className="mx-auto mb-4 h-16 w-auto" />
+                    <Badge className="bg-white/20 text-white border-white/30 mb-4 text-sm">
+                        About MEDHELM
+                    </Badge>
+                    <h1 className="text-3xl md:text-4xl font-bold mb-4 leading-tight">
+                        Your Trusted Medical Partner
+                    </h1>
+                    <p className="text-lg text-blue-100 leading-relaxed max-w-2xl mx-auto">
+                        Since 2024, providing Kenya's healthcare providers with premium supplies for quality patient care.
+                    </p>
                 </div>
             </section>
 
             {/* Our Story */}
-            <section className="py-20 bg-muted/30">
-                <div className="container mx-auto px-4">
-                    <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <section className="py-16 px-4">
+                <div className="container mx-auto max-w-6xl">
+                    <div className="grid lg:grid-cols-2 gap-8 items-center">
                         <div>
-                            <h2 className="text-3xl font-bold text-foreground mb-6">Our Story</h2>
-                            <div className="space-y-4 text-muted-foreground">
+                            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">Our Story</h2>
+                            <div className="space-y-3 text-gray-600 text-sm md:text-base">
                                 <p>
-                                    MEDHELM SUPPLIES was born from a simple observation: healthcare providers
-                                    needed a reliable partner who understood their challenges and could deliver
-                                    quality medical supplies when they needed them most.
+                                    MEDHELM was born to solve healthcare supply challenges. We deliver quality medical supplies when needed most.
                                 </p>
                                 <p>
-                                    Starting from our base in Kiambu Town, opposite the Level 5 Hospital,
-                                    we've grown to serve healthcare facilities countrywide,
-                                    building relationships based on trust, quality, and reliability.
+                                    From Kiambu Town, we've grown to serve Kenya nationwide, building trust through reliability and quality.
                                 </p>
                                 <p>
-                                    Today, we're proud to be a key partner in Kenya's healthcare ecosystem,
-                                    supporting everything from small clinics to major hospitals with our
-                                    comprehensive range of medical supplies and equipment.
+                                    Today, we're Kenya's key healthcare partner, supporting clinics to hospitals with comprehensive supplies.
                                 </p>
                             </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <Card>
-                                <CardContent className="p-6 text-center">
-                                    <Award className="h-8 w-8 text-primary mx-auto mb-2" />
-                                    <h3 className="text-2xl font-bold text-primary">2+</h3>
-                                    <p className="text-sm text-muted-foreground">Years Experience</p>
+                        <div className="grid grid-cols-2 gap-3">
+                            <Card className="bg-white shadow-md hover:shadow-lg transition-shadow">
+                                <CardContent className="p-4 text-center">
+                                    <LuAward className="h-6 w-6 text-blue-600 mx-auto mb-2" />
+                                    <h3 className="text-xl font-bold text-blue-600">2+</h3>
+                                    <p className="text-xs text-gray-500">Years</p>
                                 </CardContent>
                             </Card>
-                            <Card>
-                                <CardContent className="p-6 text-center">
-                                    <Users className="h-8 w-8 text-primary mx-auto mb-2" />
-                                    <h3 className="text-2xl font-bold text-primary">10+</h3>
-                                    <p className="text-sm text-muted-foreground">Healthcare Partners</p>
+                            <Card className="bg-white shadow-md hover:shadow-lg transition-shadow">
+                                <CardContent className="p-4 text-center">
+                                    <LuUsers className="h-6 w-6 text-blue-600 mx-auto mb-2" />
+                                    <h3 className="text-xl font-bold text-blue-600">10+</h3>
+                                    <p className="text-xs text-gray-500">Partners</p>
                                 </CardContent>
                             </Card>
-                            <Card>
-                                <CardContent className="p-6 text-center">
-                                    <MapPin className="h-8 w-8 text-primary mx-auto mb-2" />
-                                    <h3 className="text-2xl font-bold text-primary">45+</h3>
-                                    <p className="text-sm text-muted-foreground">Counties Served</p>
+                            <Card className="bg-white shadow-md hover:shadow-lg transition-shadow">
+                                <CardContent className="p-4 text-center">
+                                    <LuMapPin className="h-6 w-6 text-blue-600 mx-auto mb-2" />
+                                    <h3 className="text-xl font-bold text-blue-600">45+</h3>
+                                    <p className="text-xs text-gray-500">Counties</p>
                                 </CardContent>
                             </Card>
-                            <Card>
-                                <CardContent className="p-6 text-center">
-                                    <Clock className="h-8 w-8 text-primary mx-auto mb-2" />
-                                    <h3 className="text-2xl font-bold text-primary">24/7</h3>
-                                    <p className="text-sm text-muted-foreground">Support Available</p>
+                            <Card className="bg-white shadow-md hover:shadow-lg transition-shadow">
+                                <CardContent className="p-4 text-center">
+                                    <LuClock className="h-6 w-6 text-blue-600 mx-auto mb-2" />
+                                    <h3 className="text-xl font-bold text-blue-600">24/7</h3>
+                                    <p className="text-xs text-gray-500">Support</p>
                                 </CardContent>
                             </Card>
                         </div>
@@ -129,29 +118,25 @@ const About = () => {
                 </div>
             </section>
 
-            {/* Mission & Vision */}
-            <section className="py-20">
-                <div className="container mx-auto px-4">
-                    <div className="grid md:grid-cols-2 gap-12">
-                        <Card className="border-primary/20">
-                            <CardContent className="p-8">
-                                <Target className="h-12 w-12 text-primary mb-4" />
-                                <h3 className="text-2xl font-bold mb-4">Our Mission</h3>
-                                <p className="text-muted-foreground">
-                                    To provide healthcare providers in Kenya with reliable access to quality
-                                    medical supplies and equipment, enabling them to deliver exceptional patient
-                                    care while building sustainable healthcare systems in our communities.
+            {/* Mission & Vision - Optimized for mobile */}
+            <section className="py-8 px-4 bg-white">
+                <div className="container mx-auto max-w-6xl">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-white rounded-xl shadow-sm">
+                            <CardContent className="p-4 flex flex-col items-center text-center">
+                                <LuTarget className="h-8 w-8 text-blue-600 mb-2" />
+                                <h3 className="text-lg font-bold mb-2 text-gray-900">Our Mission</h3>
+                                <p className="text-gray-600 text-sm leading-relaxed">
+                                    Provide Kenya's healthcare providers with reliable access to quality medical supplies, enabling exceptional patient care.
                                 </p>
                             </CardContent>
                         </Card>
-                        <Card className="border-primary/20">
-                            <CardContent className="p-8">
-                                <Eye className="h-12 w-12 text-primary mb-4" />
-                                <h3 className="text-2xl font-bold mb-4">Our Vision</h3>
-                                <p className="text-muted-foreground">
-                                    To be Kenya's most trusted medical supply partner, known for our commitment
-                                    to quality, reliability, and innovation in supporting healthcare excellence
-                                    across the nation.
+                        <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-white rounded-xl shadow-sm">
+                            <CardContent className="p-4 flex flex-col items-center text-center">
+                                <LuEye className="h-8 w-8 text-blue-600 mb-2" />
+                                <h3 className="text-lg font-bold mb-2 text-gray-900">Our Vision</h3>
+                                <p className="text-gray-600 text-sm leading-relaxed">
+                                    Become Kenya's most trusted medical supply partner, known for quality, reliability, and innovation.
                                 </p>
                             </CardContent>
                         </Card>
@@ -160,22 +145,21 @@ const About = () => {
             </section>
 
             {/* Our Values */}
-            <section className="py-20 bg-muted/30">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold text-foreground mb-4">Our Values</h2>
-                        <p className="text-muted-foreground max-w-2xl mx-auto">
-                            These core principles guide everything we do and shape how we serve
-                            our healthcare partners and their patients.
+            <section className="py-16 px-4 bg-gradient-to-br from-slate-50 to-blue-50">
+                <div className="container mx-auto max-w-6xl">
+                    <div className="text-center mb-8">
+                        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Our Values</h2>
+                        <p className="text-gray-600 text-sm max-w-xl mx-auto">
+                            Core principles guiding our service to healthcare partners.
                         </p>
                     </div>
-                    <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
                         {values.map((value, index) => (
-                            <Card key={index} className="text-center hover:shadow-lg transition-shadow">
-                                <CardContent className="p-6">
-                                    <value.icon className="h-12 w-12 text-primary mx-auto mb-4" />
-                                    <h3 className="text-lg font-semibold mb-3">{value.title}</h3>
-                                    <p className="text-sm text-muted-foreground">{value.description}</p>
+                            <Card key={index} className="text-center hover:shadow-lg transition-all duration-300 bg-white border-blue-100">
+                                <CardContent className="p-4">
+                                    <value.icon className="h-8 w-8 text-blue-600 mx-auto mb-3" />
+                                    <h3 className="text-sm font-semibold mb-2 text-gray-900">{value.title}</h3>
+                                    <p className="text-xs text-gray-600 leading-tight">{value.description}</p>
                                 </CardContent>
                             </Card>
                         ))}
@@ -184,27 +168,27 @@ const About = () => {
             </section>
 
             {/* Timeline */}
-            <section className="py-20">
-                <div className="container mx-auto px-4">
-                    <div className="text-center mb-12">
-                        <h2 className="text-3xl font-bold text-foreground mb-4">Our Journey</h2>
-                        <p className="text-muted-foreground">
-                            Key milestones in our growth and service to Kenya's healthcare community
+            <section className="py-16 px-4 bg-white">
+                <div className="container mx-auto max-w-4xl">
+                    <div className="text-center mb-8">
+                        <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Our Journey</h2>
+                        <p className="text-gray-600 text-sm">
+                            Key milestones in our healthcare service growth.
                         </p>
                     </div>
-                    <div className="max-w-3xl mx-auto">
+                    <div className="max-w-md mx-auto">
                         {milestones.map((milestone, index) => (
-                            <div key={index} className="flex gap-4 mb-8 last:mb-0">
+                            <div key={index} className="flex gap-3 mb-6 last:mb-0">
                                 <div className="flex flex-col items-center">
-                                    <div className="bg-primary text-primary-foreground rounded-full w-12 h-12 flex items-center justify-center font-bold text-sm">
-                                        {milestone.year}
+                                    <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold text-xs">
+                                        {milestone.year.slice(-2)}
                                     </div>
                                     {index < milestones.length - 1 && (
-                                        <div className="w-0.5 bg-border h-16 mt-2"></div>
+                                        <div className="w-0.5 bg-blue-200 h-8 mt-1"></div>
                                     )}
                                 </div>
-                                <div className="flex-1 pb-8">
-                                    <p className="text-muted-foreground">{milestone.event}</p>
+                                <div className="flex-1 pb-4">
+                                    <p className="text-gray-600 text-sm">{milestone.event}</p>
                                 </div>
                             </div>
                         ))}
@@ -214,7 +198,7 @@ const About = () => {
 
             <Footer />
             <MobileBottomNav />
-            <div className="lg:hidden h-20"></div>
+            <div className="lg:hidden h-16"></div>
         </div>
     );
 };

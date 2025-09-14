@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.medhelmsupplies.co.ke/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -17,9 +17,9 @@ apiClient.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
     // Add request debugging
-    console.log(`🔄 ${config.method?.toUpperCase()} ${config.url}`);
+    // ...existing code...
     return config;
   },
   (error) => {
@@ -31,15 +31,15 @@ apiClient.interceptors.request.use(
 // Response interceptor for error handling
 apiClient.interceptors.response.use(
   (response) => {
-    console.log(`✅ ${response.status} ${response.config.url}`);
+    // ...existing code...
     return response;
   },
   (error) => {
     const { response, config } = error;
-    
+
     if (response) {
       console.error(`❌ ${response.status} ${config?.method?.toUpperCase()} ${config?.url}`);
-      
+
       // Handle specific error codes
       switch (response.status) {
         case 404:
@@ -59,7 +59,7 @@ apiClient.interceptors.response.use(
     } else {
       console.error('❌ Network error:', error.message);
     }
-    
+
     return Promise.reject(error);
   }
 );

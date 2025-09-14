@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { X, Send } from 'lucide-react';
+import { LuX, LuSend } from 'react-icons/lu';
 // Custom WhatsApp Icon Component
 const WhatsappIcon = ({ className }: { className?: string }) => (
     <svg
@@ -63,7 +63,7 @@ const WhatsAppChat = () => {
                         style={{ boxShadow: '0 8px 32px 0 rgba(34, 197, 94, 0.25)' }}
                     >
                         {isOpen ? (
-                            <X className="h-7 w-7 transition-transform duration-200" />
+                            <LuX className="h-7 w-7 transition-transform duration-200" />
                         ) : (
                             <div className="relative flex items-center justify-center">
                                 {/* WhatsApp icon representation */}
@@ -126,7 +126,7 @@ const WhatsAppChat = () => {
                                     className="w-full bg-green-500 hover:bg-green-600 text-white"
                                     disabled={!quickMessage.trim()}
                                 >
-                                    <Send className="h-4 w-4 mr-2" />
+                                    <LuSend className="h-4 w-4 mr-2" />
                                     Send Message
                                 </Button>
                             </div>

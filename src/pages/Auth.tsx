@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import medHelmLogo from '@/assets/medhelm-logo.svg';
-import { useAuth } from '../hooks/use-auth';
+import medHelmLogo from '../assets/medhelm-logo.svg';
+import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { Eye, EyeOff, Mail, Lock, CheckCircle, AlertCircle } from 'lucide-react';
+import { LuEye, LuEyeOff, LuMail, LuLock, LuCheck } from 'react-icons/lu';
 import { FcGoogle } from 'react-icons/fc';
 
 import { useEffect } from 'react';
@@ -21,8 +21,15 @@ const Auth: React.FC = () => {
   const [success, setSuccess] = useState('');
   // Removed unused termsAccepted and resetEmail state
 
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect to home if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+  }, [isAuthenticated, navigate]);
 
   // Show activation success message if redirected from activation link
   useEffect(() => {
@@ -56,9 +63,10 @@ const Auth: React.FC = () => {
 
     try {
       await login(formData.email, formData.password);
+      setError(''); // Clear error on successful login
       navigate('/');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      setError(err.message || 'Login failed');
     } finally {
       setLoading(false);
     }
@@ -85,14 +93,14 @@ const Auth: React.FC = () => {
           <div className="p-8">
             {error && (
               <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center">
-                <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
+                <span className="w-5 h-5 text-red-500 mr-2" role="img" aria-label="warning">⚠️</span>
                 <span className="text-sm text-red-700">{error}</span>
               </div>
             )}
 
             {success && (
               <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center">
-                <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
+                <LuCheck className="w-5 h-5 text-green-500 mr-2" />
                 <span className="text-sm text-green-700">{success}</span>
               </div>
             )}
@@ -103,7 +111,7 @@ const Auth: React.FC = () => {
                   Email Address
                 </label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <LuMail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
                     type="email"
                     name="email"
@@ -121,7 +129,7 @@ const Auth: React.FC = () => {
                   Password
                 </label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <LuLock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input
                     type={showPassword ? 'text' : 'password'}
                     name="password"
@@ -136,7 +144,7 @@ const Auth: React.FC = () => {
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
-                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    {showPassword ? <LuEyeOff className="w-5 h-5" /> : <LuEye className="w-5 h-5" />}
                   </button>
                 </div>
               </div>
@@ -180,7 +188,7 @@ const Auth: React.FC = () => {
                 <button
                   type="button"
                   className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                  onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`}
+                  onClick={() => window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/auth/google`}
                 >
                   <FcGoogle className="w-5 h-5 mr-2" />
                   Google

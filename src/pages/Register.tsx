@@ -1,12 +1,14 @@
 
-import React, { useState } from 'react';
-import { Mail, Lock, Eye, EyeOff, CheckCircle, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { LuMail, LuLock, LuEye, LuEyeOff, LuCheck } from 'react-icons/lu';
 import { Link } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
+import { useAuth } from '../hooks/use-auth';
 
-import { useEffect } from 'react';
 const Register: React.FC = () => {
   const [formData, setFormData] = useState({ name: '', email: '', password: '', confirmPassword: '' });
+  // Use AuthContext for registration
+  const { register } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -49,26 +51,14 @@ const Register: React.FC = () => {
     }
     setLoading(true);
     try {
-      // Replace with your actual registration API call
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
+      await register({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
       });
-      const data = await response.json();
-      if (response.ok) {
-        setSuccess('Registration successful! A verification link has been sent to your email. Please check your inbox and click the link to complete your registration.');
-      } else if (response.status === 409) {
-        setError('An account with this email already exists. Please log in or use a different email.');
-      } else {
-        setError(data.message || 'Registration failed. Please try again.');
-      }
+      setSuccess('Registration successful! A verification link has been sent to your email. Please check your inbox and click the link to complete your registration.');
     } catch (err) {
-      setError('Registration failed. Please try again.');
+      setError((err as any)?.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -79,7 +69,7 @@ const Register: React.FC = () => {
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-indigo-600 rounded-full mb-4">
-            <Lock className="w-8 h-8 text-white" />
+            <LuLock className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-3xl font-bold text-gray-900">Create your account</h1>
         </div>
@@ -87,13 +77,13 @@ const Register: React.FC = () => {
           <div className="p-8">
             {error && (
               <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center">
-                <AlertCircle className="w-5 h-5 text-red-500 mr-2" />
+                <span className="w-5 h-5 text-red-500 mr-2" role="img" aria-label="warning">⚠️</span>
                 <span className="text-sm text-red-700">{error}</span>
               </div>
             )}
             {success && (
               <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center">
-                <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
+                <LuCheck className="w-5 h-5 text-green-500 mr-2" />
                 <span className="text-sm text-green-700">{success}</span>
               </div>
             )}
@@ -107,29 +97,29 @@ const Register: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <LuMail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input type="email" name="email" value={formData.email} onChange={handleInputChange} className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Enter your email" required />
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <LuLock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input type={showPassword ? 'text' : 'password'} name="password" value={formData.password} onChange={handleInputChange} className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Create a password" required />
-                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">{showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}</button>
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">{showPassword ? <LuEyeOff className="w-5 h-5" /> : <LuEye className="w-5 h-5" />}</button>
                 </div>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <LuLock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                   <input type={showConfirmPassword ? 'text' : 'password'} name="confirmPassword" value={formData.confirmPassword} onChange={handleInputChange} className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent" placeholder="Confirm your password" required />
-                  <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">{showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}</button>
+                  <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">{showConfirmPassword ? <LuEyeOff className="w-5 h-5" /> : <LuEye className="w-5 h-5" />}</button>
                 </div>
               </div>
               <div className="flex items-start">
                 <div className="flex items-center h-5">
-                  <input id="terms" type="checkbox" checked={termsAccepted} onChange={e => setTermsAccepted(e.target.checked)} className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" />
+                  <input id="terms" name="terms" type="checkbox" checked={termsAccepted} onChange={e => setTermsAccepted(e.target.checked)} className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" />
                 </div>
                 <div className="ml-3 text-sm">
                   <label htmlFor="terms" className="text-gray-600">I agree to the <Link to="/terms" className="text-indigo-600 hover:text-indigo-500">Terms and Conditions</Link> and <Link to="/privacy" className="text-indigo-600 hover:text-indigo-500">Privacy Policy</Link></label>
@@ -151,7 +141,7 @@ const Register: React.FC = () => {
                 <button
                   type="button"
                   className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                  onClick={() => window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`}
+                  onClick={() => window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/auth/google`}
                 >
                   <FcGoogle className="w-5 h-5 mr-2" />
                   Google

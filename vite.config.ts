@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import path from 'path';
 
 // https://vitejs.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
   resolve: {
     alias: {
@@ -13,16 +13,37 @@ export default defineConfig({
     },
   },
   define: {
-    'process.env': {}
+    'process.env': { NODE_ENV: mode }
   },
   server: {
+    port: 5173,
+    strictPort: true,
     proxy: {
       // Forward all requests starting with /api to backend server running on port 5000
       '/api': {
-  target: 'https://api.medhelmsupplies.co.ke', // <-- change to your backend domain
+        target: process.env.NODE_ENV === 'production'
+          ? 'https://backend.medhelmsupplies.co.ke'
+          : 'http://localhost:5000', // local backend for development
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api/, '/api'), // optional, you can skip if no path change needed
+        rewrite: (path) => path.replace(/^\/api/, '/api'),
       },
     },
   },
-});
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          router: ['react-router-dom'],
+          ui: ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu']
+        }
+      }
+    }
+  },
+  preview: {
+    port: 4173,
+    host: true
+  }
+}));

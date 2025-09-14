@@ -5,16 +5,12 @@ yarn-debug.log*
 yarn-error.log*
 
 # Production builds
-dist/
+# dist/
 build/
 dist-ssr/
 
 # Environment variables
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
 
 # Logs
 logs/
@@ -113,6 +109,19 @@ temp/
 .gitignore
 README.md
 PROJECT_ANALYSIS.md
+
+# Additional test & mock exclusions
+**/tests/
+**/*.test.*
+**/__mocks__/
+
+# Exclude all env files except example templates
+*.env
+*.env.*
+!**/.env.example
+
+# Ignore coverage artifacts globally (already partly covered)
+**/coverage/
 
 # Docker
 Dockerfile

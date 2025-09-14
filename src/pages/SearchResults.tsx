@@ -16,7 +16,7 @@ const SearchResults: React.FC = () => {
     if (!searchQuery) return;
     setLoading(true);
     setError('');
-    fetch(`${import.meta.env.VITE_API_URL}/products?search=${encodeURIComponent(searchQuery)}`)
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/products?search=${encodeURIComponent(searchQuery)}`)
       .then(res => res.json())
       .then(data => {
         setProducts(data.products || []);
@@ -36,7 +36,7 @@ const SearchResults: React.FC = () => {
       {!loading && !error && products.length === 0 && (
         <p>No products found.</p>
       )}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.map(product => (
           <ProductCard key={product._id || product.id} product={product} />
         ))}

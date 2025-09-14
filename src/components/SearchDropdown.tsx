@@ -16,7 +16,7 @@ const SearchDropdown: React.FC<SearchDropdownProps> = ({ query, onSelect }) => {
       return;
     }
     setLoading(true);
-    fetch(`${import.meta.env.VITE_API_URL}/products?search=${encodeURIComponent(query)}&limit=5`)
+    fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/products?search=${encodeURIComponent(query)}&limit=5`)
       .then(res => res.json())
       .then(data => {
         // Support both { products: [...] } and { data: { products: [...] } }

@@ -57,15 +57,15 @@ export function useAuth() {
   const login = useCallback(async (email: string, password: string) => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
-  const response = await apiClient.post('/auth/signin', { email, password });
+      const response = await apiClient.post('/auth/login', { email, password });
       const { user, token } = response.data;
-      
+
       setToken(token);
       setUser(user);
       localStorage.setItem('token', token);
-      
+
       return { success: true };
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Login failed';
@@ -87,22 +87,13 @@ export function useAuth() {
   }) => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
-      const response = await apiClient.post('/auth/register', userData);
-      const { user, token } = response.data;
-      
-      setToken(token);
-      setUser(user);
-      localStorage.setItem('token', token);
-      
+      await apiClient.post('/auth/register', userData);
       return { success: true };
     } catch (err: any) {
       const errorMessage = err.response?.data?.message || 'Registration failed';
       setError(errorMessage);
-      setToken(null);
-      setUser(null);
-      localStorage.removeItem('token');
       throw new Error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -120,7 +111,7 @@ export function useAuth() {
   const updateUser = useCallback(async (userData: Partial<User>) => {
     setIsLoading(true);
     setError(null);
-    
+
     try {
       const response = await apiClient.put('/users/profile', userData);
       setUser(response.data);
@@ -138,11 +129,11 @@ export function useAuth() {
     try {
       const response = await apiClient.post('/auth/refresh-token');
       const { token } = response.data;
-      
+
       setToken(token);
       localStorage.setItem('token', token);
       apiClient.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-      
+
       return token;
     } catch (error) {
       logout();

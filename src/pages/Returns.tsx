@@ -1,23 +1,22 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { RefreshCw, Shield, Clock, Phone } from 'lucide-react';
-import Header from '@/components/Header';
+import { LuRefreshCw, LuShield, LuClock, LuPhone } from 'react-icons/lu';
+// ...existing code...
 import Footer from '@/components/Footer';
 
 const Returns = () => {
     return (
         <div className="min-h-screen">
-            <Header />
             <main className="container mx-auto px-4 py-8">
                 <div className="max-w-4xl mx-auto">
                     <h1 className="text-3xl font-bold mb-8">Returns & Refunds Policy</h1>
 
-                    <div className="grid gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <Card>
                             <CardHeader>
                                 <CardTitle className="flex items-center gap-2">
-                                    <RefreshCw className="h-5 w-5" />
+                                    <LuRefreshCw className="h-5 w-5" />
                                     Return Policy Overview
                                 </CardTitle>
                             </CardHeader>
@@ -26,19 +25,19 @@ const Returns = () => {
                                     At MEDHELM Supplies, we understand that sometimes medical supplies may not meet your expectations.
                                     We offer a comprehensive return policy to ensure your satisfaction.
                                 </p>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                                     <div className="text-center p-4 border rounded-lg">
-                                        <Clock className="h-8 w-8 mx-auto mb-2 text-primary" />
+                                        <LuClock className="h-8 w-8 mx-auto mb-2 text-primary" />
                                         <h3 className="font-medium">30-Day Returns</h3>
                                         <p className="text-sm text-muted-foreground">Return within 30 days of purchase</p>
                                     </div>
                                     <div className="text-center p-4 border rounded-lg">
-                                        <Shield className="h-8 w-8 mx-auto mb-2 text-primary" />
+                                        <LuShield className="h-8 w-8 mx-auto mb-2 text-primary" />
                                         <h3 className="font-medium">Quality Guarantee</h3>
                                         <p className="text-sm text-muted-foreground">100% quality assurance on all products</p>
                                     </div>
                                     <div className="text-center p-4 border rounded-lg">
-                                        <RefreshCw className="h-8 w-8 mx-auto mb-2 text-primary" />
+                                        <LuRefreshCw className="h-8 w-8 mx-auto mb-2 text-primary" />
                                         <h3 className="font-medium">Easy Process</h3>
                                         <p className="text-sm text-muted-foreground">Simple return process with support</p>
                                     </div>
@@ -127,7 +126,7 @@ const Returns = () => {
                             <CardContent>
                                 <div className="flex flex-col sm:flex-row gap-4">
                                     <Button className="flex-1">
-                                        <Phone className="mr-2 h-4 w-4" />
+                                        <LuPhone className="mr-2 h-4 w-4" />
                                         Call Support: +254 746 020 323
                                     </Button>
                                     <Button variant="outline" className="flex-1">

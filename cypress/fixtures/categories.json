@@ -1,0 +1,26 @@
+[
+    {
+        "name": "Medical Equipment",
+        "count": 15,
+        "minPrice": 5000,
+        "maxPrice": 150000
+    },
+    {
+        "name": "Diagnostic Tools",
+        "count": 8,
+        "minPrice": 2000,
+        "maxPrice": 50000
+    },
+    {
+        "name": "First Aid Supplies",
+        "count": 12,
+        "minPrice": 100,
+        "maxPrice": 5000
+    },
+    {
+        "name": "Personal Protective Equipment",
+        "count": 20,
+        "minPrice": 50,
+        "maxPrice": 3000
+    }
+]

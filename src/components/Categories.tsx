@@ -4,19 +4,24 @@ import { useCart } from '@/context/cartContext';
 import { useWishlist } from '@/context/wishlistContext';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-
 import { Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {
-  Stethoscope,
-  Syringe,
-  Shield,
-  Pill,
-  Package,
-  AlertCircle
-} from 'lucide-react';
-import { Heart, ShoppingCart } from 'lucide-react';
+  LuStethoscope,
+  LuSyringe,
+  LuShield,
+  LuPill,
+  LuPackage,
+  LuLoaderCircle,
+  LuHeart,
+  LuShoppingCart,
+  LuActivity,
+  LuDroplet,
+  LuWind,
+  LuBandage,
+  LuAmbulance
+} from 'react-icons/lu';
 import productService from '@/services/productService';
 
 interface CategoryData {
@@ -41,31 +46,35 @@ const Categories: React.FC<CategoriesProps> = () => {
   const [categories, setCategories] = useState<CategoryData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [expandedCategory] = useState<string | null>(null);
   const [categoryProducts, setCategoryProducts] = useState<Record<string, any[] | null>>({});
   const [productsLoading, setProductsLoading] = useState<Record<string, boolean>>({});
   const [search, setSearch] = useState('');
-  // Feedback handlers
-  // Example usage of setSelectedCategory (if provided):
-  // setSelectedCategory && setSelectedCategory('SomeCategory');
+
   const handleAddToCart = async (product: any) => {
-    await addToCart(product._id || product.id, 1);
-    setSuccessMsg('Added to cart!');
-    setShowToast(true);
-    setTimeout(() => { setShowToast(false); setSuccessMsg(null); }, 1800);
+    try {
+      await addToCart(product._id || product.id, 1);
+      setSuccessMsg('Added to cart!');
+      setShowToast(true);
+      setTimeout(() => { setShowToast(false); setSuccessMsg(null); }, 1800);
+    } catch (error) {
+      console.error('Failed to add to cart:', error);
+      setSuccessMsg('Failed to add to cart');
+      setShowToast(true);
+      setTimeout(() => { setShowToast(false); setSuccessMsg(null); }, 1800);
+    }
   };
+
   const handleAddToWishlist = async (product: any) => {
     await addToWishlist(product._id || product.id);
     setSuccessMsg('Added to wishlist!');
     setShowToast(true);
     setTimeout(() => { setShowToast(false); setSuccessMsg(null); }, 1800);
   };
-  // Fetch products for a category
+
   const fetchProductsForCategory = async (categoryName: string) => {
     setProductsLoading((prev) => ({ ...prev, [categoryName]: true }));
     try {
-      const res = await productService.getFilteredProducts({ category: categoryName });
-      // If no products returned, but productCount > 0, show a loading message or refetch
+      const res = await productService.getProductsByCategory({ category: categoryName });
       if (res.data.products && res.data.products.length === 0) {
         setCategoryProducts((prev) => ({ ...prev, [categoryName]: null }));
       } else {
@@ -79,16 +88,31 @@ const Categories: React.FC<CategoriesProps> = () => {
   };
 
   const categoryIcons: Record<string, any> = {
-    "Diagnostic Equipment": Stethoscope,
-    "Surgical Instruments": Syringe,
-    "Patient Care": Heart,
-    "Safety & PPE": Shield,
-    "Pharmaceuticals": Pill,
-    "Medical Supplies": Package
+    "Diagnostics": LuStethoscope,
+    "Protection": LuShield,
+    "Mobility": LuActivity,
+    "Surgical": LuSyringe,
+    "Emergency": LuAmbulance,
+    "Infusion": LuDroplet,
+    "Respiratory": LuWind,
+    "Wound Care": LuBandage,
+    "Diagnostic Equipment": LuStethoscope,
+    "Surgical Instruments": LuSyringe,
+    "Patient Care": LuHeart,
+    "Safety & PPE": LuShield,
+    "Pharmaceuticals": LuPill,
+    "Medical Supplies": LuPackage
   };
 
-  // Assign unique gradient colors for each category icon
   const categoryIconBg: Record<string, string> = {
+    "Diagnostics": "from-blue-500 to-cyan-400",
+    "Protection": "from-green-500 to-emerald-400",
+    "Mobility": "from-yellow-500 to-amber-400",
+    "Surgical": "from-red-500 to-pink-400",
+    "Emergency": "from-orange-600 to-red-400",
+    "Infusion": "from-purple-500 to-indigo-400",
+    "Respiratory": "from-cyan-500 to-blue-400",
+    "Wound Care": "from-pink-500 to-fuchsia-400",
     "Diagnostic Equipment": "from-blue-500 to-cyan-400",
     "Surgical Instruments": "from-red-500 to-pink-400",
     "Patient Care": "from-pink-500 to-fuchsia-400",
@@ -107,7 +131,7 @@ const Categories: React.FC<CategoriesProps> = () => {
       const response = await productService.getCategoriesWithCounts();
       if (response.success && Array.isArray(response.data) && response.data.length > 0) {
         const mappedCategories = response.data.map((cat) => {
-          const icon = categoryIcons[cat.name] || Package;
+          const icon = categoryIcons[cat.name] || LuPackage;
           const color = categoryIconBg[cat.name] || "text-gray-600";
           return {
             id: cat.name.toLowerCase().replace(/\s+/g, '-'),
@@ -121,13 +145,12 @@ const Categories: React.FC<CategoriesProps> = () => {
         });
         setCategories(mappedCategories.sort((a, b) => b.productCount - a.productCount));
       } else {
-        // Fallback demo categories
         setCategories([
           {
             id: 'diagnostic-equipment',
             name: 'Diagnostic Equipment',
             description: 'Stethoscopes, BP monitors, thermometers & more',
-            icon: Stethoscope,
+            icon: LuStethoscope,
             productCount: 12,
             color: 'text-blue-600',
             products: [],
@@ -136,7 +159,7 @@ const Categories: React.FC<CategoriesProps> = () => {
             id: 'surgical-instruments',
             name: 'Surgical Instruments',
             description: 'Precision tools for medical procedures',
-            icon: Syringe,
+            icon: LuSyringe,
             productCount: 8,
             color: 'text-red-600',
             products: [],
@@ -145,7 +168,7 @@ const Categories: React.FC<CategoriesProps> = () => {
             id: 'patient-care',
             name: 'Patient Care',
             description: 'Comfort items, beddings, and care essentials',
-            icon: Heart,
+            icon: LuHeart,
             productCount: 15,
             color: 'text-pink-600',
             products: [],
@@ -154,7 +177,7 @@ const Categories: React.FC<CategoriesProps> = () => {
             id: 'safety-ppe',
             name: 'Safety & PPE',
             description: 'Protective equipment for healthcare safety',
-            icon: Shield,
+            icon: LuShield,
             productCount: 10,
             color: 'text-green-600',
             products: [],
@@ -163,7 +186,7 @@ const Categories: React.FC<CategoriesProps> = () => {
             id: 'pharmaceuticals',
             name: 'Pharmaceuticals',
             description: 'Medications and therapeutic solutions',
-            icon: Pill,
+            icon: LuPill,
             productCount: 20,
             color: 'text-purple-600',
             products: [],
@@ -172,7 +195,7 @@ const Categories: React.FC<CategoriesProps> = () => {
             id: 'medical-supplies',
             name: 'Medical Supplies',
             description: 'First aid, bandages, and essential supplies',
-            icon: Package,
+            icon: LuPackage,
             productCount: 18,
             color: 'text-orange-600',
             products: [],
@@ -181,13 +204,12 @@ const Categories: React.FC<CategoriesProps> = () => {
       }
     } catch (err) {
       console.error('Error fetching categories:', err);
-      // Fallback demo categories on error
       setCategories([
         {
           id: 'diagnostic-equipment',
           name: 'Diagnostic Equipment',
           description: 'Stethoscopes, BP monitors, thermometers & more',
-          icon: Stethoscope,
+          icon: LuStethoscope,
           productCount: 12,
           color: 'text-blue-600',
           products: [],
@@ -196,7 +218,7 @@ const Categories: React.FC<CategoriesProps> = () => {
           id: 'surgical-instruments',
           name: 'Surgical Instruments',
           description: 'Precision tools for medical procedures',
-          icon: Syringe,
+          icon: LuSyringe,
           productCount: 8,
           color: 'text-red-600',
           products: [],
@@ -205,7 +227,7 @@ const Categories: React.FC<CategoriesProps> = () => {
           id: 'patient-care',
           name: 'Patient Care',
           description: 'Comfort items, beddings, and care essentials',
-          icon: Heart,
+          icon: LuHeart,
           productCount: 15,
           color: 'text-pink-600',
           products: [],
@@ -214,7 +236,7 @@ const Categories: React.FC<CategoriesProps> = () => {
           id: 'safety-ppe',
           name: 'Safety & PPE',
           description: 'Protective equipment for healthcare safety',
-          icon: Shield,
+          icon: LuShield,
           productCount: 10,
           color: 'text-green-600',
           products: [],
@@ -223,7 +245,7 @@ const Categories: React.FC<CategoriesProps> = () => {
           id: 'pharmaceuticals',
           name: 'Pharmaceuticals',
           description: 'Medications and therapeutic solutions',
-          icon: Pill,
+          icon: LuPill,
           productCount: 20,
           color: 'text-purple-600',
           products: [],
@@ -232,7 +254,7 @@ const Categories: React.FC<CategoriesProps> = () => {
           id: 'medical-supplies',
           name: 'Medical Supplies',
           description: 'First aid, bandages, and essential supplies',
-          icon: Package,
+          icon: LuPackage,
           productCount: 18,
           color: 'text-orange-600',
           products: [],
@@ -275,7 +297,7 @@ const Categories: React.FC<CategoriesProps> = () => {
       <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4">
           <Alert variant="destructive" className="max-w-md mx-auto">
-            <AlertCircle className="h-4 w-4" />
+            <LuLoaderCircle className="h-4 w-4" />
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         </div>
@@ -283,7 +305,6 @@ const Categories: React.FC<CategoriesProps> = () => {
     );
   }
 
-  // Filter categories by search
   const filteredCategories = categories.filter(cat =>
     cat.name.toLowerCase().includes(search.toLowerCase()) ||
     cat.description.toLowerCase().includes(search.toLowerCase())
@@ -298,7 +319,6 @@ const Categories: React.FC<CategoriesProps> = () => {
             Discover our comprehensive range of medical supplies organized by specialty. Find exactly what you need with our expertly curated categories.
           </p>
         </div>
-        {/* Search/filter bar */}
         <div className="flex justify-center mb-10 animate-fade-in">
           <input
             type="text"
@@ -317,141 +337,109 @@ const Categories: React.FC<CategoriesProps> = () => {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredCategories.map((category) => {
               const IconComponent = category.icon;
-              const isExpanded = expandedCategory === category.name;
+              const products = categoryProducts[category.name] || [];
               return (
                 <div
                   key={category.id}
                   className="block group cursor-pointer"
+                  onMouseEnter={() => {
+                    if (
+                      category.productCount > 0 &&
+                      !productsLoading[category.name] &&
+                      !categoryProducts[category.name]
+                    ) {
+                      fetchProductsForCategory(category.name);
+                    }
+                  }}
                 >
-                  <Card className="hover:shadow-2xl transition-all duration-300 group-hover:scale-105 border-0 bg-gradient-to-br from-white to-blue-50 animate-fade-in">
-                    <CardContent className="p-8 text-center">
+                  <Card className="hover:shadow-2xl transition-all duration-300 group-hover:scale-105 border-0 bg-gradient-to-br from-white to-blue-50 animate-fade-in p-2 sm:p-4">
+                    <CardContent className="p-2 sm:p-4 text-center">
                       {IconComponent ? (
-                        <div className={`bg-gradient-to-br ${categoryIconBg[category.name] || 'from-gray-400 to-gray-600'} rounded-full p-5 w-20 h-20 mx-auto mb-6 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                          <IconComponent className="h-10 w-10 text-white drop-shadow-lg" />
+                        <div className={`bg-gradient-to-br ${categoryIconBg[category.name] || 'from-gray-400 to-gray-600'} rounded-full p-2 sm:p-3 w-12 sm:w-16 h-12 sm:h-16 mx-auto mb-3 sm:mb-4 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                          <IconComponent className="h-6 sm:h-8 w-6 sm:w-8 text-white drop-shadow-lg" />
                         </div>
                       ) : null}
 
-                      <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                      <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2 sm:mb-3 group-hover:text-blue-600 transition-colors">
                         {category.name}
                       </h3>
 
-                      <p className="text-gray-600 mb-4 text-sm leading-relaxed">
+                      <p className="hidden sm:block text-gray-600 mb-3 sm:mb-4 text-xs sm:text-sm leading-relaxed">
                         {category.description}
                       </p>
 
-                      <div className="flex items-center justify-center gap-2 mb-4">
-                        {(() => {
-                          const products = categoryProducts[category.name];
-                          if (typeof products !== 'undefined' && Array.isArray(products)) {
-                            return (
-                              <>
-                                <span className={`text-2xl font-bold ${products.length > 0 ? 'text-blue-700' : 'text-gray-400'}`}>
-                                  {products.length}
-                                </span>
-                                <span className="text-sm text-gray-500">
-                                  {products.length === 1 ? 'Product' : 'Products'}
-                                </span>
-                              </>
-                            );
-                          } else {
-                            return (
-                              <>
-                                <span className="text-2xl font-bold text-gray-400">?</span>
-                                <span className="text-sm text-gray-400">Products</span>
-                              </>
-                            );
-                          }
-                        })()}
+                      <div className="hidden sm:flex items-center justify-center gap-1 sm:gap-2 mb-3 sm:mb-4">
+                        <span className={`text-xl sm:text-2xl font-bold ${category.productCount > 0 ? 'text-blue-700' : 'text-gray-400'}`}>
+                          {category.productCount}
+                        </span>
+                        <span className="text-xs sm:text-sm text-gray-500">
+                          {category.productCount === 1 ? 'Product' : 'Products'}
+                        </span>
                       </div>
-
-                      <Button
-                        variant="outline"
-                        className="w-full group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 mb-2"
-                        onClick={() => {
-                          if (typeof categoryProducts[category.name] === 'undefined') {
-                            fetchProductsForCategory(category.name);
-                          }
-                          const products = categoryProducts[category.name];
-                          if (Array.isArray(products) && products.length > 0) {
-                            // Redirect to product catalog filtered by category
-                            window.location.href = `/shop?category=${encodeURIComponent(category.name)}`;
-                          } else {
-                            alert('No available products in this category.');
-                          }
-                        }}
-                        disabled={productsLoading[category.name]}
-                      >
-                        View Products
-                      </Button>
-
-                      {isExpanded && (() => {
-                        const products = categoryProducts[category.name];
-                        return (
-                          <div className="mt-4 animate-fade-in">
-                            {productsLoading[category.name] ? (
-                              <div className="text-blue-600 font-medium">Loading products...</div>
-                            ) : (Array.isArray(products) && products.length > 0) ? (
-                              <>
-                                {showToast && (
-                                  <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-green-600 text-white px-6 py-2 rounded shadow-lg animate-fade-in-out">
-                                    {successMsg}
-                                  </div>
-                                )}
-                                {cartError && <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-red-600 text-white px-6 py-2 rounded shadow-lg animate-fade-in-out">{cartError}</div>}
-                                {wishlistError && <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-red-600 text-white px-6 py-2 rounded shadow-lg animate-fade-in-out">{wishlistError}</div>}
-                                <ul className="space-y-2">
-                                  {products.map((product: any) => (
-                                    <li key={product._id || product.id} className="border rounded p-2 text-left flex items-center justify-between gap-2 bg-white shadow-sm hover:shadow-md transition-all">
-                                      <span className="font-semibold">{product.name}</span> - <span className="text-primary font-bold">KES {product.price}</span>
-                                      <div className="flex gap-2">
-                                        <Tooltip>
-                                          <TooltipTrigger asChild>
-                                            <Button
-                                              size="icon"
-                                              variant="ghost"
-                                              className="hover:bg-pink-100"
-                                              disabled={wishlistLoading}
-                                              onClick={() => handleAddToWishlist(product)}
-                                              aria-label="Add to Wishlist"
-                                            >
-                                              <Heart className="h-5 w-5 text-pink-500" />
-                                            </Button>
-                                          </TooltipTrigger>
-                                          <TooltipContent>
-                                            Add to Wishlist
-                                          </TooltipContent>
-                                        </Tooltip>
-                                        <Tooltip>
-                                          <TooltipTrigger asChild>
-                                            <Button
-                                              size="icon"
-                                              variant="ghost"
-                                              className="hover:bg-primary/10"
-                                              disabled={cartLoading}
-                                              onClick={() => handleAddToCart(product)}
-                                              aria-label="Add to Cart"
-                                            >
-                                              <ShoppingCart className="h-5 w-5 text-primary" />
-                                            </Button>
-                                          </TooltipTrigger>
-                                          <TooltipContent>
-                                            Add to Cart
-                                          </TooltipContent>
-                                        </Tooltip>
-                                      </div>
-                                    </li>
-                                  ))}
-                                </ul>
-                              </>
-                            ) : (
-                              <div className="text-gray-500">{category.productCount > 0 ? 'Products are being loaded, please try again.' : 'No products found in this category.'}</div>
+                      <div className="hidden sm:block">
+                        {productsLoading[category.name] ? (
+                          <div className="text-blue-600 font-medium">Loading products...</div>
+                        ) : Array.isArray(products) && products.length > 0 ? (
+                          <>
+                            {showToast && (
+                              <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-green-600 text-white px-6 py-2 rounded shadow-lg animate-fade-in-out">
+                                {successMsg}
+                              </div>
                             )}
-                          </div>
-                        );
-                      })()}
+                            {cartError && <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-red-600 text-white px-6 py-2 rounded shadow-lg animate-fade-in-out">{cartError}</div>}
+                            {wishlistError && <div className="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-red-600 text-white px-6 py-2 rounded shadow-lg animate-fade-in-out">{wishlistError}</div>}
+                            <ul className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                              {products.slice(0, 16).map((product: any) => (
+                                <li key={product._id || product.id} className="border rounded p-1 sm:p-2 text-left flex flex-col items-center justify-between gap-1 bg-white shadow-sm hover:shadow-md transition-all">
+                                  <span className="font-semibold text-sm sm:text-base text-center">{product.name}</span>
+                                  <span className="text-primary font-bold text-xs sm:text-sm">KES {product.price}</span>
+                                  <div className="flex gap-1 sm:gap-2">
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <Button
+                                          size="icon"
+                                          variant="ghost"
+                                          className="hover:bg-pink-100"
+                                          disabled={wishlistLoading}
+                                          onClick={() => handleAddToWishlist(product)}
+                                          aria-label="Add to Wishlist"
+                                        >
+                                          <LuHeart className="h-4 w-4 sm:h-5 sm:w-5 text-pink-500" />
+                                        </Button>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        Add to Wishlist
+                                      </TooltipContent>
+                                    </Tooltip>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <Button
+                                          size="icon"
+                                          variant="ghost"
+                                          className="hover:bg-primary/10"
+                                          disabled={cartLoading}
+                                          onClick={() => handleAddToCart(product)}
+                                          aria-label="Add to Cart"
+                                        >
+                                          <LuShoppingCart className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                                        </Button>
+                                      </TooltipTrigger>
+                                      <TooltipContent>
+                                        Add to Cart
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </div>
+                                </li>
+                              ))}
+                            </ul>
+                          </>
+                        ) : (
+                          <div className="text-gray-500">{category.productCount > 0 ? 'Products are being loaded, please try again.' : 'No products found in this category.'}</div>
+                        )}
+                      </div>
                     </CardContent>
                   </Card>
                 </div>
@@ -465,11 +453,10 @@ const Categories: React.FC<CategoriesProps> = () => {
             Can't find what you're looking for?
           </p>
           <Button variant="outline" asChild>
-            <Link to={{ pathname: "/shop" }} state={{ resetFilters: true }}>View All Products</Link>
+            <Link to={{ pathname: "/categories" }}>View All Categories</Link>
           </Button>
         </div>
       </div>
-      {/* Animations */}
       <style>{`
         @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
         .animate-fade-in { animation: fade-in 0.7s ease; }

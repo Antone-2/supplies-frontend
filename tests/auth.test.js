@@ -1,3 +1,4 @@
+
 require('dotenv').config();
 const request = require('supertest');
 const mongoose = require('mongoose');
@@ -43,10 +44,10 @@ describe('Authentication Endpoints', () => {
         jest.setTimeout(60000); // Increase timeout to 60s
         const uri = process.env.MONGO_URI;
         if (!uri) throw new Error('MONGO_URI environment variable not set');
-        console.log('Connecting to test DB:', uri);
+        // ...existing code...
         try {
             await mongoose.connect(uri, { connectTimeoutMS: 10000 });
-            console.log('Connected to test DB');
+            // ...existing code...
         } catch (err) {
             console.error('MongoDB connection error:', err);
             throw err;

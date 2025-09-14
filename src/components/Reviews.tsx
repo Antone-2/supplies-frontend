@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
-import { Star, User, Calendar, MessageSquare } from 'lucide-react';
+import { LuStar, LuUser, LuCalendar, LuMessageSquare } from 'react-icons/lu';
 import { useToast } from '@/hooks/use-toast';
 
 const Reviews = () => {
@@ -80,7 +80,7 @@ const Reviews = () => {
 
     const renderStars = (rating: number) => {
         return Array.from({ length: 5 }, (_, i) => (
-            <Star
+            <LuStar
                 key={i}
                 className={`h-4 w-4 ${i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
                     }`}
@@ -122,7 +122,7 @@ const Reviews = () => {
                         onClick={() => setShowForm(!showForm)}
                         className="bg-secondary hover:bg-secondary-light text-secondary-foreground"
                     >
-                        <MessageSquare className="mr-2 h-4 w-4" />
+                        <LuMessageSquare className="mr-2 h-4 w-4" />
                         Write a Review
                     </Button>
                 </div>
@@ -132,7 +132,7 @@ const Reviews = () => {
                     <Card className="max-w-2xl mx-auto mb-12">
                         <CardHeader>
                             <CardTitle className="flex items-center gap-2">
-                                <MessageSquare className="h-5 w-5 text-primary" />
+                                <LuMessageSquare className="h-5 w-5 text-primary" />
                                 Share Your Experience
                             </CardTitle>
                         </CardHeader>
@@ -170,7 +170,7 @@ const Reviews = () => {
                                                 onClick={() => setFormData(prev => ({ ...prev, rating: i + 1 }))}
                                                 className="p-1"
                                             >
-                                                <Star
+                                                <LuStar
                                                     className={`h-6 w-6 ${i < formData.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
                                                         }`}
                                                 />
@@ -225,7 +225,7 @@ const Reviews = () => {
                                 <div className="flex items-start justify-between mb-4">
                                     <div className="flex items-center gap-3">
                                         <div className="bg-primary/10 p-2 rounded-full">
-                                            <User className="h-5 w-5 text-primary" />
+                                            <LuUser className="h-5 w-5 text-primary" />
                                         </div>
                                         <div>
                                             <div className="flex items-center gap-2">
@@ -237,7 +237,7 @@ const Reviews = () => {
                                                 )}
                                             </div>
                                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                                <Calendar className="h-3 w-3" />
+                                                <LuCalendar className="h-3 w-3" />
                                                 {review.date}
                                             </div>
                                         </div>

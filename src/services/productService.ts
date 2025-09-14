@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.medhelmsupplies.co.ke/api/v1';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1';
 
 export interface Product {
   _id: string;
@@ -74,25 +74,25 @@ class ProductService {
     });
     // If a specific category is selected (not 'all'), use /products/category/:category
     if (options.category && options.category !== 'all') {
-      const response = await axios.get(`${API_BASE_URL}/products/category/${options.category}?${params}`);
-      return { success: true, data: { products: response.data.products, pagination: response.data.pagination } };
+      const response = await axios.get(`${API_BASE_URL}/products/category/${encodeURIComponent(options.category)}?${params}`);
+      return { success: true, data: { products: response.data.data.products, pagination: response.data.data.pagination } };
     } else {
       // Otherwise, get all products with filters
       const response = await axios.get(`${API_BASE_URL}/products?${params}`);
-      return { success: true, data: { products: response.data.products, pagination: response.data.pagination } };
+      return { success: true, data: { products: response.data.data.products, pagination: response.data.data.pagination } };
     }
   }
 
   // Get all categories with product counts
   async getCategoriesWithCounts(): Promise<{ success: boolean; data: CategoryInfo[] }> {
     const response = await axios.get(`${API_BASE_URL}/products/categories/counts`);
-    return response.data;
+    return { success: true, data: response.data.data };
   }
 
   // Get filtered products
   async getFilteredProducts(options: FilterOptions): Promise<ProductsResponse> {
     const params = new URLSearchParams();
-    
+
     Object.entries(options).forEach(([key, value]) => {
       if (value !== undefined && value !== null) {
         if (Array.isArray(value)) {
@@ -103,8 +103,8 @@ class ProductService {
       }
     });
 
-    const response = await axios.get(`${API_BASE_URL}/products/filter?${params}`);
-    return response.data;
+    const response = await axios.get(`${API_BASE_URL}/products?${params}`);
+    return { success: true, data: { products: response.data.data.products, pagination: response.data.data.pagination } };
   }
 
   // Get single product by ID

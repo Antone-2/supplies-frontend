@@ -1,6 +1,7 @@
 import axios from 'axios';
 import crypto from 'crypto';
 
+
 interface PesapalPaymentParams {
   amount: number;
   currency: string;
@@ -32,12 +33,12 @@ class PesapalService {
     };
 
     const combinedParams = { ...oauthParams, ...params };
-      // Add index signature to combinedParams for TypeScript
-      const combinedParamsTyped: { [key: string]: string } = combinedParams as { [key: string]: string };
-      const sortedParams = Object.keys(combinedParamsTyped)
-        .sort()
-        .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(combinedParamsTyped[key])}`)
-        .join('&');
+    // Add index signature to combinedParams for TypeScript
+    const combinedParamsTyped: { [key: string]: string } = combinedParams as { [key: string]: string };
+    const sortedParams = Object.keys(combinedParamsTyped)
+      .sort()
+      .map(key => `${encodeURIComponent(key)}=${encodeURIComponent(combinedParamsTyped[key])}`)
+      .join('&');
 
     const baseString = `${httpMethod.toUpperCase()}&${encodeURIComponent(requestUrl)}&${encodeURIComponent(sortedParams)}`;
     const signingKey = `${encodeURIComponent(this.consumerSecret)}&`;

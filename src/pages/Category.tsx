@@ -4,10 +4,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { ShoppingCart, Eye } from 'lucide-react';
+
 import { toast } from 'sonner';
 import ProductService, { Product } from '@/services/productService';
 import { useCart } from '@/context/cartContext';
+import { LuShoppingCart, LuEye } from 'react-icons/lu';
 
 const formatPrice = (price: number, currency: string) => {
   try {
@@ -210,7 +211,7 @@ const ProductCard = ({ product }: { product: Product }) => {
               disabled={product.stock <= 0 || isAdding || cartLoading}
               onClick={handleAddToCart}
             >
-              <ShoppingCart className="mr-2 h-4 w-4" />
+              <LuShoppingCart className="mr-2 h-4 w-4" />
               {isAdding ? 'Adding...' : 'Add to Cart'}
             </Button>
             <Button
@@ -218,7 +219,7 @@ const ProductCard = ({ product }: { product: Product }) => {
               size="sm"
               onClick={() => window.location.href = `/product/${product._id}`}
             >
-              <Eye className="mr-2 h-4 w-4" />
+              <LuEye className="mr-2 h-4 w-4" />
               View
             </Button>
           </div>

@@ -1,4 +1,3 @@
-import Header from '@/components/Header';
 import Hero from '@/components/Hero';
 import SearchFilter from '@/components/SearchFilter';
 import Categories from '@/components/Categories';
@@ -29,126 +28,16 @@ const Index = () => {
     useEffect(() => {
         setLoading(true);
         setError('');
-        fetch(`${import.meta.env.VITE_API_URL}/products/featured/all`)
+        fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/products/featured/all`)
             .then(res => res.json())
             .then(data => {
-                if (data && data.success && Array.isArray(data.data) && data.data.length > 0) {
+                if (data && data.success && Array.isArray(data.data)) {
                     setFeaturedProducts(data.data);
-                } else {
-                    // Fallback demo products
-                    setFeaturedProducts([
-                        {
-                            _id: "64e1a1f2c1a4b2a1c1a4b2a1",
-                            name: "Digital Blood Pressure Monitor",
-                            brand: "Omron",
-                            price: 8500,
-                            originalPrice: 10000,
-                            rating: 4.8,
-                            reviews: 156,
-                            image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop",
-                            inStock: true,
-                            isNew: false,
-                            discount: 15
-                        },
-                        {
-                            _id: "64e1a1f2c1a4b2a1c1a4b2a2",
-                            name: "Infrared Thermometer",
-                            brand: "Beurer",
-                            price: 3200,
-                            originalPrice: 3200,
-                            rating: 4.9,
-                            reviews: 203,
-                            image: "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=400&h=300&fit=crop",
-                            inStock: true,
-                            isNew: true,
-                            discount: 0
-                        },
-                        {
-                            _id: "64e1a1f2c1a4b2a1c1a4b2a3",
-                            name: "Pulse Oximeter",
-                            brand: "ChoiceMMed",
-                            price: 2800,
-                            originalPrice: 3500,
-                            rating: 4.7,
-                            reviews: 89,
-                            image: "https://images.unsplash.com/photo-1628595351029-c2bf17511435?w=400&h=300&fit=crop",
-                            inStock: true,
-                            isNew: false,
-                            discount: 20
-                        },
-                        {
-                            _id: "64e1a1f2c1a4b2a1c1a4b2a4",
-                            name: "Stethoscope Classic III",
-                            brand: "3M Littmann",
-                            price: 15000,
-                            originalPrice: 15000,
-                            rating: 4.9,
-                            reviews: 342,
-                            image: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=400&h=300&fit=crop",
-                            inStock: true,
-                            isNew: false,
-                            discount: 0
-                        }
-                    ]);
                 }
                 setLoading(false);
             })
             .catch(() => {
-                // Fallback demo products on error
-                setFeaturedProducts([
-                    {
-                        _id: "64e1a1f2c1a4b2a1c1a4b2a1",
-                        name: "Digital Blood Pressure Monitor",
-                        brand: "Omron",
-                        price: 8500,
-                        originalPrice: 10000,
-                        rating: 4.8,
-                        reviews: 156,
-                        image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=300&fit=crop",
-                        inStock: true,
-                        isNew: false,
-                        discount: 15
-                    },
-                    {
-                        _id: "64e1a1f2c1a4b2a1c1a4b2a2",
-                        name: "Infrared Thermometer",
-                        brand: "Beurer",
-                        price: 3200,
-                        originalPrice: 3200,
-                        rating: 4.9,
-                        reviews: 203,
-                        image: "https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=400&h=300&fit=crop",
-                        inStock: true,
-                        isNew: true,
-                        discount: 0
-                    },
-                    {
-                        _id: "64e1a1f2c1a4b2a1c1a4b2a3",
-                        name: "Pulse Oximeter",
-                        brand: "ChoiceMMed",
-                        price: 2800,
-                        originalPrice: 3500,
-                        rating: 4.7,
-                        reviews: 89,
-                        image: "https://images.unsplash.com/photo-1628595351029-c2bf17511435?w=400&h=300&fit=crop",
-                        inStock: true,
-                        isNew: false,
-                        discount: 20
-                    },
-                    {
-                        _id: "64e1a1f2c1a4b2a1c1a4b2a4",
-                        name: "Stethoscope Classic III",
-                        brand: "3M Littmann",
-                        price: 15000,
-                        originalPrice: 15000,
-                        rating: 4.9,
-                        reviews: 342,
-                        image: "https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=400&h=300&fit=crop",
-                        inStock: true,
-                        isNew: false,
-                        discount: 0
-                    }
-                ]);
+                setError('Failed to load featured products.');
                 setLoading(false);
             });
     }, []);
@@ -169,7 +58,6 @@ const Index = () => {
 
     return (
         <div className="min-h-screen">
-            <Header />
             <Hero />
             <SearchFilter
                 searchQuery={searchQuery}

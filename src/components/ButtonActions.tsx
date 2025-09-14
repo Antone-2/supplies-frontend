@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import { ShoppingCart, Heart, Eye, Share2, Download, Phone, Mail, MessageCircle } from 'lucide-react';
+import {
+    LuShoppingCart, LuHeart, LuEye, LuShare2, LuDownload, LuPhone, LuMail, LuMessageCircle
+} from 'react-icons/lu';
+// import other icons similarly if this works
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/cartContext';
 import { useWishlist } from '@/context/wishlistContext';
@@ -38,7 +41,7 @@ export const AddToCartButton = ({ product, size = 'default' }: ButtonActionsProp
             size={size}
             className="w-full"
         >
-            <ShoppingCart className="mr-2 h-4 w-4" />
+            <LuShoppingCart className="mr-2 h-4 w-4" />
             {isAdding ? 'Adding...' : 'Add to Cart'}
         </Button>
     );
@@ -77,7 +80,7 @@ export const WishlistButton = ({ product }: ButtonActionsProps) => {
             variant={isInWishlist ? "destructive" : "outline"}
             size="icon"
         >
-            <Heart className={`h-4 w-4 ${isInWishlist ? 'fill-current' : ''}`} />
+            <LuHeart className={`h-4 w-4 ${isInWishlist ? 'fill-current' : ''}`} />
         </Button>
     );
 };
@@ -97,7 +100,7 @@ export const QuickViewButton = ({ onAction }: ButtonActionsProps) => {
             size="icon"
             className="hover:bg-primary/10"
         >
-            <Eye className="h-4 w-4" />
+            <LuEye className="h-4 w-4" />
         </Button>
     );
 };
@@ -134,7 +137,7 @@ export const ShareButton = ({ product }: ButtonActionsProps) => {
             size="icon"
             className="hover:bg-primary/10"
         >
-            <Share2 className="h-4 w-4" />
+            <LuShare2 className="h-4 w-4" />
         </Button>
     );
 };
@@ -159,7 +162,7 @@ export const DownloadButton = ({ product }: ButtonActionsProps) => {
             variant="outline"
             size="sm"
         >
-            <Download className="mr-2 h-4 w-4" />
+            <LuDownload className="mr-2 h-4 w-4" />
             Download
         </Button>
     );
@@ -182,15 +185,15 @@ export const ContactButtons = () => {
     return (
         <div className="flex gap-2">
             <Button onClick={handleCall} variant="outline" size="sm">
-                <Phone className="mr-2 h-4 w-4" />
+                <LuPhone className="mr-2 h-4 w-4" />
                 Call
             </Button>
             <Button onClick={handleEmail} variant="outline" size="sm">
-                <Mail className="mr-2 h-4 w-4" />
+                <LuMail className="mr-2 h-4 w-4" />
                 Email
             </Button>
             <Button onClick={handleWhatsApp} variant="default" size="sm">
-                <MessageCircle className="mr-2 h-4 w-4" />
+                <LuMessageCircle className="mr-2 h-4 w-4" />
                 WhatsApp
             </Button>
         </div>

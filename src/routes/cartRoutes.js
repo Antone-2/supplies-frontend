@@ -2,16 +2,17 @@ const express = require('express');
 const router = express.Router();
 const { body, validationResult } = require('express-validator');
 const authMiddleware = require('../middleware/authMiddleware');
+const auth = authMiddleware.default || authMiddleware;
 const Cart = require('../models/Cart');
 const Product = require('../models/Product');
 
 // GET /api/cart - Get logged in user's cart contents
-router.get('/', authMiddleware, async (req, res) => {
+router.get('/', auth, async (req, res) => {
   try {
     const userId = req.user.id;
-    const cart = await Cart.findOne({ user: userId }).populate('items.product');
+    const cart = await Cart.findOne({ userId: userId }).populate('cartItem.productId');
     if (!cart) {
-      return res.status(200).json({ items: [] });
+      return res.status(200).json({ cartItem: [] });
     }
     res.json(cart);
   } catch (error) {
@@ -23,7 +24,7 @@ router.get('/', authMiddleware, async (req, res) => {
 // POST /api/cart/add - Add product to cart
 router.post(
   '/add',
-  authMiddleware,
+  auth,
   body('productId').isMongoId(),
   body('quantity').isInt({ min: 1 }),
   async (req, res) => {
@@ -39,18 +40,18 @@ router.post(
       const product = await Product.findById(productId);
       if (!product) return res.status(404).json({ message: 'Product not found' });
 
-      let cart = await Cart.findOne({ user: userId });
+      let cart = await Cart.findOne({ userId: userId });
       if (!cart) {
         cart = new Cart({
-          user: userId,
-          items: [{ product: productId, quantity }],
+          userId: userId,
+          cartItem: [{ productId: productId, quantity }],
         });
       } else {
-        const itemIndex = cart.items.findIndex(item => item.product.toString() === productId);
+        const itemIndex = cart.cartItem.findIndex(item => (item.product?._id?.toString() || item.productId?.toString()) === productId);
         if (itemIndex > -1) {
-          cart.items[itemIndex].quantity += quantity; // Increment quantity
+          cart.cartItem[itemIndex].quantity += quantity; // Increment quantity
         } else {
-          cart.items.push({ product: productId, quantity });
+          cart.cartItem.push({ productId: productId, quantity });
         }
       }
 
@@ -66,7 +67,7 @@ router.post(
 // PUT /api/cart/update - Update quantity of a product in the cart
 router.put(
   '/update',
-  authMiddleware,
+  auth,
   body('productId').isMongoId(),
   body('quantity').isInt({ min: 1 }),
   async (req, res) => {
@@ -79,13 +80,13 @@ router.put(
     const userId = req.user.id;
 
     try {
-      let cart = await Cart.findOne({ user: userId });
+      let cart = await Cart.findOne({ userId: userId });
       if (!cart) return res.status(404).json({ message: 'Cart not found' });
 
-      const itemIndex = cart.items.findIndex(item => item.product.toString() === productId);
+      const itemIndex = cart.cartItem.findIndex(item => (item.product?._id?.toString() || item.productId?.toString()) === productId);
       if (itemIndex === -1) return res.status(404).json({ message: 'Product not found in cart' });
 
-      cart.items[itemIndex].quantity = quantity;
+      cart.cartItem[itemIndex].quantity = quantity;
       await cart.save();
 
       res.status(200).json(cart);
@@ -97,15 +98,15 @@ router.put(
 );
 
 // DELETE /api/cart/remove/:productId - Remove product from cart
-router.delete('/remove/:productId', authMiddleware, async (req, res) => {
+router.delete('/remove/:productId', auth, async (req, res) => {
   const userId = req.user.id;
   const { productId } = req.params;
 
   try {
-    let cart = await Cart.findOne({ user: userId });
+    let cart = await Cart.findOne({ userId: userId });
     if (!cart) return res.status(404).json({ message: 'Cart not found' });
 
-    cart.items = cart.items.filter(item => item.product.toString() !== productId);
+    cart.cartItem = cart.cartItem.filter(item => (item.product?._id?.toString() || item.productId?.toString()) !== productId);
     await cart.save();
 
     res.status(200).json(cart);

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Search, X, SlidersHorizontal } from 'lucide-react';
+import { LuSearch, LuX, LuSlidersHorizontal } from 'react-icons/lu';
 import {
   Popover,
   PopoverContent,
@@ -112,7 +112,7 @@ const SearchFilter = ({ searchQuery, setSearchQuery, selectedCategory, setSelect
         <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center">
           {/* Enhanced search input */}
           <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <LuSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
             <div className="relative" ref={inputRef}>
               <Input
                 type="text"
@@ -183,7 +183,7 @@ const SearchFilter = ({ searchQuery, setSearchQuery, selectedCategory, setSelect
             <Popover>
               <PopoverTrigger asChild>
                 <Button variant="outline" className="gap-2">
-                  <SlidersHorizontal className="h-4 w-4" />
+                  <LuSlidersHorizontal className="h-4 w-4" />
                   More Filters
                 </Button>
               </PopoverTrigger>
@@ -241,7 +241,7 @@ const SearchFilter = ({ searchQuery, setSearchQuery, selectedCategory, setSelect
 
             {/* Search button */}
             <Button className="bg-primary hover:bg-primary-light" onClick={() => setShowDropdown(true)}>
-              <Search className="h-4 w-4 lg:mr-2" />
+              <LuSearch className="h-4 w-4 lg:mr-2" />
               <span className="hidden lg:inline">Search</span>
             </Button>
           </div>
@@ -259,7 +259,7 @@ const SearchFilter = ({ searchQuery, setSearchQuery, selectedCategory, setSelect
                 onClick={() => removeFilter(filter)}
               >
                 {filter}
-                <X className="h-3 w-3" />
+                <LuX className="h-3 w-3" />
               </Badge>
             ))}
             <Button

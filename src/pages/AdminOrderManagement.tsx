@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { format, isAfter, isBefore } from 'date-fns';
+// import { format, isAfter, isBefore } from 'date-fns';
 // ...existing code...
 import 'react-day-picker/dist/style.css';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
@@ -99,12 +99,12 @@ const AdminOrderManagement: React.FC = () => {
             : true;
         let matchesDate = true;
         if (fromDate) {
-            const orderDate = order.createdAt ? new Date(order.createdAt) : undefined;
-            matchesDate = orderDate ? !isBefore(orderDate, fromDate) : true;
+            // const orderDate = order.createdAt ? new Date(order.createdAt) : undefined;
+            // matchesDate = orderDate ? !isBefore(orderDate, fromDate) : true;
         }
         if (toDate) {
-            const orderDate = order.createdAt ? new Date(order.createdAt) : undefined;
-            matchesDate = matchesDate && orderDate ? !isAfter(orderDate, toDate) : matchesDate;
+            // const orderDate = order.createdAt ? new Date(order.createdAt) : undefined;
+            // matchesDate = matchesDate && orderDate ? !isAfter(orderDate, toDate) : matchesDate;
         }
         return matchesStatus && matchesSearch && matchesDate;
     });
@@ -197,7 +197,7 @@ const AdminOrderManagement: React.FC = () => {
                     <label className="text-xs">From</label>
                     <input
                         type="date"
-                        value={fromDate ? format(fromDate, 'yyyy-MM-dd') : ''}
+                        // value={fromDate ? format(fromDate, 'yyyy-MM-dd') : ''}
                         onChange={e => setFromDate(e.target.value ? new Date(e.target.value) : undefined)}
                         className="border rounded px-2 py-1"
                     />
@@ -206,7 +206,7 @@ const AdminOrderManagement: React.FC = () => {
                     <label className="text-xs">To</label>
                     <input
                         type="date"
-                        value={toDate ? format(toDate, 'yyyy-MM-dd') : ''}
+                        // value={toDate ? format(toDate, 'yyyy-MM-dd') : ''}
                         onChange={e => setToDate(e.target.value ? new Date(e.target.value) : undefined)}
                         className="border rounded px-2 py-1"
                     />

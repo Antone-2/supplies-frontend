@@ -6,9 +6,11 @@ import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import CartSheet from './CartSheet';
 import WishlistSheet from './WishlistSheet';
-import { Menu, Phone, MapPin, User, Mail } from 'lucide-react';
+import { Menu, Phone, MapPin, User, Mail, LogOut, User as UserIcon } from 'lucide-react';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import medHelmLogo from '@/assets/medhelm-logo.svg';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import medHelmLogo from '../assets/medhelm-logo.svg';
+// ...existing code...
 
 
 const Header = () => {
@@ -21,7 +23,7 @@ const Header = () => {
     const cartCount = cartItems.reduce((total, item) => total + item.quantity, 0);
     const wishlistCount = wishlist.length;
 
-    const { user } = useAuth();
+    const { user, logout } = useAuth();
     return (
         <header className="bg-white shadow-lg border-b border-border sticky top-0 z-50">
             {/* Top bar with contact info */}
@@ -54,7 +56,7 @@ const Header = () => {
                         <img src={medHelmLogo} alt="MEDHELM Supplies Logo" className="h-20 w-auto drop-shadow-lg" style={{ maxHeight: '5rem' }} />
                         <div className="flex flex-col justify-center" style={{ height: '5rem' }}>
                             <h1 className="text-2xl font-extrabold text-primary leading-none tracking-wide" style={{ letterSpacing: '0.1em' }}>MEDHELM</h1>
-                            <p className="text-base text-muted-foreground leading-none tracking-widest font-semibold">SUPPLIES</p>
+                            <p className="text-base text-muted-foreground leading-none tracking-widest font-semibold" style={{ color: '#E53935' }}> S U P P L I E S</p>
                         </div>
                     </div>
 
@@ -64,8 +66,24 @@ const Header = () => {
                     {/* Desktop navigation */}
                     <nav className="hidden lg:flex items-center gap-6">
                         <Link to="/" className="text-foreground hover:text-primary transition-colors">Home</Link>
-                        <a href="/#categories" className="text-foreground hover:text-primary transition-colors">Categories</a>
-                        <a href="/#products" className="text-foreground hover:text-primary transition-colors">Products</a>
+                        <a href="#categories" className="text-foreground hover:text-primary transition-colors cursor-pointer" onClick={(e) => {
+                            e.preventDefault();
+                            const element = document.getElementById('categories');
+                            if (element) {
+                                element.scrollIntoView({ behavior: 'smooth' });
+                            } else {
+                                window.location.href = '/#categories';
+                            }
+                        }}>Categories</a>
+                        <a href="#products" className="text-foreground hover:text-primary transition-colors cursor-pointer" onClick={(e) => {
+                            e.preventDefault();
+                            const element = document.getElementById('products');
+                            if (element) {
+                                element.scrollIntoView({ behavior: 'smooth' });
+                            } else {
+                                window.location.href = '/#products';
+                            }
+                        }}>Products</a>
                         <Link to="/about" className="text-foreground hover:text-primary transition-colors">About</Link>
                         <Link to="/contact" className="text-foreground hover:text-primary transition-colors">Contact</Link>
                         {/* Admin links */}
@@ -95,19 +113,36 @@ const Header = () => {
                         <div className="relative">
                             <CartSheet />
                             {cartCount > 0 && (
-                                <span className="absolute -top-2 -right-3 flex items-center justify-center h-5 w-5 rounded-full bg-red-600 text-white text-xs font-bold border-2 border-white shadow" style={{ fontSize: '0.8rem' }}>
+                                <span data-testid="cart-count" className="absolute -top-2 -right-3 flex items-center justify-center h-5 w-5 rounded-full bg-red-600 text-white text-xs font-bold border-2 border-white shadow" style={{ fontSize: '0.8rem' }}>
                                     {cartCount}
                                 </span>
                             )}
                         </div>
                         {user ? (
-                            <Button variant="ghost" size="sm" asChild>
-                                <Link to="/profile">
-                                    <div style={{ borderRadius: '50%', width: 32, height: 32, background: '#e0e7ff', color: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: 16, border: '2px solid #6366f1' }}>
-                                        {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                                    </div>
-                                </Link>
-                            </Button>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" size="sm" className="relative">
+                                        <div style={{ borderRadius: '50%', width: 32, height: 32, background: '#e0e7ff', color: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: 16, border: '2px solid #6366f1' }}>
+                                            {user.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                                        </div>
+                                    </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-48">
+                                    <DropdownMenuItem asChild>
+                                        <Link to="/profile" className="flex items-center">
+                                            <UserIcon className="mr-2 h-4 w-4" />
+                                            Profile
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem onClick={() => {
+                                        logout();
+                                        window.location.href = '/auth';
+                                    }}>
+                                        <LogOut className="mr-2 h-4 w-4" />
+                                        Logout
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         ) : (
                             <Button variant="ghost" size="sm" asChild>
                                 <Link to="/auth">
@@ -118,20 +153,45 @@ const Header = () => {
                         )}
                     </div>
 
-                    {/* Mobile actions - only menu, no cart/wishlist icons */}
+                    {/* Mobile actions - menu and cart */}
                     <div className="flex lg:hidden items-center gap-2">
+                        {/* Cart icon for mobile */}
+                        <div className="relative">
+                            <CartSheet />
+                            {cartCount > 0 && (
+                                <span className="absolute -top-2 -right-3 flex items-center justify-center h-5 w-5 rounded-full bg-red-600 text-white text-xs font-bold border-2 border-white shadow" style={{ fontSize: '0.8rem' }}>
+                                    {cartCount}
+                                </span>
+                            )}
+                        </div>
                         {/* Mobile menu */}
                         <Sheet>
                             <SheetTrigger asChild className="lg:hidden">
-                                <Button variant="ghost" size="sm">
+                                <Button id="mobile-menu-toggle" data-cy="mobile-menu-toggle" variant="ghost" size="sm" className="menu-toggle" aria-label="Open menu">
                                     <Menu className="h-4 w-4" />
                                 </Button>
                             </SheetTrigger>
-                            <SheetContent side="right" className="w-64">
+                            <SheetContent side="right" className="w-64 mobile-nav">
                                 <div className="flex flex-col gap-4 mt-8">
                                     <Link to="/" className="text-foreground hover:text-primary transition-colors py-2">Home</Link>
-                                    <a href="/#categories" className="text-foreground hover:text-primary transition-colors py-2">Categories</a>
-                                    <a href="/#products" className="text-foreground hover:text-primary transition-colors py-2">Products</a>
+                                    <a href="#categories" className="text-foreground hover:text-primary transition-colors py-2 cursor-pointer" onClick={(e) => {
+                                        e.preventDefault();
+                                        const element = document.getElementById('categories');
+                                        if (element) {
+                                            element.scrollIntoView({ behavior: 'smooth' });
+                                        } else {
+                                            window.location.href = '/#categories';
+                                        }
+                                    }}>Categories</a>
+                                    <a href="#products" className="text-foreground hover:text-primary transition-colors py-2 cursor-pointer" onClick={(e) => {
+                                        e.preventDefault();
+                                        const element = document.getElementById('products');
+                                        if (element) {
+                                            element.scrollIntoView({ behavior: 'smooth' });
+                                        } else {
+                                            window.location.href = '/#products';
+                                        }
+                                    }}>Products</a>
                                     <Link to="/wishlist" className="text-foreground hover:text-primary transition-colors py-2">Wishlist</Link>
                                     <Link to="/about" className="text-foreground hover:text-primary transition-colors py-2">About</Link>
                                     <Link to="/contact" className="text-foreground hover:text-primary transition-colors py-2">Contact</Link>

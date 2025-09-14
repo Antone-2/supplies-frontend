@@ -1,62 +1,91 @@
-version: "3.8"
 
 services:
+  # Backend API
+  backend:
+    build:
+      context: ./eCommerce-Backend
+      dockerfile: Dockerfile
+    container_name: medhelm-backend
+    restart: unless-stopped
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - ./eCommerce-Backend/logs:/app/logs
+      - ./eCommerce-Backend/uploads:/app/uploads
+    networks:
+      - medhelm-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend
   frontend:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: medhelm-frontend
+    restart: unless-stopped
     ports:
-      - "5173:80"
+      - "3000:80"
+    env_file:
+      - .env
     depends_on:
       - backend
-    environment:
-      - VITE_API_URL=http://localhost:5000
     networks:
       - medhelm-network
 
-  backend:
-    build:
-      context: ./server
-      dockerfile: Dockerfile
-    ports:
-      - "5000:5000"
-    depends_on:
-      - mongodb
-      - redis
-    environment:
-      - NODE_ENV=production
-      - MONGODB_URI=mongodb://mongodb:27017/medhelm
-      - REDIS_URL=redis://redis:6379
-    env_file:
-      - server/.env
-    volumes:
-      - ./server/uploads:/app/uploads
-    networks:
-      - medhelm-network
-
+  # MongoDB Database
   mongodb:
-    image: mongo:6.0
-    restart: always
+    image: mongo:4.4
+    container_name: medhelm-mongodb
+    restart: unless-stopped
     ports:
       - "27017:27017"
+    env_file:
+      - .env
     volumes:
       - mongodb_data:/data/db
+      - ./eCommerce-Backend/Database/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
     networks:
       - medhelm-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
 
+  # Redis Cache
   redis:
     image: redis:7-alpine
-    restart: always
+    container_name: medhelm-redis
+    restart: unless-stopped
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
       - medhelm-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 
 volumes:
   mongodb_data:
+    driver: local
   redis_data:
+    driver: local
+  nginx_logs:
+    driver: local
 
 networks:
   medhelm-network:

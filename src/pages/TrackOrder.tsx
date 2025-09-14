@@ -3,8 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Package, Truck, MapPin, CheckCircle } from 'lucide-react';
-import Header from '@/components/Header';
+import { LuPackage, LuTruck, LuMapPin, LuCheck } from 'react-icons/lu';
+// ...existing code...
 import Footer from '@/components/Footer';
 
 const TrackOrder = () => {
@@ -34,7 +34,6 @@ const TrackOrder = () => {
 
     return (
         <div className="min-h-screen">
-            <Header />
             <main className="container mx-auto px-4 py-8">
                 <div className="max-w-4xl mx-auto">
                     <h1 className="text-3xl font-bold mb-8">Track Your Order</h1>
@@ -55,7 +54,7 @@ const TrackOrder = () => {
                                     className="flex-1"
                                 />
                                 <Button onClick={handleTrack}>
-                                    <Package className="mr-2 h-4 w-4" />
+                                    <LuPackage className="mr-2 h-4 w-4" />
                                     Track Order
                                 </Button>
                             </div>
@@ -74,16 +73,16 @@ const TrackOrder = () => {
                                 </div>
                             </CardHeader>
                             <CardContent>
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div className="grid grid-cols-2 md:grid-cols-2 gap-6 mb-6">
                                     <div className="flex items-center gap-3">
-                                        <Truck className="h-5 w-5 text-primary" />
+                                        <LuTruck className="h-5 w-5 text-primary" />
                                         <div>
                                             <p className="font-medium">Current Location</p>
                                             <p className="text-sm text-muted-foreground">{orderStatus.currentLocation}</p>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-3">
-                                        <MapPin className="h-5 w-5 text-primary" />
+                                        <LuMapPin className="h-5 w-5 text-primary" />
                                         <div>
                                             <p className="font-medium">Estimated Delivery</p>
                                             <p className="text-sm text-muted-foreground">{orderStatus.estimatedDelivery}</p>
@@ -96,7 +95,7 @@ const TrackOrder = () => {
                                     {orderStatus.trackingSteps.map((step: any, index: number) => (
                                         <div key={index} className="flex items-center gap-4">
                                             {step.completed ? (
-                                                <CheckCircle className="h-5 w-5 text-green-500" />
+                                                <LuCheck className="h-5 w-5 text-green-500" />
                                             ) : (
                                                 <div className="h-5 w-5 border-2 border-gray-300 rounded-full" />
                                             )}

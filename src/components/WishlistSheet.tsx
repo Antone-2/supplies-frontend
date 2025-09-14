@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart } from 'lucide-react';
+import { LuHeart } from 'react-icons/lu';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
@@ -14,7 +14,7 @@ const WishlistSheet: React.FC = () => {
         <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
                 <Button variant="ghost" size="icon" className="relative">
-                    <Heart className="h-5 w-5" />
+                    <LuHeart className="h-5 w-5" />
                     {wishlist.length > 0 && (
                         <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 text-xs">
                             {wishlist.length}
@@ -29,7 +29,7 @@ const WishlistSheet: React.FC = () => {
                 <div className="mt-6 flex-1 overflow-y-auto">
                     {wishlist.length === 0 ? (
                         <div className="flex flex-col items-center justify-center h-64">
-                            <Heart className="h-12 w-12 text-gray-400 mb-4" />
+                            <LuHeart className="h-12 w-12 text-gray-400 mb-4" />
                             <p className="text-gray-500">Your wishlist is empty</p>
                         </div>
                     ) : (

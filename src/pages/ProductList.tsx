@@ -1,8 +1,6 @@
 import React from 'react';
 import { useFetch } from '../hooks/use-fetch';
 import { Product } from '@/types/product';
-// ...existing code...
-// ...existing code...
 import ProductCard from '../components/ProductCard';
 
 const ProductList: React.FC = () => {
@@ -13,7 +11,7 @@ const ProductList: React.FC = () => {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {products?.map((product) => (
+            {(Array.isArray(products) ? products : []).map((product) => (
                 <ProductCard key={product._id} product={product} />
             ))}
         </div>

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useCart } from '@/context/cartContext';
 import { useAuth } from '../hooks/use-auth';
-import { ShoppingCart, Check } from 'lucide-react';
+import { LuShoppingCart, LuCheck } from 'react-icons/lu';
 
 interface AddToCartButtonProps {
   product: {
@@ -87,17 +87,17 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
     >
       {isAdded ? (
         <>
-          <Check size={18} />
+          <LuCheck size={18} />
           <span>Added!</span>
         </>
       ) : isInCart ? (
         <>
-          <ShoppingCart size={18} />
+          <LuShoppingCart size={18} />
           <span>In Cart ({currentQuantityInCart})</span>
         </>
       ) : (
         <>
-          <ShoppingCart size={18} />
+          <LuShoppingCart size={18} />
           <span>{isLoading ? 'Adding...' : 'Add to Cart'}</span>
         </>
       )}

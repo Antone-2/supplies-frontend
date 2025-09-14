@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import medHelmLogo from '@/assets/medhelm-logo.svg';
+import medHelmLogo from '@/assets/medhelm-logo.png';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { Trash2 } from 'lucide-react';
+import { LuTrash2 } from 'react-icons/lu';
 
 interface Product {
   _id: string;
@@ -102,9 +102,9 @@ const Cart: React.FC = () => {
   );
 
   return (
-    <div className="max-w-4xl mx-auto p-4">
+    <div className="max-w-4xl mx-auto p-4 relative" style={{ minHeight: '80vh' }}>
       <h1 className="text-2xl font-bold mb-4">Your Cart</h1>
-      <div className="space-y-4">
+      <div className="space-y-4 pb-24 overflow-y-auto" style={{ maxHeight: '60vh' }}>
         {cartItems.map(({ product, quantity }) => (
           <div
             key={product._id}
@@ -142,19 +142,20 @@ const Cart: React.FC = () => {
                 className="text-red-600 hover:text-red-800 p-2"
                 aria-label={`Remove ${product.name} from cart`}
               >
-                <Trash2 size={16} />
+                <LuTrash2 className="h-5 w-5 text-red-500 cursor-pointer" onClick={() => removeItem(product._id)} />
               </button>
             </div>
           </div>
         ))}
       </div>
-      <div className="mt-6 text-right">
-        <h3 className="text-xl font-semibold">
+      {/* Fixed Pay Now button at bottom */}
+      <div className="fixed left-0 right-0 bottom-0 bg-white border-t shadow-lg p-4 flex flex-col items-end z-40" style={{ maxWidth: '100vw' }}>
+        <h3 className="text-xl font-semibold mb-2">
           Total: KES {total.toLocaleString()}
         </h3>
         <button
           onClick={() => setShowPaymentModal(true)}
-          className="mt-4 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+          className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
           Pay Now
         </button>

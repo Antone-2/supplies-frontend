@@ -1,17 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import Header from '@/components/Header';
+// ...existing code...
 import Footer from '@/components/Footer';
 
 const Terms = () => {
     return (
         <div className="min-h-screen">
-            <Header />
             <main className="container mx-auto px-4 py-8">
                 <div className="max-w-4xl mx-auto">
                     <h1 className="text-3xl font-bold mb-8">Terms & Conditions</h1>
                     <p className="text-muted-foreground mb-8">Last updated: August 9, 2025</p>
 
-                    <div className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <Card>
                             <CardHeader>
                                 <CardTitle>1. Acceptance of Terms</CardTitle>

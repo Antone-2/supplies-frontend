@@ -95,7 +95,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     const login = async (email: string, password: string) => {
         dispatch({ type: 'LOGIN_START' });
         try {
-            const response = await apiClient.post('/auth/signin', { email, password });
+            const response = await apiClient.post('/auth/login', { email, password });
             const { user, token } = response.data;
 
             localStorage.setItem('token', token);

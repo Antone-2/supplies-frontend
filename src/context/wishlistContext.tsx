@@ -51,7 +51,7 @@ export const WishlistProvider: React.FC<{ children: ReactNode }> = ({ children }
     const addToWishlist = async (productId: string) => {
         if (!user || !token) {
             setError('You must be logged in to add items to wishlist.');
-            return;
+            throw new Error('You must be logged in to add items to wishlist.');
         }
         try {
             await apiClient.post('/wishlist/add', { productId });
@@ -62,9 +62,12 @@ export const WishlistProvider: React.FC<{ children: ReactNode }> = ({ children }
     };
 
     const removeFromWishlist = async (productId: string) => {
-        if (!user || !token) return;
+        if (!user || !token) {
+            setError('You must be logged in to remove items from wishlist.');
+            throw new Error('You must be logged in to remove items from wishlist.');
+        }
         try {
-            await apiClient.delete(`/wishlist/remove/${productId}`);
+            await apiClient.post('/wishlist/remove', { productId });
             await fetchWishlist();
         } catch (err: any) {
             setError(err.response?.data?.message || 'Failed to remove item from wishlist');

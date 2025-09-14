@@ -3,19 +3,17 @@ const pesaPalConfig = {
   // API Configuration
   api: {
     baseUrl: process.env.PESAPAL_BASE_URL || 'https://pay.pesapal.com/v3',
-    consumerKey: process.env.PESAPAL_CONSUMER_KEY || 'your-consumer-key',
-    consumerSecret: process.env.PESAPAL_CONSUMER_SECRET || 'your-consumer-secret',
-    apiKey: process.env.PESAPAL_API_KEY || 'your-api-key',
-    apiSecret: process.env.PESAPAL_API_SECRET || 'your-api-secret'
+    consumerKey: process.env.PESAPAL_CONSUMER_KEY || 'dq0GHR7+cZoaLe8oonYJUkbok3iKv+yp',
+    consumerSecret: process.env.PESAPAL_CONSUMER_SECRET || 'wLEg6gVhz+UzUwe9uUjCiC9MVvI='
   },
 
   // Payment Configuration
   payment: {
     currency: 'KES',
     country: 'KE',
-    callbackUrl: process.env.PESAPAL_CALLBACK_URL || 'http://localhost:3000/payment/callback',
-    notificationUrl: process.env.PESAPAL_NOTIFICATION_URL || 'http://localhost:3000/payment/notification',
-    redirectUrl: process.env.PESAPAL_REDIRECT_URL || 'http://localhost:3000/payment/success'
+    callbackUrl: process.env.PESAPAL_CALLBACK_URL || 'https://medhelmsupplies.co.ke/api/payments/callback',
+    notificationUrl: process.env.PESAPAL_NOTIFICATION_URL || 'https://medhelmsupplies.co.ke/api/payments/notification',
+    redirectUrl: process.env.PESAPAL_REDIRECT_URL || 'https://medhelmsupplies.co.ke/payment/complete'
   },
 
   // Order Configuration

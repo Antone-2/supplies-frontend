@@ -1,45 +1,48 @@
-import AdminProductManagement from './pages/AdminProductManagement';
-import OrderConfirmed from './pages/OrderConfirmed';
-
+import { Suspense, lazy } from 'react';
 import AuthProvider from './providers/AuthProvider';
 import { CartProvider } from './context/cartContext';
 import { WishlistProvider } from './context/wishlistContext';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-
-import Index from './pages/Index';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import Checkout from './pages/Checkout';
-import TrackOrder from './pages/TrackOrder';
-import AdminOrderManagement from './pages/AdminOrderManagement';
-import AdminRoute from './components/AdminRoute';
-import About from './pages/About';
-import Contact from './pages/Contact';
-import Terms from './pages/Terms';
-import Returns from './pages/Returns';
-import DeliveryPolicy from './pages/DeliveryPolicy';
-import Cookies from './pages/Cookies';
-import Privacy from './pages/Privacy';
-import ProductList from './pages/ProductList';
-import ProductDetail from './pages/productDetail';
-import CategoryPage from './pages/Category';
-import WishlistPage from './components/WishlistPage';
-import Shop from './pages/Shop';
-import ReviewsPage from './pages/ReviewsPage';
+import Header from './components/Header';
+import MobileBottomNav from './components/MobileBottomNav';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import RouteFallback from './components/RouteFallback';
 
-
-
-
-import NotFound from './pages/NotFound';
-import Auth from './pages/Auth';
-import Register from './pages/Register';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
-import ResendVerification from './pages/ResendVerification';
-import SearchResults from './pages/SearchResults';
-import OAuthCallback from './pages/OAuthCallback';
-import Profile from './pages/profile';
-import ActivateAccount from './pages/ActivateAccount';
-
+// Lazy loaded pages/components
+const Index = lazy(() => import('./pages/Index'));
+const About = lazy(() => import('./pages/About'));
+const Contact = lazy(() => import('./pages/Contact'));
+const Terms = lazy(() => import('./pages/Terms'));
+const Returns = lazy(() => import('./pages/Returns'));
+const DeliveryPolicy = lazy(() => import('./pages/DeliveryPolicy'));
+const Cookies = lazy(() => import('./pages/Cookies'));
+const Privacy = lazy(() => import('./pages/Privacy'));
+const ProductList = lazy(() => import('./pages/ProductList'));
+const ProductDetail = lazy(() => import('./pages/productDetail'));
+const CategoryPage = lazy(() => import('./pages/Category'));
+const WishlistPage = lazy(() => import('./components/WishlistPage'));
+const Cart = lazy(() => import('./components/Cart'));
+const Shop = lazy(() => import('./pages/Shop'));
+const ReviewsPage = lazy(() => import('./pages/ReviewsPage'));
+const Categories = lazy(() => import('./pages/Categories'));
+const Checkout = lazy(() => import('./pages/Checkout'));
+const TrackOrder = lazy(() => import('./pages/TrackOrder'));
+const AdminOrderManagement = lazy(() => import('./pages/AdminOrderManagement'));
+const AdminProductManagement = lazy(() => import('./pages/AdminProductManagement'));
+const ResendVerification = lazy(() => import('./pages/ResendVerification'));
+const OrderConfirmed = lazy(() => import('./pages/OrderConfirmed'));
+const SearchResults = lazy(() => import('./pages/SearchResults'));
+const Auth = lazy(() => import('./pages/Auth'));
+const Register = lazy(() => import('./pages/Register'));
+const ForgotPassword = lazy(() => import('./pages/ForgotPassword'));
+const ResetPassword = lazy(() => import('./pages/ResetPassword'));
+const OAuthCallback = lazy(() => import('./pages/OAuthCallback'));
+const Profile = lazy(() => import('./pages/profile'));
+const ActivateAccount = lazy(() => import('./pages/ActivateAccount'));
+const VerifyEmail = lazy(() => import('./pages/VerifyEmail'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const AdminRoute = lazy(() => import('./components/AdminRoute'));
 
 const App = () => (
     <AuthProvider>
@@ -47,45 +50,66 @@ const App = () => (
             <WishlistProvider>
                 <TooltipProvider>
                     <BrowserRouter>
-                        <Routes>
-                            <Route path="/" element={<Index />} />
-                            <Route path="/about" element={<About />} />
-                            <Route path="/contact" element={<Contact />} />
-                            <Route path="/checkout" element={<Checkout />} />
-                            <Route path="/track-order" element={<TrackOrder />} />
-                            <Route path="/terms" element={<Terms />} />
-                            <Route path="/returns" element={<Returns />} />
-                            <Route path="/delivery-policy" element={<DeliveryPolicy />} />
-                            <Route path="/cookies" element={<Cookies />} />
-                            <Route path="/privacy" element={<Privacy />} />
-                            <Route path="/products" element={<ProductList />} />
-                            <Route path="/shop" element={<Shop />} />
-                            <Route path="/reviews" element={<ReviewsPage />} />
-                            <Route path="/product/:id" element={<ProductDetail />} />
-                            <Route path="/category/:categoryName" element={<CategoryPage />} />
-                            <Route path="/auth" element={<Auth />} />
-                            <Route path="/register" element={<Register />} />
-                            <Route path="/forgot-password" element={<ForgotPassword />} />
-                            <Route path="/reset-password" element={<ResetPassword />} />
-                            <Route path="/admin-orders" element={
-                                <AdminRoute>
-                                    <AdminOrderManagement />
-                                </AdminRoute>
-                            } />
-                            <Route path="/admin-products" element={
-                                <AdminRoute>
-                                    <AdminProductManagement />
-                                </AdminRoute>
-                            } />
-                            <Route path="/resend-verification" element={<ResendVerification />} />
-                            <Route path="/order-confirmed" element={<OrderConfirmed />} />
-                            <Route path="/search" element={<SearchResults />} />
-                            <Route path="/wishlist" element={<WishlistPage />} />
-                            <Route path="/activate" element={<ActivateAccount />} />
-                            <Route path="/oauth-callback" element={<OAuthCallback />} />
-                            <Route path="/profile" element={<Profile />} />
-                            <Route path="*" element={<NotFound />} />
-                        </Routes>
+                        <Header />
+                        <ErrorBoundary>
+                            <Suspense fallback={<RouteFallback />}>
+                                <Routes>
+                                    <Route path="/" element={<Index />} />
+                                    <Route path="/about" element={<About />} />
+                                    <Route path="/contact" element={<Contact />} />
+                                    <Route path="/checkout" element={
+                                        <ErrorBoundary>
+                                            <Checkout />
+                                        </ErrorBoundary>
+                                    } />
+                                    <Route path="/track-order" element={<TrackOrder />} />
+                                    <Route path="/terms" element={<Terms />} />
+                                    <Route path="/returns" element={<Returns />} />
+                                    <Route path="/delivery-policy" element={<DeliveryPolicy />} />
+                                    <Route path="/cookies" element={<Cookies />} />
+                                    <Route path="/privacy" element={<Privacy />} />
+                                    <Route path="/products" element={<ProductList />} />
+                                    <Route path="/shop" element={<Shop />} />
+                                    <Route path="/categories" element={<Categories />} />
+                                    <Route path="/reviews" element={<ReviewsPage />} />
+                                    <Route path="/product/:id" element={
+                                        <ErrorBoundary>
+                                            <ProductDetail />
+                                        </ErrorBoundary>
+                                    } />
+                                    <Route path="/category/:categoryName" element={<CategoryPage />} />
+                                    <Route path="/auth" element={<Auth />} />
+                                    <Route path="/register" element={<Register />} />
+                                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                                    <Route path="/reset-password" element={<ResetPassword />} />
+                                    <Route path="/admin-orders" element={
+                                        <ErrorBoundary>
+                                            <AdminRoute>
+                                                <AdminOrderManagement />
+                                            </AdminRoute>
+                                        </ErrorBoundary>
+                                    } />
+                                    <Route path="/admin-products" element={
+                                        <ErrorBoundary>
+                                            <AdminRoute>
+                                                <AdminProductManagement />
+                                            </AdminRoute>
+                                        </ErrorBoundary>
+                                    } />
+                                    <Route path="/resend-verification" element={<ResendVerification />} />
+                                    <Route path="/order-confirmed" element={<OrderConfirmed />} />
+                                    <Route path="/search" element={<SearchResults />} />
+                                    <Route path="/cart" element={<Cart />} />
+                                    <Route path="/wishlist" element={<WishlistPage />} />
+                                    <Route path="/activate" element={<ActivateAccount />} />
+                                    <Route path="/verify-email" element={<VerifyEmail />} />
+                                    <Route path="/oauth-callback" element={<OAuthCallback />} />
+                                    <Route path="/profile" element={<Profile />} />
+                                    <Route path="*" element={<NotFound />} />
+                                </Routes>
+                            </Suspense>
+                        </ErrorBoundary>
+                        <MobileBottomNav />
                     </BrowserRouter>
                 </TooltipProvider>
             </WishlistProvider>
@@ -94,3 +118,4 @@ const App = () => (
 );
 
 export default App;
+<Route path="/profile" element={<Profile />} />

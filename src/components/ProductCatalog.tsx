@@ -2,8 +2,7 @@ import React, { useState, useMemo } from 'react';
 import ProductCard from './ProductCard';
 import { ProductFilters } from './ProductFilters';
 
-import { useCart } from '../hooks/use-cart';
-import { useWishlist } from '../hooks/use-wishlist';
+// ...existing code...
 import { Product } from '../types/product';
 import { useFetch } from '../hooks/use-fetch';
 
@@ -19,8 +18,9 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({ category, search
     const [showFilters, setShowFilters] = useState(false);
 
     const { data: products, loading, error } = useFetch<Product[]>('/products');
-    useCart();
-    useWishlist();
+    // Cart and wishlist hooks are available but not used in this component
+    // const { cart, addToCart } = useCart();
+    // const { wishlist, addToWishlist } = useWishlist();
 
     const filteredAndSortedProducts = useMemo(() => {
         if (!products) return [];
@@ -126,7 +126,7 @@ export const ProductCatalog: React.FC<ProductCatalogProps> = ({ category, search
                     </p>
 
                     {/* Product Grid */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4">
                         {filteredAndSortedProducts.map(product => (
                             <ProductCard
                                 key={product._id}
