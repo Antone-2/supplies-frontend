@@ -1,4 +1,5 @@
 // server.js
+console.log('[BOOT] Starting backend server bootstrap...');
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -9,12 +10,17 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xssClean = require('xss-clean');
 const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+console.log('[BOOT] dotenv loaded. MONGO_URI present?', !!process.env.MONGO_URI, 'PORT=', process.env.PORT);
 
 // Accept either MONGO_URI or legacy MONGODB_URI
 process.env.MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
 if (!process.env.MONGO_URI) {
-    console.error('FATAL: MONGO_URI (or MONGODB_URI) is not set. Please check your environment configuration.');
-    process.exit(1);
+    console.error('FATAL: MONGO_URI (or MONGODB_URI) is not set. (Set SKIP_DB=1 to bypass for route smoke tests)');
+    if (process.env.SKIP_DB === '1') {
+        console.warn('[BOOT] Continuing without database (SKIP_DB=1)');
+    } else {
+        process.exit(1);
+    }
 }
 
 const passport = require('./passport');
@@ -37,11 +43,6 @@ const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 //     app.use(Sentry.Handlers.tracingHandler());
 //   }
 // ...existing code...
-// Test endpoint to confirm backend receives POST requests
-app.post('/api/v1/test', (req, res) => {
-    console.log('Test endpoint hit', req.body);
-    res.json({ message: 'Test endpoint received', data: req.body });
-});
 // Preferred port
 const PREFERRED_PORT = parseInt(process.env.PORT || '5000', 10);
 let PORT = PREFERRED_PORT;
@@ -76,38 +77,40 @@ app.use(passport.session());
 // Structured request logging
 app.use(pinoHttp({ logger }));
 
-// Helper debug logs for sensitive helper endpoints (kept minimal)
-app.use((req, _res, next) => {
-    if (req.path.includes('get-verification-token') || req.path.includes('get-reset-token')) {
-        logger.debug({ path: req.path, body: req.body }, 'Helper endpoint invoked');
-    }
-    next();
-});
 
 
 
 
 // Routes
+
 const authRoutes = require('./src/routes/authRoutes');
 const productRoutes = require('./src/modules/product/product.routes');
 const categoryRoutes = require('./src/modules/category/category.routes');
-const socialAuthRoutes = require('./src/routes/socialAuthRoutes');
 const cartRoutes = require('./src/routes/cartRoutes');
 const wishlistRoutes = require('./src/routes/wishlistRoutes');
 const orderRoutes = require('./src/routes/orderRoutes');
 const userRoutes = require('./src/routes/userRoutes');
+const paymentRoutes = require('./src/routes/paymentRoutes');
+const pesapalRoutes = require('./src/routes/pesapalRoutes');
+
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/categories', categoryRoutes);
-app.use('/api/v1/auth', socialAuthRoutes);
 app.use('/api/v1/cart', cartRoutes);
 app.use('/api/v1/wishlist', wishlistRoutes);
 app.use('/api/v1/orders', orderRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/payment', paymentRoutes);
+app.use('/api/v1/pesapal', pesapalRoutes);
 
+// Health endpoints (primary + alias) placed early to guarantee availability
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', message: 'Backend is running!' });
+    res.json({ status: 'ok', message: 'Backend is running!', time: new Date().toISOString() });
 });
+app.get('/healthz', (req, res) => {
+    res.json({ status: 'ok', message: 'Health alias', time: new Date().toISOString() });
+});
+
 
 // 404 handler
 app.use((req, res, next) => {
@@ -127,33 +130,45 @@ app.use((err, _req, res, _next) => {
     res.status(500).json({ error: 'Internal Server Error' });
 });
 
-console.log('Connecting to MongoDB at', MONGO_URI);
 let server;
-mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => {
-        logger.info('Connected to MongoDB');
-        const attemptListen = (attemptsLeft = 5) => {
-            server = app.listen(PORT)
-                .once('listening', () => {
-                    logger.info({ port: PORT }, 'Server listening');
-                })
-                .once('error', (err) => {
-                    if (err.code === 'EADDRINUSE' && attemptsLeft > 0) {
-                        logger.warn({ portTried: PORT }, 'Port in use, trying next');
-                        PORT += 1; // increment port
-                        setTimeout(() => attemptListen(attemptsLeft - 1), 300);
-                    } else {
-                        logger.error({ err }, 'Failed to bind server port');
-                        process.exit(1);
-                    }
-                });
-        };
-        attemptListen();
-    })
-    .catch((err) => {
-        logger.error({ err }, 'MongoDB connection error');
-        process.exit(1);
-    });
+function startListening() {
+    const attemptListen = (attemptsLeft = 5) => {
+        server = app.listen(PORT)
+            .once('listening', () => {
+                logger.info({ port: PORT }, 'Server listening');
+            })
+            .once('error', (err) => {
+                if (err.code === 'EADDRINUSE' && attemptsLeft > 0) {
+                    logger.warn({ portTried: PORT }, 'Port in use, trying next');
+                    PORT += 1; // increment port
+                    setTimeout(() => attemptListen(attemptsLeft - 1), 300);
+                } else {
+                    logger.error({ err }, 'Failed to bind server port');
+                    process.exit(1);
+                }
+            });
+    };
+    attemptListen();
+}
+
+// Only auto-start server if not required by tests
+if (require.main === module) {
+    if (process.env.SKIP_DB === '1') {
+        console.warn('[BOOT] SKIP_DB=1 set; not connecting to Mongo. Routes available, but DB ops will fail.');
+        startListening();
+    } else {
+        console.log('Connecting to MongoDB at', MONGO_URI);
+        mongoose.connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+            .then(() => {
+                logger.info('Connected to MongoDB');
+                startListening();
+            })
+            .catch((err) => {
+                logger.error({ err }, 'MongoDB connection error');
+                process.exit(1);
+            });
+    }
+}
 
 // Graceful shutdown
 const shutdown = (signal) => {
@@ -165,3 +180,5 @@ const shutdown = (signal) => {
         .finally(() => process.exit(0));
 };
 ['SIGINT', 'SIGTERM'].forEach(sig => process.on(sig, () => shutdown(sig)));
+
+module.exports = { app };
