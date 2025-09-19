@@ -1,35 +1,47 @@
-# Build stage
-FROM node:20-bullseye as build
+# Use Node.js 18 LTS Alpine for smaller image size
+FROM node:18-bullseye
 
+# Set working directory
 WORKDIR /app
+
+# Install system dependencies for native modules
+RUN apt-get update && \
+    apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    sqlite3 \
+    libsqlite3-dev \
+    postgresql \
+    libpq-dev && \
+    rm -rf /var/lib/apt/lists/*
 
 # Copy package files
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci
+RUN npm ci --only=production && npm cache clean --force
 
-# Copy source code
+# Copy application code
 COPY . .
 
-# Build the application
-RUN npm run build
+# Create non-root user
+RUN groupadd -g 1001 nodejs && \
+    useradd -m -u 1001 -g nodejs medhelm
 
-# Production stage
-FROM nginx:alpine
+# Create necessary directories and set permissions
+RUN mkdir -p logs uploads public && \
+    chown -R medhelm:nodejs /app
 
-# Copy built assets from build stage
-COPY --from=build /app/dist /usr/share/nginx/html
-
-# Copy nginx configuration
-COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
+# Switch to non-root user
+USER medhelm
 
 # Expose port
-EXPOSE 80
+EXPOSE 5000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost/ || exit 1
+    CMD node healthcheck.js
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Start the application
+CMD ["npm", "start"]

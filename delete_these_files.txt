@@ -1,3 +1,0 @@
-eCommerce-Backend/src/services/emailVerificationService.js
-src/pages/VerifyEmail.tsx
-src/pages/ResendVerification.tsx

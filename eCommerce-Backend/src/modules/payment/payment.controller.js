@@ -9,7 +9,7 @@ const crypto = require('crypto');
 const qs = require('querystring');
 
 function getPesapalBaseUrl() {
-    return process.env.PESAPAL_BASE_URL || 'https://sandbox.pesapal.com/api/Transactions/';
+    return process.env.PESAPAL_BASE_URL || 'https://sandbox. pesapal.com/api/Transactions/';
 }
 
 function getPesapalCredentials() {

@@ -1,1 +1,0 @@
-export { CartProvider } from '../context/cartContext';

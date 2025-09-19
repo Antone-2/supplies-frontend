@@ -1,28 +1,26 @@
-import jwt from 'jsonwebtoken';
-import dotenv from 'dotenv';
+const jwt = require('jsonwebtoken');
+const User = require('../../Database/models/user.model');
 
-dotenv.config();
+const auth = async (req, res, next) => {
+    try {
+        const token = req.header('Authorization')?.replace('Bearer ', '');
 
-// Middleware to authenticate token
-function authenticateToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
+        if (!token) {
+            return res.status(401).json({ message: 'No token provided' });
+        }
 
-    if (!token) return res.status(401).json({ error: 'Access denied. No token provided.' });
+        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
+        const user = await User.findById(decoded.id);
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-        if (err) return res.status(403).json({ error: 'Invalid or expired token' });
+        if (!user) {
+            return res.status(401).json({ message: 'User not found' });
+        }
+
         req.user = user;
         next();
-    });
-}
-
-
-// For CommonJS compatibility (default export)
-module.exports = authenticateToken;
-export function admin(req, res, next) {
-    if (!req.user || req.user.role !== 'admin') {
-        return res.status(403).json({ error: 'Access denied. Admins only.' });
+    } catch (error) {
+        res.status(401).json({ message: 'Invalid token' });
     }
-    next();
-}
+};
+
+module.exports = auth;

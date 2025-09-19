@@ -2,31 +2,25 @@
 const nodemailer = require('nodemailer');
 
 const sendEmail = async (to, subject, html) => {
-    try {
-        // Create a transporter
-        const transporter = nodemailer.createTransport({
-            host: process.env.EMAIL_HOST,
-            port: process.env.EMAIL_PORT,
-            secure: process.env.EMAIL_SECURE === 'true',
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
-            },
-        });
-
-        // Send the email
-        await transporter.sendMail({
-            from: process.env.EMAIL_FROM || '"Medhelm Supplies" <info@medhelmsupplies.co.ke>',
-            to,
-            subject,
-            html,
-        });
-
-        // ...existing code...
-    } catch (error) {
-        console.error('Email sending failed:', error);
-        throw new Error('Email could not be sent');
-    }
+    const transporter = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: parseInt(process.env.EMAIL_PORT) || 587,
+        secure: false,
+        auth: {
+            user: process.env.EMAIL_USER,
+            pass: process.env.CONTACT_EMAIL_PASS || process.env.EMAIL_PASS
+        },
+        tls: {
+            rejectUnauthorized: false
+        }
+    });
+    const mailOptions = {
+        from: process.env.EMAIL_FROM || `"Medhelm Supplies" <${process.env.EMAIL_USER || 'info@medhelmsupplies.co.ke'}>`,
+        to,
+        subject,
+        html
+    };
+    await transporter.sendMail(mailOptions);
 };
 
-module.exports = sendEmail;
+module.exports = { sendEmail };
