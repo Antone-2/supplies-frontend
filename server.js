@@ -1,39 +1,3 @@
-// ...existing code...
-// Import passport after routes to avoid circular dependency
-const passport = require('./passport');
-app.use(passport.initialize());
-app.use(passport.session());
-
-// Google OAuth routes (must be after app and passport are initialized)
-app.get('/api/v1/auth/google',
-    passport.authenticate('google', { scope: ['profile', 'email'] })
-);
-
-app.get('/api/v1/auth/google/callback',
-    passport.authenticate('google', {
-        failureRedirect: process.env.FRONTEND_URL ? process.env.FRONTEND_URL + '/auth' : '/auth',
-        session: true
-    }),
-    async (req, res) => {
-        try {
-            // Generate JWT token for the authenticated user
-            const jwt = require('jsonwebtoken');
-            const token = jwt.sign(
-                { userId: req.user._id, email: req.user.email, role: req.user.role },
-                process.env.JWT_SECRET,
-                { expiresIn: '7d' }
-            );
-            // Redirect to frontend with token
-            const frontendUrl = process.env.FRONTEND_URL;
-            res.redirect(`${frontendUrl}/oauth-callback?token=${token}&provider=google`);
-        } catch (error) {
-            if (process.env.NODE_ENV !== 'production') {
-                console.error('Google OAuth callback error:', error);
-            }
-            res.redirect(process.env.FRONTEND_URL ? process.env.FRONTEND_URL + '/oauth-callback' : '/oauth-callback');
-        }
-    }
-);
 // server.js
 const express = require('express');
 const mongoose = require('mongoose');
@@ -117,6 +81,7 @@ const cartRoutes = require('./src/routes/cartRoutes');
 const wishlistRoutes = require('./src/routes/wishlistRoutes');
 const orderRoutes = require('./src/routes/orderRoutes');
 const userRoutes = require('./src/routes/userRoutes');
+const adminRoutes = require('./src/routes/adminRoutes');
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/categories', categoryRoutes);
@@ -125,6 +90,7 @@ app.use('/api/v1/cart', cartRoutes);
 app.use('/api/v1/wishlist', wishlistRoutes);
 app.use('/api/v1/orders', orderRoutes);
 app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/admin', adminRoutes);
 
 // Import passport after routes to avoid circular dependency
 const passport = require('./passport');

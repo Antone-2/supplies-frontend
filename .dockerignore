@@ -5,12 +5,12 @@ yarn-debug.log*
 yarn-error.log*
 
 # Production builds
-dist/
+# dist/
 build/
+dist-ssr/
 
 # Environment variables
 .env
-.env.*
 
 # Logs
 logs/
@@ -90,9 +90,25 @@ Thumbs.db
 *~
 
 # Testing
-tests/
-**/*.test.*
-**/__mocks__/
+/cypress/videos/
+/cypress/screenshots/
+/cypress/downloads/
+
+# Cache
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# Temporary folders
+tmp/
+temp/
+
+# Git
+.git/
+.gitignore
+README.md
+PROJECT_ANALYSIS.md
 
 # Additional test & mock exclusions
 **/tests/
@@ -126,15 +142,4 @@ docs/
 # Uploads
 uploads/
 temp/
-
-# Git
-.git/
-.gitignore
-README.md
-
-# Temporary folders
-tmp/
-temp/
-
-# Cypress
-cypress/
+   

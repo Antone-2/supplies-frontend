@@ -4,75 +4,16 @@
 const axios = require('axios');
 
 // Create payment (Pesapal/Card/Bank)
-// REAL PESAPAL INTEGRATION (OAuth1, REST API)
-const crypto = require('crypto');
-const qs = require('querystring');
-
-function getPesapalBaseUrl() {
-    return process.env.PESAPAL_BASE_URL || 'https://sandbox. pesapal.com/api/Transactions/';
-}
-
-function getPesapalCredentials() {
-    return {
-        key: process.env.PESAPAL_CONSUMER_KEY,
-        secret: process.env.PESAPAL_CONSUMER_SECRET,
-    };
-}
-
-function generateOauthSignature(method, url, params, consumerSecret) {
-    // Pesapal uses OAuth1.0a HMAC-SHA1
-    const sorted = Object.keys(params).sort().map(k => `${encodeURIComponent(k)}=${encodeURIComponent(params[k])}`).join('&');
-    const baseString = `${method.toUpperCase()}&${encodeURIComponent(url)}&${encodeURIComponent(sorted)}`;
-    const signingKey = `${encodeURIComponent(consumerSecret)}&`;
-    return crypto.createHmac('sha1', signingKey).update(baseString).digest('base64');
-}
-
 exports.createPesapalPayment = async (req, res) => {
     try {
-        const { amount, currency = 'KES', description = 'Order Payment', callback_url, notification_id, billing_phone, billing_email } = req.body;
-        const { key, secret } = getPesapalCredentials();
-        const baseUrl = getPesapalBaseUrl();
-        if (!key || !secret) return res.status(500).json({ message: 'Pesapal credentials missing' });
-
-        // Pesapal OAuth1 params
-        const oauthParams = {
-            oauth_consumer_key: key,
-            oauth_nonce: crypto.randomBytes(8).toString('hex'),
-            oauth_signature_method: 'HMAC-SHA1',
-            oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
-            oauth_version: '1.0',
-        };
-        // Payment params
-        const paymentParams = {
-            Amount: amount,
-            Currency: currency,
-            Description: description,
-            Type: 'MERCHANT',
-            Reference: notification_id || `order-${Date.now()}`,
-            PhoneNumber: billing_phone || '',
-            Email: billing_email || '',
-            CallbackURL: callback_url || process.env.PESAPAL_CALLBACK_URL || '',
-        };
-        const allParams = { ...oauthParams, ...paymentParams };
-        const signature = generateOauthSignature('POST', baseUrl + 'PostPesapalDirectOrderV4', allParams, secret);
-
-        // Build OAuth1 header
-        const oauthHeader =
-            `OAuth oauth_consumer_key="${key}",oauth_signature_method="HMAC-SHA1",oauth_signature="${encodeURIComponent(signature)}",oauth_timestamp="${oauthParams.oauth_timestamp}",oauth_nonce="${oauthParams.oauth_nonce}",oauth_version="1.0"`;
-
-        // Pesapal expects x-www-form-urlencoded
-        const pesapalUrl = baseUrl + 'PostPesapalDirectOrderV4';
-        const formBody = qs.stringify(paymentParams);
-        const pesapalRes = await axios.post(pesapalUrl, formBody, {
-            headers: {
-                'Authorization': oauthHeader,
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-        });
-        // Pesapal returns OrderTrackingId or payment URL
-        res.json({ pesapal: pesapalRes.data });
+        // Example: send payment request to Pesapal
+        // You should replace this with your real Pesapal integration
+        const { orderId, amount, phone, email } = req.body;
+        // Simulate payment URL
+        const paymentUrl = `https://pesapal.com/pay?orderId=${orderId}&amount=${amount}`;
+        res.json({ paymentUrl });
     } catch (err) {
-        res.status(500).json({ message: 'Failed to initiate Pesapal payment', details: err.message });
+        res.status(500).json({ message: 'Failed to initiate Pesapal payment' });
     }
 };
 

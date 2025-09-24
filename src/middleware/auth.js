@@ -1,26 +1,23 @@
 const jwt = require('jsonwebtoken');
-const User = require('../../Database/models/user.model');
+require('dotenv').config();
 
-const auth = async (req, res, next) => {
-    try {
-        const token = req.header('Authorization')?.replace('Bearer ', '');
-
-        if (!token) {
-            return res.status(401).json({ message: 'No token provided' });
-        }
-
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'secret');
-        const user = await User.findById(decoded.id);
-
-        if (!user) {
-            return res.status(401).json({ message: 'User not found' });
-        }
-
+function authenticateToken(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'Access denied. No token provided.' });
+    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+        if (err) return res.status(403).json({ error: 'Invalid or expired token' });
         req.user = user;
         next();
-    } catch (error) {
-        res.status(401).json({ message: 'Invalid token' });
-    }
-};
+    });
+}
 
-module.exports = auth;
+function admin(req, res, next) {
+    if (!req.user || req.user.role !== 'admin') {
+        return res.status(403).json({ error: 'Access denied. Admins only.' });
+    }
+    next();
+}
+
+module.exports = authenticateToken;
+module.exports.admin = admin;

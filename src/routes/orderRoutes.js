@@ -1,22 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const orderController = require('../modules/order/order.controller');
-const jwtAuthMiddleware = require('../middleware/jwtAuthMiddleware');
+const orderController = require('../controllers/orderController');
+const auth = require('../middleware/auth');
 
-router.get('/', orderController.getAllOrders);
-router.post('/', jwtAuthMiddleware, orderController.createCashOrder);
-router.get('/:id', orderController.getSpecificOrder);
-router.put('/:id', orderController.updateOrderStatus);
+// GET /api/orders - Get all orders (admin) or user’s own orders
+router.get('/', auth, orderController.getOrders);
 
-// Payment endpoints
-router.post('/pay/mpesa', jwtAuthMiddleware, orderController.payMpesa);
-router.post('/pay/airtel', jwtAuthMiddleware, orderController.payAirtelMoney);
+// GET /api/orders/:id - Get order by ID
+router.get('/:id', auth, orderController.getOrderById);
 
-// Shipping calculation
-router.post('/calculate-shipping', orderController.calculateShippingFee);
+// POST /api/orders - Place a new order
+router.post('/', auth, orderController.placeOrder);
 
-// Pesapal integration
-router.post('/payments/pesapal', orderController.createCheckOutSession);
-router.post('/create-checkout-session', jwtAuthMiddleware, orderController.createCheckOutSession);
+// PUT /api/orders/:id/status - Update order status (admin only)
+router.put('/:id/status', auth, orderController.updateOrderStatus);
 
 module.exports = router;

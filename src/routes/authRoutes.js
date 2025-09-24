@@ -1,22 +1,17 @@
-// authRoutes.js
+// Converted to CommonJS for compatibility with server.js require()
 const express = require('express');
 const router = express.Router();
-const authController = require('../modules/auth/auth.controller');
-const auth = require('../middleware/auth');
+const authController = require('../controllers/authController');
+const authenticateToken = require('../middleware/auth');
 
-router.post('/register', authController.register);
-router.post('/signup', authController.register); // alias for frontend compatibility
+router.post('/register', authController.registerUser);
+router.post('/verify-email', authController.verifyEmail);
+router.post('/login', authController.loginUser);
+router.post('/reset-password-request', authController.requestPasswordReset);
 
-router.post('/login', authController.login);
-router.post('/logout', authController.logout);
-router.get('/me', auth, authController.me);
-router.post('/refresh-token', authController.refreshToken);
-router.post('/forgot-password', authController.forgotPassword);
-router.post('/reset-password', authController.resetPassword);
-router.get('/verify-email', authController.verifyEmail);
-
-
-
-
+// Protected profile example
+router.get('/profile', authenticateToken, (req, res) => {
+    res.json({ message: 'This is a protected profile route', user: req.user });
+});
 
 module.exports = router;
