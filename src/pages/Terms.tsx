@@ -1,84 +1,149 @@
-import React from 'react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import MobileBottomNav from '@/components/MobileBottomNav';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 const Terms = () => {
-    return (
-        <div className="min-h-screen bg-white">
-            <Header />
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                {/* Header */}
-                <div className="text-center mb-16">
-                    <h1 className="text-4xl font-bold text-gray-900 mb-4 font-['Roboto']">Terms & Conditions</h1>
-                    <p className="text-gray-600 font-['Roboto']">
-                        Last updated: {new Date().toLocaleDateString()}
-                    </p>
+  return (
+    <div className="min-h-screen">
+      <Header />
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-3xl font-bold mb-8">Terms & Conditions</h1>
+          <p className="text-muted-foreground mb-8">Last updated: August 9, 2025</p>
+
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card>
+              <CardHeader>
+                <CardTitle>1. Acceptance of Terms</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm">
+                  By accessing and using MEDHELM Supplies website and services, you accept and agree to be bound by the terms and provision of this agreement. These terms apply to all visitors, users and others who access or use the service.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>2. Use License</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3 text-sm">
+                  <p>Permission is granted to temporarily download one copy of the materials on MEDHELM Supplies website for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:</p>
+                  <ul className="list-disc list-inside space-y-1 ml-4">
+                    <li>modify or copy the materials</li>
+                    <li>use the materials for any commercial purpose or for any public display</li>
+                    <li>attempt to reverse engineer any software contained on the website</li>
+                    <li>remove any copyright or other proprietary notations from the materials</li>
+                  </ul>
                 </div>
+              </CardContent>
+            </Card>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    {/* Section 1: Acceptance of Terms */}
-                    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-300">
-                        <h2 className="text-xl font-bold text-gray-900 mb-4 font-['Roboto']">1. Acceptance of Terms</h2>
-                        <p className="text-gray-600 leading-relaxed font-['Roboto']">
-                            By accessing and using MEDHELM Supplies website and services, you accept and agree to be bound by the terms and provision of this agreement. These terms apply to all visitors, users and others who access or use the service.
-                        </p>
-                    </div>
-
-                    {/* Section 2: Use License */}
-                    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-300">
-                        <h2 className="text-xl font-bold text-gray-900 mb-4 font-['Roboto']">2. Use License</h2>
-                        <p className="text-gray-600 leading-relaxed mb-4 font-['Roboto']">
-                            Permission is granted to temporarily download one copy of the materials on MEDHELM Supplies website for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:
-                        </p>
-                        <ul className="text-gray-600 space-y-2 font-['Roboto']">
-                            <li>• modify or copy the materials</li>
-                            <li>• use the materials for any commercial purpose or for any public display</li>
-                            <li>• attempt to reverse engineer any software contained on the website</li>
-                            <li>• remove any copyright or other proprietary notations from the materials</li>
-                        </ul>
-                    </div>
-
-                    {/* Section 3: User Accounts */}
-                    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-300">
-                        <h2 className="text-xl font-bold text-gray-900 mb-4 font-['Roboto']">3. User Accounts</h2>
-                        <p className="text-gray-600 leading-relaxed font-['Roboto']">
-                            When you create an account with us, you must provide information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account.
-                        </p>
-                    </div>
-
-                    {/* Section 4: Limitation of Liability */}
-                    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-300">
-                        <h2 className="text-xl font-bold text-gray-900 mb-4 font-['Roboto']">4. Limitation of Liability</h2>
-                        <p className="text-gray-600 leading-relaxed font-['Roboto']">
-                            In no event shall Medhelm Supplies or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on Medhelm Supplies' website.
-                        </p>
-                    </div>
-
-                    {/* Section 5: Privacy Policy */}
-                    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-300">
-                        <h2 className="text-xl font-bold text-gray-900 mb-4 font-['Roboto']">5. Privacy Policy</h2>
-                        <p className="text-gray-600 leading-relaxed font-['Roboto']">
-                            Your privacy is important to us. Please review our Privacy Policy, which also governs your use of the Service, to understand our practices.
-                        </p>
-                    </div>
-
-                    {/* Section 6: Contact Information */}
-                    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-300">
-                        <h2 className="text-xl font-bold text-gray-900 mb-4 font-['Roboto']">6. Contact Information</h2>
-                        <div className="text-gray-600 font-['Roboto']">
-                            <p><strong>Email:</strong> info@medhelmsupplies.co.ke</p>
-                            <p><strong>Phone:</strong> +254 746 020 323</p>
-                            <p><strong>Address:</strong> Kiambu Town, Kenya</p>
-                        </div>
-                    </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>3. Product Information</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3 text-sm">
+                  <p>MEDHELM Supplies provides medical supplies and equipment. All products listed are subject to availability. We reserve the right to:</p>
+                  <ul className="list-disc list-inside space-y-1 ml-4">
+                    <li>Limit quantities of any products or services offered</li>
+                    <li>Discontinue any product at any time</li>
+                    <li>Refuse service to anyone at our sole discretion</li>
+                  </ul>
                 </div>
-            </div>
-            <Footer />
-            <MobileBottomNav />
-            <div className="lg:hidden h-20"></div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>4. Pricing and Payment</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3 text-sm">
+                  <p>All prices are listed in Kenya Shillings (KSh) and are subject to change without notice. We accept the following payment methods:</p>
+                  <ul className="list-disc list-inside space-y-1 ml-4">
+                    <li>M-Pesa</li>
+                    <li>Airtel Money</li>
+                    <li>Bank Transfer</li>
+                    <li>PayPal (for international orders)</li>
+                  </ul>
+                  <p>Payment must be received before order processing begins.</p>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>5. Medical Disclaimer</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-3 text-sm">
+                  <p><strong>Important:</strong> MEDHELM Supplies is a medical supply distributor. We do not provide medical advice or diagnosis. All medical supplies should be used under the guidance of qualified healthcare professionals.</p>
+                  <ul className="list-disc list-inside space-y-1 ml-4">
+                    <li>Consult healthcare professionals before using any medical equipment</li>
+                    <li>Follow all manufacturer instructions and safety guidelines</li>
+                    <li>Ensure proper training before using specialized medical equipment</li>
+                  </ul>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>6. Privacy and Data Protection</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm">
+                  Your privacy is important to us. We collect and process personal information in accordance with our Privacy Policy. By using our services, you consent to the collection and use of information as outlined in our Privacy Policy.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>7. Limitation of Liability</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm">
+                  MEDHELM Supplies shall not be liable for any direct, indirect, incidental, consequential, or punitive damages arising out of your use of our products or services. Our liability is limited to the purchase price of the products.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>8. Governing Law</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-sm">
+                  These terms and conditions are governed by and construed in accordance with the laws of Kenya. Any disputes arising under these terms shall be subject to the exclusive jurisdiction of the courts of Kenya.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>9. Contact Information</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-sm">
+                  <p>If you have any questions about these Terms & Conditions, please contact us:</p>
+                  <div className="mt-3 space-y-1">
+                    <p><strong>Email:</strong> {import.meta.env.VITE_COMPANY_EMAIL || 'info@medhelmsupplies.co.ke'}</p>
+                    <p><strong>Phone:</strong> +254 746 020 323</p>
+                    <p><strong>Address:</strong> Kiambu Town, Kenya</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
-    );
+      </main>
+      <Footer />
+    </div>
+  );
 };
 
 export default Terms;

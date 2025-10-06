@@ -1,14 +1,15 @@
 // server.js
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const cookieParser = require('cookie-parser');
-const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
-const mongoSanitize = require('express-mongo-sanitize');
-const xssClean = require('xss-clean');
-const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import cookieParser from 'cookie-parser';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
+import mongoSanitize from 'express-mongo-sanitize';
+import xssClean from 'xss-clean';
+import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+import 'dotenv/config';
 
 // Accept either MONGO_URI or legacy MONGODB_URI
 process.env.MONGO_URI = process.env.MONGO_URI || process.env.MONGODB_URI;
@@ -17,12 +18,12 @@ if (!process.env.MONGO_URI) {
     process.exit(1);
 }
 
-const session = require('express-session');
+import session from 'express-session';
 const app = express();
 // Observability: Sentry (if DSN provided) & pino logger
-const Sentry = require('@sentry/node');
-const pino = require('pino');
-const pinoHttp = require('pino-http');
+import Sentry from '@sentry/node';
+import pino from 'pino';
+import pinoHttp from 'pino-http';
 const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 // Sentry error monitoring is disabled due to missing/invalid DSN
 // const Sentry = require('@sentry/node');
@@ -37,6 +38,8 @@ const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
 //   }
 // ...existing code...
 // Preferred port
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const PREFERRED_PORT = parseInt(process.env.PORT || '5000', 10);
 let PORT = PREFERRED_PORT;
 const MONGO_URI = process.env.MONGO_URI;
@@ -74,14 +77,13 @@ app.use(pinoHttp({ logger }));
 
 
 // Routes
-const authRoutes = require('./src/routes/authRoutes');
-const productRoutes = require('./src/modules/product/product.routes');
-const categoryRoutes = require('./src/modules/category/category.routes');
-const cartRoutes = require('./src/routes/cartRoutes');
-const wishlistRoutes = require('./src/routes/wishlistRoutes');
-const orderRoutes = require('./src/routes/orderRoutes');
-const userRoutes = require('./src/routes/userRoutes');
-const adminRoutes = require('./src/routes/adminRoutes');
+import authRoutes from './src/routes/authRoutes.js';
+import productRoutes from './src/modules/product/product.routes.js';
+import categoryRoutes from './src/modules/category/category.routes.js';
+import cartRoutes from './src/routes/cartRoutes.js';
+import wishlistRoutes from './src/routes/wishlistRoutes.js';
+import orderRoutes from './src/routes/orderRoutes.js';
+import userRoutes from './src/routes/userRoutes.js';
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/products', productRoutes);
 app.use('/api/v1/categories', categoryRoutes);
@@ -90,10 +92,9 @@ app.use('/api/v1/cart', cartRoutes);
 app.use('/api/v1/wishlist', wishlistRoutes);
 app.use('/api/v1/orders', orderRoutes);
 app.use('/api/v1/users', userRoutes);
-app.use('/api/v1/admin', adminRoutes);
 
 // Import passport after routes to avoid circular dependency
-const passport = require('./passport');
+import passport from './passport.js';
 app.use(passport.initialize());
 app.use(passport.session());
 

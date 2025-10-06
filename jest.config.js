@@ -1,18 +1,47 @@
-export default {
-    transform: {
-        '^.+\\.(ts|tsx)$': 'ts-jest',
-    },
+module.exports = {
     testEnvironment: 'node',
-    moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
-    extensionsToTreatAsEsm: ['.ts', '.tsx'],
-    globals: {
-        'ts-jest': {
-            useESM: true,
-        },
+    testMatch: [
+        '**/tests/**/*.test.js',
+        '**/src/**/*.test.js',
+        '**/src/**/*.spec.js'
+    ],
+    setupFilesAfterEnv: ['<rootDir>/tests/setup.js'],
+    testTimeout: 30000,
+    collectCoverageFrom: [
+        'src/**/*.js',
+        'eCommerce-Backend/src/**/*.js',
+        '!src/**/*.test.js',
+        '!src/**/*.spec.js',
+        '!**/node_modules/**',
+        '!**/coverage/**',
+        '!**/dist/**',
+        '!**/build/**'
+    ],
+    coverageDirectory: 'coverage',
+    coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
+    coverageThreshold: {
+        global: {
+            branches: 70,
+            functions: 70,
+            lines: 70,
+            statements: 70
+        }
     },
-    preset: 'ts-jest/presets/default-esm',
-    moduleNameMapper: {
-        '^(\\.{1,2}/.*)\\.js$': '$1',
-    },
-    testMatch: ['**/tests/**/*.test.ts', '**/tests/**/*.test.tsx', '**/tests/**/*.test.js'],
+    verbose: true,
+    detectOpenHandles: true,
+    forceExit: true,
+    clearMocks: true,
+    restoreMocks: true,
+    testPathIgnorePatterns: [
+        '/node_modules/',
+        '/dist/',
+        '/build/',
+        '/coverage/'
+    ],
+    moduleDirectories: [
+        'node_modules',
+        'src',
+        'eCommerce-Backend/src'
+    ],
+    testResultsProcessor: 'jest-sonar-reporter'
 };

@@ -1,147 +1,284 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/hooks/use-auth';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Package, CheckCircle, Truck, Clock, XCircle } from 'lucide-react';
-type OrderItem = {
-    name: string;
-    quantity: number;
-    price: number;
-};
+import { useEffect, useState } from 'react';
+import { toast } from '@/components/ui/use-toast';
+import { Link } from 'react-router-dom';
 
-type Order = {
-    id: string;
-    date: string;
-    status: string;
-    total: number;
-    items: OrderItem[];
-};
+interface Order {
+    _id: string;
+    orderNumber: string;
+    createdAt: string;
+    orderStatus: string;
+    paymentStatus: string;
+    totalAmount: number;
+    items: Array<{
+        product: {
+            _id: string;
+            name: string;
+            imageUrl?: string;
+        };
+        quantity: number;
+        price: number;
+    }>;
+    shippingAddress: {
+        name: string;
+        address: string;
+        city: string;
+        phone: string;
+    };
+}
 
-const Orders = () => {
-    useAuth(); // invoked to ensure authentication context (user not directly used yet)
-    const navigate = useNavigate();
+export default function Orders() {
     const [orders, setOrders] = useState<Order[]>([]);
+    const [error, setError] = useState<string | null>(null);
+    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
-    // Mock orders data - in real app, this would come from API
     useEffect(() => {
-        // Clear orders if user has no orders
-        setOrders([]);
+        fetchOrders();
     }, []);
 
-    const getStatusIcon = (status: string) => {
-        switch (status) {
-            case 'delivered':
-                return <CheckCircle className="h-4 w-4 text-green-600" />;
-            case 'shipped':
-                return <Truck className="h-4 w-4 text-blue-600" />;
-            case 'processing':
-                return <Clock className="h-4 w-4 text-yellow-600" />;
-            default:
-                return <XCircle className="h-4 w-4 text-red-600" />;
+    const fetchOrders = async () => {
+        try {
+            let allOrders: Order[] = [];
+
+            // Get demo orders from localStorage
+            const demoOrders = localStorage.getItem('demo_orders');
+            if (demoOrders) {
+                const parsedDemoOrders = JSON.parse(demoOrders);
+                allOrders = parsedDemoOrders.map((order: any) => ({
+                    _id: order.id,
+                    orderNumber: order.id,
+                    createdAt: order.createdAt,
+                    orderStatus: order.status || 'pending',
+                    paymentStatus: 'paid',
+                    totalAmount: order.totalAmount,
+                    items: order.items.map((item: any) => ({
+                        product: {
+                            _id: item.productId || '1',
+                            name: item.name,
+                            imageUrl: ''
+                        },
+                        quantity: item.quantity,
+                        price: item.price
+                    })),
+                    shippingAddress: {
+                        name: order.shippingAddress?.fullName || 'Customer',
+                        address: order.shippingAddress?.address || '',
+                        city: order.shippingAddress?.city || '',
+                        phone: order.shippingAddress?.phone || ''
+                    }
+                }));
+            }
+
+            // Try to fetch orders from API if user is authenticated
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                try {
+                    const response = await fetch(`${import.meta.env.VITE_API_URL}/orders`, {
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.orders) {
+                            allOrders = [...allOrders, ...data.orders];
+                        }
+                    }
+                } catch (apiError) {
+                    console.log('API orders not available:', apiError);
+                }
+            }
+
+            setOrders(allOrders);
+
+            // Show notification for new orders if available
+            if (allOrders.length > 0) {
+                const latestOrder = allOrders[0];
+                toast({
+                    title: `Order ${latestOrder.orderStatus}`,
+                    description: `Order #${latestOrder.orderNumber || latestOrder._id.toString().slice(-8)} is now ${latestOrder.orderStatus}.`,
+                });
+            }
+        } catch (err) {
+            setError('Failed to load orders');
+            console.error('Orders fetch error:', err);
         }
     };
 
     const getStatusColor = (status: string) => {
-        switch (status) {
-            case 'delivered':
-                return 'bg-green-100 text-green-800';
-            case 'shipped':
-                return 'bg-blue-100 text-blue-800';
-            case 'processing':
-                return 'bg-yellow-100 text-yellow-800';
-            default:
-                return 'bg-red-100 text-red-800';
+        switch (status.toLowerCase()) {
+            case 'pending': return 'bg-yellow-100 text-yellow-800';
+            case 'processing': return 'bg-blue-100 text-blue-800';
+            case 'shipped': return 'bg-purple-100 text-purple-800';
+            case 'delivered': return 'bg-green-100 text-green-800';
+            case 'cancelled': return 'bg-red-100 text-red-800';
+            default: return 'bg-gray-100 text-gray-800';
         }
     };
 
-    return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <div className="bg-white shadow-sm border-b">
-                <div className="max-w-2xl mx-auto px-4 py-4">
-                    <div className="flex items-center gap-4">
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => navigate('/profile')}
-                            className="p-2"
-                        >
-                            <ArrowLeft className="h-5 w-5" />
-                        </Button>
-                        <h1 className="text-xl font-semibold text-gray-900">My Orders</h1>
-                    </div>
+    const getPaymentStatusColor = (status: string) => {
+        switch (status.toLowerCase()) {
+            case 'paid': return 'bg-green-100 text-green-800';
+            case 'pending': return 'bg-yellow-100 text-yellow-800';
+            case 'failed': return 'bg-red-100 text-red-800';
+            default: return 'bg-gray-100 text-gray-800';
+        }
+    };
+
+
+
+    if (error) {
+        return (
+            <div className="min-h-screen bg-gray-50 py-8">
+                <div className="max-w-6xl mx-auto px-4">
+                    <div className="text-center text-red-600">{error}</div>
                 </div>
             </div>
+        );
+    }
 
-            <div className="max-w-2xl mx-auto px-4 py-6">
+    return (
+        <div className="min-h-screen bg-gray-50 py-8">
+            <div className="max-w-6xl mx-auto px-4">
+                <div className="mb-8">
+                    <h1 className="text-3xl font-bold text-gray-900 mb-2">My Orders</h1>
+                    <p className="text-gray-600">Track and manage your order history</p>
+                </div>
+
                 {orders.length === 0 ? (
-                    <Card>
-                        <CardContent className="text-center py-12">
-                            <Package className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">No orders yet</h3>
-                            <p className="text-gray-600 mb-4">You haven't placed any orders yet.</p>
-                            <Button onClick={() => navigate('/shop')}>Start Shopping</Button>
-                        </CardContent>
-                    </Card>
+                    <div className="text-center py-12">
+                        <div className="text-gray-400 text-6xl mb-4">📦</div>
+                        <h3 className="text-xl font-medium text-gray-900 mb-2">No orders yet</h3>
+                        <p className="text-gray-600 mb-6">When you place your first order, it will appear here.</p>
+                        <Link
+                            to="/products"
+                            className="inline-flex items-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                        >
+                            Start Shopping
+                        </Link>
+                    </div>
                 ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                         {orders.map((order) => (
-                            <Card key={order.id} className="hover:shadow-md transition-shadow">
-                                <CardHeader className="pb-3">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <Package className="h-5 w-5 text-gray-600" />
-                                            <div>
-                                                <CardTitle className="text-lg">Order {order.id}</CardTitle>
-                                                <p className="text-sm text-gray-600">{order.date}</p>
+                            <div key={order._id} className="bg-white rounded-lg shadow-sm border">
+                                <div className="p-6">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-gray-900">
+                                                Order #{order.orderNumber || order._id.slice(-8)}
+                                            </h3>
+                                            <p className="text-sm text-gray-600">
+                                                {new Date(order.createdAt).toLocaleDateString('en-US', {
+                                                    year: 'numeric',
+                                                    month: 'long',
+                                                    day: 'numeric',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                })}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center space-x-3">
+                                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(order.orderStatus)}`}>
+                                                {order.orderStatus}
+                                            </span>
+                                            <span className={`px-3 py-1 rounded-full text-sm font-medium ${getPaymentStatusColor(order.paymentStatus)}`}>
+                                                {order.paymentStatus}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="border-t pt-4">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center space-x-4">
+                                                {order.items.slice(0, 3).map((item, index) => (
+                                                    <div key={index} className="flex items-center space-x-3">
+                                                        <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                                                            {item.product.imageUrl ? (
+                                                                <img
+                                                                    src={item.product.imageUrl}
+                                                                    alt={item.product.name}
+                                                                    className="w-full h-full object-cover rounded-lg"
+                                                                />
+                                                            ) : (
+                                                                <span className="text-gray-500 text-xs">📦</span>
+                                                            )}
+                                                        </div>
+                                                        <div>
+                                                            <p className="font-medium text-gray-900">{item.product.name}</p>
+                                                            <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                                {order.items.length > 3 && (
+                                                    <div className="text-sm text-gray-600">
+                                                        +{order.items.length - 3} more items
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-lg font-semibold text-gray-900">
+                                                    KES {order.totalAmount.toLocaleString()}
+                                                </p>
+                                                <button
+                                                    onClick={() => setSelectedOrder(selectedOrder?._id === order._id ? null : order)}
+                                                    className="text-blue-600 hover:text-blue-800 text-sm font-medium mt-1"
+                                                >
+                                                    {selectedOrder?._id === order._id ? 'Hide Details' : 'View Details'}
+                                                </button>
                                             </div>
                                         </div>
-                                        <Badge className={getStatusColor(order.status)}>
-                                            <div className="flex items-center gap-1">
-                                                {getStatusIcon(order.status)}
-                                                {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                                            </div>
-                                        </Badge>
                                     </div>
-                                </CardHeader>
-                                <CardContent>
-                                    <div className="space-y-3">
-                                        {order.items.map((item, index) => (
-                                            <div
-                                                key={index}
-                                                className="flex items-center justify-between py-2 border-b border-gray-100 last:border-b-0"
-                                            >
+
+                                    {selectedOrder?._id === order._id && (
+                                        <div className="border-t mt-4 pt-4">
+                                            <div className="grid md:grid-cols-2 gap-6">
                                                 <div>
-                                                    <p className="font-medium text-gray-900">{item.name}</p>
-                                                    <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
+                                                    <h4 className="font-medium text-gray-900 mb-2">Order Items</h4>
+                                                    <div className="space-y-3">
+                                                        {order.items.map((item, index) => (
+                                                            <div key={index} className="flex items-center justify-between">
+                                                                <div className="flex items-center space-x-3">
+                                                                    <div className="w-10 h-10 bg-gray-200 rounded flex items-center justify-center">
+                                                                        {item.product.imageUrl ? (
+                                                                            <img
+                                                                                src={item.product.imageUrl}
+                                                                                alt={item.product.name}
+                                                                                className="w-full h-full object-cover rounded"
+                                                                            />
+                                                                        ) : (
+                                                                            <span className="text-gray-500 text-xs">📦</span>
+                                                                        )}
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="font-medium text-gray-900">{item.product.name}</p>
+                                                                        <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
+                                                                    </div>
+                                                                </div>
+                                                                <p className="font-medium text-gray-900">
+                                                                    KES {(item.price * item.quantity).toLocaleString()}
+                                                                </p>
+                                                            </div>
+                                                        ))}
+                                                    </div>
                                                 </div>
-                                                <p className="font-medium text-gray-900">KSh {item.price.toFixed(2)}</p>
+                                                <div>
+                                                    <h4 className="font-medium text-gray-900 mb-2">Shipping Address</h4>
+                                                    <div className="text-sm text-gray-600">
+                                                        <p className="font-medium text-gray-900">{order.shippingAddress.name}</p>
+                                                        <p>{order.shippingAddress.address}</p>
+                                                        <p>{order.shippingAddress.city}</p>
+                                                        <p>{order.shippingAddress.phone}</p>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        ))}
-                                        <div className="flex items-center justify-between pt-3 border-t border-gray-200">
-                                            <span className="font-semibold text-gray-900">Total</span>
-                                            <span className="font-bold text-lg text-indigo-600">KSh {order.total.toFixed(2)}</span>
                                         </div>
-                                    </div>
-                                    <div className="mt-4 flex gap-2">
-                                        <Button variant="outline" size="sm" className="flex-1">
-                                            View Details
-                                        </Button>
-                                        <Button variant="outline" size="sm" className="flex-1">
-                                            Track Order
-                                        </Button>
-                                    </div>
-                                </CardContent>
-                            </Card>
+                                    )}
+                                </div>
+                            </div>
                         ))}
                     </div>
                 )}
             </div>
         </div>
     );
-};
-
-export default Orders;
-
+}

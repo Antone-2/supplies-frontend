@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const productSchema = new mongoose.Schema(
     {
@@ -9,8 +9,7 @@ const productSchema = new mongoose.Schema(
         images: [{ url: { type: String }, alt: { type: String } }],
         category: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Category',
-            required: true
+            ref: 'Category'
         },
         subcategory: { type: String },
         brand: { type: String },
@@ -46,4 +45,4 @@ productSchema.index({ name: 'text', description: 'text' });
 productSchema.index({ price: 1 });
 productSchema.index({ rating: 1 });
 
-module.exports = mongoose.model('Product', productSchema);
+export default mongoose.model('Product', productSchema);

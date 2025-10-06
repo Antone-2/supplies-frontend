@@ -1,15 +1,22 @@
 const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
+    _id: {
+        type: String,
+        required: true
+    },
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        required: true
+        required: false // Allow guest orders
     },
     items: [{
-        product: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Product',
+        productId: {
+            type: String,
+            required: true
+        },
+        name: {
+            type: String,
             required: true
         },
         quantity: {
@@ -29,15 +36,11 @@ const orderSchema = new mongoose.Schema({
         min: 0
     },
     shippingAddress: {
-        name: {
+        fullName: {
             type: String,
             required: true
         },
-        address: {
-            type: String,
-            required: true
-        },
-        pickupPoint: {
+        email: {
             type: String,
             required: true
         },
@@ -45,15 +48,32 @@ const orderSchema = new mongoose.Schema({
             type: String,
             required: true
         },
-        email: {
+        address: {
+            type: String,
+            required: true
+        },
+        city: {
+            type: String,
+            required: true
+        },
+        county: {
+            type: String,
+            required: true
+        },
+        deliveryLocation: {
             type: String,
             required: true
         }
     },
     paymentMethod: {
         type: String,
-        enum: ['MPESA', 'AIRTEL', 'CARD', 'BANK TRANSFER', 'PAYPAL', 'PESAPAL'],
-        default: 'MPESA'
+        enum: ['mpesa', 'airtel', 'card', 'bank', 'paypal', 'pesapal'],
+        default: 'pesapal'
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['pending', 'paid', 'failed', 'cancelled'],
+        default: 'pending'
     },
     isPaid: {
         type: Boolean,
@@ -64,6 +84,7 @@ const orderSchema = new mongoose.Schema({
     },
     paymentResult: {
         transaction_tracking_id: String,
+        order_tracking_id: String,
         status: String
     },
     orderStatus: {

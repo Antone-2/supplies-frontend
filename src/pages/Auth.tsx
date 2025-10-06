@@ -1,228 +1,377 @@
-import React, { useState } from 'react';
-import medHelmLogo from '../assets/medhelm-logo.svg';
-import { useAuth } from '../context/AuthContext';
-import { useNavigate, Link } from 'react-router-dom';
-import { LuEye, LuEyeOff, LuMail, LuLock, LuCheck } from 'react-icons/lu';
+import { useState, useEffect } from 'react';
+import { useLocation, Navigate, Link } from 'react-router-dom';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
+import { Checkbox } from '../components/ui/checkbox';
+
+import { Eye, EyeOff } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
+import { useAuth } from '../context/AuthContext';
+import { toast } from 'sonner';
+import SEOHead from '../components/SEOHead';
+import MedhelmLogo from '../assets/medhelm-logo.svg';
 
-// Simple Spinner component
-const Spinner: React.FC = () => (
-  <svg className="animate-spin h-5 w-5 text-white mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
-  </svg>
-);
-
-import { useEffect } from 'react';
-const Auth: React.FC = () => {
-  // Removed unused activeTab and setActiveTab state
+const Auth = () => {
+  // Simulate loading state for demonstration (replace with actual loading logic if needed)
+  const [pageLoading] = useState(false);
+  if (pageLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="mt-4 text-medical-body">Loading authentication...</p>
+        </div>
+      </div>
+    );
+  }
+  const location = useLocation();
+  const { user, isLoading, login, register } = useAuth();
+  const [activeTab, setActiveTab] = useState('signin');
   const [formData, setFormData] = useState({
-    name: '',
     email: '',
     password: '',
-    confirmPassword: '',
+    fullName: '',
+    confirmPassword: ''
   });
   const [showPassword, setShowPassword] = useState(false);
-  // const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  // Removed unused termsAccepted and resetEmail state
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  const { login } = useAuth();
-  const navigate = useNavigate();
-
-  // Redirect to home if already authenticated
   useEffect(() => {
-    // If you want to check authentication, implement it here or remove this effect
-    // Example: if (localStorage.getItem('token')) { navigate('/'); }
-  }, [navigate]);
+    setActiveTab(location.pathname === '/signup' ? 'signup' : 'signin');
+  }, [location.pathname]);
 
-  // Show activation success message if redirected from activation link
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('activated') === '1') {
-      setSuccess('Your account has been activated! Please log in.');
-    }
-  }, []);
-
-  // Social login: check for token in URL and store it
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get('token');
-    if (token) {
-      localStorage.setItem('token', token);
-      window.history.replaceState({}, document.title, window.location.pathname); // Clean URL
-      navigate('/');
-    }
-  }, [navigate]);
+  // Redirect if already authenticated
+  if (user && !isLoading) {
+    return <Navigate to="/" replace />;
+  }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    setError('');
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    setError('');
+    
+    if (!formData.email || !formData.password) {
+      toast.error('Please fill in all fields');
+      return;
+    }
 
     try {
       await login(formData.email, formData.password);
-      setError(''); // Clear error on successful login
-      navigate('/');
-    } catch (err: any) {
-      setError(err.message || 'Login failed');
-    } finally {
-      setLoading(false);
+      toast.success('Welcome back!', {
+        description: 'You have successfully logged in.',
+      });
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Please check your credentials and try again.';
+      
+      // Special handling for unverified email
+      if (errorMessage.includes('verify your email')) {
+        toast.error('Account Not Verified', {
+          description: 'Please check your email and click the verification link before logging in.',
+        });
+      } else {
+        toast.error('Login Failed', {
+          description: errorMessage,
+        });
+      }
     }
   };
 
-  // Removed unused handleRegister function
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!formData.fullName || !formData.email || !formData.password || !formData.confirmPassword) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+    
+    if (formData.password !== formData.confirmPassword) {
+      toast.error('Passwords do not match', {
+        description: 'Please make sure both passwords are identical.',
+      });
+      return;
+    }
+    
+    try {
+      await register({
+        email: formData.email,
+        password: formData.password,
+        name: formData.fullName,
+      });
+      toast.success('Registration Successful!', {
+        description: 'Please check your email and click the verification link to activate your account. You cannot login until verified.',
+      });
+      // Clear form after success
+      setFormData({
+        email: '',
+        password: '',
+        fullName: '',
+        confirmPassword: ''
+      });
+    } catch (error) {
+      toast.error('Registration Failed', {
+        description: error instanceof Error ? error.message : 'Could not register. Please try again or contact support.',
+      });
+    }
+  };
 
-  // Removed unused handleForgotPassword function
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
 
-  // Removed unused TabButton component
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
+  const handleGoogleSignIn = () => {
+    try {
+      // Show loading toast
+      toast.loading('Connecting to Google...', {
+        description: 'Opening Google sign-in window...',
+        duration: 3000
+      });
+
+      // Redirect to backend Google OAuth endpoint using BACKEND_URL from .env
+      const backendUrl = import.meta.env.VITE_API_URL.replace(/\/api\/v1$/, '');
+      window.location.href = `${backendUrl}/api/v1/auth/google`;
+    } catch (error) {
+      console.error('Google sign-in error:', error);
+      toast.error('Sign-in Failed', {
+        description: 'Unable to connect to Google. Please try again.',
+        duration: 5000
+      });
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/10 via-white to-primary-light/10 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <img src={medHelmLogo} alt="Medhelm Supplies Logo" className="mx-auto mb-4 h-16" />
-          <h1 className="text-3xl font-bold text-gray-900 font-['Roboto']">Welcome to Medhelm</h1>
-          <p className="mt-2 text-sm text-gray-600 font-['Roboto']">Sign in to your account</p>
-        </div>
+    <>
+      <SEOHead
+        title="Sign In - MEDHELM Supplies Ltd"
+        description="Sign in to your MEDHELM Supplies account to access your orders, wishlist, and account settings."
+        keywords="sign in, login, account, MEDHELM supplies"
+      />
 
-        {/* Login Form Only */}
-        <div className="bg-white rounded-xl shadow-lg border border-gray-200">
-          <div className="p-8">
-            {error && (
-              <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center">
-                <span className="w-5 h-5 text-red-500 mr-2" role="img" aria-label="warning">⚠️</span>
-                <span className="text-sm text-red-700">{error}</span>
-              </div>
-            )}
-
-            {success && (
-              <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center">
-                <LuCheck className="w-5 h-5 text-green-500 mr-2" />
-                <span className="text-sm text-green-700">{success}</span>
-              </div>
-            )}
-
-            <form onSubmit={handleLogin} className="space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 font-['Roboto']">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <LuMail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder="Enter your email"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2 font-['Roboto']">
-                  Password
-                </label>
-                <div className="relative">
-                  <LuLock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    name="password"
-                    value={formData.password}
-                    onChange={handleInputChange}
-                    className="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                    placeholder="Enter your password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    {showPassword ? <LuEyeOff className="w-5 h-5" /> : <LuEye className="w-5 h-5" />}
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <label className="flex items-center">
-                  <input
-                    type="checkbox"
-                    className="rounded border-gray-300 text-primary focus:ring-primary"
-                    aria-label="Remember me"
-                  />
-                  <span className="ml-2 text-sm text-gray-600">Remember me</span>
-                </label>
-                <Link
-                  to="/forgot-password"
-                  className="text-sm text-primary hover:text-primary-light"
-                >
-                  Forgot password?
-                </Link>
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-primary text-white py-3 px-4 rounded-lg hover:bg-primary-light focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {loading ? <Spinner /> : 'Sign In'}
-              </button>
-
-              {/* Social Login */}
-              <div className="relative">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Or continue with</span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 gap-3">
-                <button
-                  type="button"
-                  className="w-full inline-flex justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                  onClick={() => window.location.href = `${import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'}/auth/google`}
-                >
-                  <FcGoogle className="w-5 h-5 mr-2" />
-                  Google
-                </button>
-              </div>
-
-              <div className="text-center text-sm text-gray-600 mt-4">
-                Don't have an account?{' '}
-                <Link to="/register" className="font-medium text-primary hover:text-primary-light">
-                  Sign up here
-                </Link>
-              </div>
-            </form>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-subtle p-4">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <img src={MedhelmLogo} alt="Medhelm Supplies Logo" className="mx-auto mb-4 h-12" />
+            <h1 className="text-3xl font-bold text-primary mb-2">Welcome to Medhelm</h1>
+            <p className="text-muted-foreground">Sign in to your account</p>
           </div>
-        </div>
 
-        {/* Footer */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-gray-500">
-            By continuing, you agree to our{' '}
-            <Link to="/terms" className="text-primary hover:text-primary-light">Terms</Link>{' '}
-            and{' '}
-            <Link to="/privacy" className="text-primary hover:text-primary-light">Privacy Policy</Link>
-          </p>
+          <Card className="shadow-lg">
+            {activeTab === 'signup' && (
+              <CardHeader className="space-y-1">
+                <CardTitle className="text-2xl text-center">Create Account</CardTitle>
+                <CardDescription className="text-center">
+                  Join Medhelm Supplies to access exclusive services
+                </CardDescription>
+              </CardHeader>
+            )}
+
+            {activeTab === 'signin' ? (
+              <form onSubmit={handleSignIn}>
+                <CardContent className="space-y-6">
+                  <div className="space-y-2 pl-4">
+                    <Label htmlFor="signin-email">Email Address</Label>
+                    <Input
+                      id="signin-email"
+                      name="email"
+                      type="email"
+                      placeholder="Enter your email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="signin-password">Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="signin-password"
+                        name="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Enter your password"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        required
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        onClick={togglePasswordVisibility}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox id="remember" />
+                      <Label htmlFor="remember" className="text-sm">
+                        Remember me
+                      </Label>
+                    </div>
+                    <Link to="/forgot-password" className="text-sm text-primary hover:underline">
+                      Forgot password?
+                    </Link>
+                  </div>
+                </CardContent>
+                <CardFooter className="flex flex-col space-y-6">
+                  <Button type="submit" className="w-full">
+                    Sign In
+                  </Button>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+                    </div>
+                  </div>
+
+                  <Button type="button" variant="outline" className="w-full" onClick={handleGoogleSignIn}>
+                    <FcGoogle className="mr-2 h-4 w-4" />
+                    Google
+                  </Button>
+
+                  <div className="text-center mt-2">
+                    <p className="text-sm text-muted-foreground">
+                      Don't have an account? <Link to="/signup" className="text-primary hover:underline font-medium">Sign up here</Link>
+                    </p>
+                  </div>
+                </CardFooter>
+              </form>
+            ) : (
+              <form onSubmit={handleSignUp}>
+                <CardContent className="space-y-6">
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-name">Full Name</Label>
+                    <Input
+                      id="signup-name"
+                      name="fullName"
+                      type="text"
+                      placeholder="Enter your full name"
+                      value={formData.fullName}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-email">Email</Label>
+                    <Input
+                      id="signup-email"
+                      name="email"
+                      type="email"
+                      placeholder="Enter your email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-password">Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="signup-password"
+                        name="password"
+                        type={showPassword ? "text" : "password"}
+                        placeholder="Create a password"
+                        value={formData.password}
+                        onChange={handleInputChange}
+                        required
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        onClick={togglePasswordVisibility}
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="confirm-password">Confirm Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="confirm-password"
+                        name="confirmPassword"
+                        type={showConfirmPassword ? "text" : "password"}
+                        placeholder="Confirm your password"
+                        value={formData.confirmPassword}
+                        onChange={handleInputChange}
+                        required
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                        onClick={toggleConfirmPasswordVisibility}
+                      >
+                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-2">
+                      <input type="checkbox" id="terms" required className="form-checkbox h-4 w-4 text-primary" />
+                      <label htmlFor="terms" className="text-sm text-muted-foreground">
+                        I agree to the <Link to="/terms" className="text-primary hover:underline">Terms</Link> and <Link to="/privacy" className="text-primary hover:underline">Privacy Policy</Link>
+                      </label>
+                    </div>
+                  </div>
+                </CardContent>
+
+                <CardFooter className="flex flex-col space-y-6">
+                  <Button type="submit" className="w-full">
+                    Create Account
+                  </Button>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
+                    </div>
+                  </div>
+
+                  <Button type="button" variant="outline" className="w-full hover:bg-[#FFF9E5]" onClick={handleGoogleSignIn}>
+                    <FcGoogle className="mr-2 h-4 w-4" />
+                    Google
+                  </Button>
+
+                  <div className="text-center">
+                    <p className="text-sm text-muted-foreground">
+                      Already have an account? <Link to="/auth" className="text-primary hover:underline font-medium">Sign in here</Link>
+                    </p>
+                  </div>
+                </CardFooter>
+              </form>
+            )}
+          </Card>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

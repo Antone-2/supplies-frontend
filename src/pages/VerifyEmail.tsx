@@ -1,105 +1,135 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useSearchParams, useNavigate } from 'react-router-dom';
-import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { useEffect, useState } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
-import { CheckCircle, XCircle, Mail } from 'lucide-react';
+import { CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import SEOHead from '../components/SEOHead';
+import MedhelmLogo from '../assets/medhelm-logo.svg';
 
 const VerifyEmail = () => {
     const [searchParams] = useSearchParams();
+    // Support both /verify-email?token=... and /verify-email/:token
+    const urlToken = window.location.pathname.split('/verify-email/')[1];
+    const navigate = useNavigate();
     const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
     const [message, setMessage] = useState('');
-    const navigate = useNavigate();
+    const [redirectCountdown, setRedirectCountdown] = useState(0);
 
     useEffect(() => {
-        const token = searchParams.get('token');
-        const email = searchParams.get('email');
-
-        if (!token) {
-            setStatus('error');
-            setMessage('Verification token is missing');
-            return;
-        }
-
-        // Simulate email verification API call
         const verifyEmail = async () => {
-            try {
-                // In a real app, this would be an API call
-                await new Promise(resolve => setTimeout(resolve, 1000));
-
-                // Simulate success/error based on token
-                if (token === 'valid-token') {
-                    setStatus('success');
-                    setMessage('Your email has been successfully verified! Redirecting to login...');
-                    setTimeout(() => {
-                        navigate('/auth', { state: { fromVerify: true } });
-                    }, 2000);
-                } else {
-                    setStatus('error');
-                    setMessage('Invalid or expired verification token');
-                }
-            } catch (error) {
+            // Prefer search param, fallback to route param
+            const token = searchParams.get('token') || urlToken;
+            if (!token) {
                 setStatus('error');
-                setMessage('Verification failed. Please try again.');
+                setMessage('Invalid verification link. No token provided.');
+                return;
+            }
+
+            try {
+                const backendUrl = import.meta.env.VITE_API_URL;
+                const response = await fetch(`${backendUrl}/auth/verify-email?token=${token}`);
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.message || 'Verification failed');
+                }
+                const data = await response.json();
+                setStatus('success');
+                setMessage(data.message || 'Your email has been successfully verified! You can now log in.');
+
+                // Show success toast notification
+                toast.success('Email Verified Successfully!', {
+                    description: 'Your account has been activated. Redirecting to login...',
+                    duration: 4000,
+                });
+
+                // Start countdown for auto-redirect
+                setRedirectCountdown(5);
+                const countdownInterval = setInterval(() => {
+                    setRedirectCountdown(prev => {
+                        if (prev <= 1) {
+                            clearInterval(countdownInterval);
+                            navigate('/auth');
+                            return 0;
+                        }
+                        return prev - 1;
+                    });
+                }, 1000);
+
+            } catch (error: any) {
+                setStatus('error');
+                setMessage(error.message || 'Failed to verify email. The link may be expired or invalid.');
+
+                // Show error toast notification
+                toast.error('Email Verification Failed', {
+                    description: error.message || 'The verification link may be invalid or expired.',
+                    duration: 4000,
+                });
             }
         };
 
         verifyEmail();
-    }, [searchParams]);
+    }, [searchParams, urlToken]);
+
+    const handleGoToLogin = () => {
+        navigate('/auth');
+    };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
-            <Card className="w-full max-w-md">
-                <CardHeader className="text-center">
-                    <div className="mx-auto mb-4 p-3 bg-blue-100 rounded-full w-fit">
-                        <Mail className="h-8 w-8 text-blue-600" />
+        <>
+            <SEOHead
+                title="Verify Email - Medhelm Supplies"
+                description="Verify your email address to complete your Medhelm Supplies account registration."
+                keywords="verify email, account verification, Medhelm supplies"
+            />
+
+            <div className="min-h-screen flex items-center justify-center bg-gradient-subtle p-4">
+                <div className="w-full max-w-md">
+                    <div className="text-center mb-8">
+                        <img src={MedhelmLogo} alt="Medhelm Supplies Logo" className="mx-auto mb-4 h-12" />
+                        <h1 className="text-3xl font-bold text-primary mb-2">Email Verification</h1>
                     </div>
-                    <CardTitle className="text-2xl">Email Verification</CardTitle>
-                </CardHeader>
-                <CardContent className="text-center">
-                    {status === 'loading' && (
-                        <div className="space-y-4">
-                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                            <p className="text-gray-600">Verifying your email...</p>
-                        </div>
-                    )}
 
-                    {status === 'success' && (
-                        <div className="space-y-4">
-                            <CheckCircle className="h-16 w-16 text-green-500 mx-auto" />
-                            <div>
-                                <h3 className="text-xl font-semibold text-green-600 mb-2">
-                                    Verification Successful!
-                                </h3>
-                                <p className="text-gray-600">{message}</p>
-                                <p className="text-xs text-gray-500">You will be redirected to login shortly.</p>
-                            </div>
-                        </div>
-                    )}
+                    <Card className="shadow-lg">
+                        <CardHeader className="text-center">
+                            <CardTitle className="flex items-center justify-center gap-2">
+                                {status === 'loading' && <Loader2 className="h-6 w-6 text-blue-500 animate-spin" />}
+                                {status === 'success' && <CheckCircle className="h-6 w-6 text-green-500" />}
+                                {status === 'error' && <XCircle className="h-6 w-6 text-red-500" />}
+                                Email Verification
+                            </CardTitle>
+                            <CardDescription>
+                                {status === 'loading' && 'Verifying your email...'}
+                                {status === 'success' && 'Verification completed successfully!'}
+                                {status === 'error' && 'Verification failed'}
+                            </CardDescription>
+                        </CardHeader>
 
-                    {status === 'error' && (
-                        <div className="space-y-4">
-                            <XCircle className="h-16 w-16 text-red-500 mx-auto" />
-                            <div>
-                                <h3 className="text-xl font-semibold text-red-600 mb-2">
-                                    Verification Failed
-                                </h3>
-                                <p className="text-gray-600 mb-4">{message}</p>
-                            </div>
-                            <div className="space-y-2">
-                                <Link to="/resend-verification">
-                                    <Button variant="outline" className="w-full">
-                                        Resend Verification Email
-                                    </Button>
-                                </Link>
-                                <Link to="/profile">
-                                    <Button className="w-full">Back to Profile</Button>
-                                </Link>
-                            </div>
-                        </div>
-                    )}
-                </CardContent>
-            </Card>
-        </div>
+                        <CardContent className="text-center space-y-4">
+                            <p className="text-muted-foreground">{message}</p>
+
+                            {status === 'loading' && (
+                                <div className="text-sm text-muted-foreground">
+                                    Please wait while we verify your account...
+                                </div>
+                            )}
+
+                            {status === 'success' && redirectCountdown > 0 && (
+                                <div className="text-sm text-muted-foreground">
+                                    Redirecting to login in {redirectCountdown} seconds...
+                                </div>
+                            )}
+
+                            {status !== 'loading' && (
+                                <Button onClick={handleGoToLogin} className="w-full">
+                                    {status === 'success' ? 'Go to Login Now' : 'Back to Login'}
+                                </Button>
+                            )}
+                        </CardContent>
+                    </Card>
+                </div>
+            </div>
+        </>
     );
 };
 

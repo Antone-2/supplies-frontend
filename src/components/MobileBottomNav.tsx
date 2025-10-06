@@ -1,165 +1,134 @@
-import { LuUser, LuHouse, LuShoppingCart } from 'react-icons/lu';
-import { FaWhatsapp } from 'react-icons/fa';
+import { Home, Search, ShoppingCart, User } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
-import { useState } from 'react';
-import SearchModal from './SearchModal';
-import { Link } from 'react-router-dom';
 
 const MobileBottomNav = () => {
-    const [activeTab, setActiveTab] = useState('home');
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { getTotalItems } = useCart();
+  const { isAuthenticated } = useAuth();
 
-    const { user } = useAuth();
-    const navItems = [
-        {
-            id: 'home',
-            label: 'Home',
-            icon: LuHouse,
-            href: '/',
-            type: 'link'
-        },
-        {
-            id: 'cart',
-            label: 'Cart',
-            icon: LuShoppingCart,
-            href: '/cart',
-            type: 'link'
-        },
-        {
-            id: 'chat',
-            label: 'WhatsApp',
-            icon: FaWhatsapp,
-            href: 'https://wa.me/254746020323?text=Hi%20I%20need%20help%20with%20my%20order',
-            type: 'link'
-        },
-        user ? {
-            id: 'account',
-            label: user.name.split(' ').map(n => n[0]).join('').toUpperCase(),
-            icon: LuUser,
-            href: '/profile',
-            type: 'link'
-        } : {
-            id: 'account',
-            label: 'Account',
-            icon: LuUser,
-            href: '/auth',
-            type: 'link'
+  const cartItems = getTotalItems();
+
+  // Determine active tab based on current route
+  const getActiveTab = () => {
+    const path = location.pathname;
+    if (path === '/') return 'home';
+    if (path.startsWith('/products') || path.startsWith('/search') || path.startsWith('/category')) return 'search';
+    if (path === '/cart') return 'cart';
+    if (path === '/wishlist') return 'wishlist';
+    if (path.startsWith('/profile') || path.startsWith('/auth')) return 'account';
+    return 'home'; // default
+  };
+
+  const activeTab = getActiveTab();
+
+  const handleNavClick = (id: string) => {
+    // Add haptic feedback for mobile devices
+    if ('vibrate' in navigator) {
+      navigator.vibrate(10); // Short vibration on tap
+    }
+
+    switch (id) {
+      case 'home':
+        navigate('/');
+        break;
+      case 'search':
+        navigate('/products');
+        break;
+      case 'cart':
+        navigate('/cart');
+        break;
+      case 'wishlist':
+        navigate('/wishlist');
+        break;
+      case 'account':
+        if (isAuthenticated) {
+          navigate('/profile');
+        } else {
+          navigate('/auth');
         }
-    ];
+        break;
+      default:
+        break;
+    }
+  };
 
-    return (
-        <>
-            {/* Modern Mobile Bottom Navigation */}
-            <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 safe-area-pb">
-                {/* Cool gradient background */}
-                <div className="absolute inset-0 bg-white backdrop-blur-xl border-t border-gray-200 shadow-2xl"></div>
+  const navItems = [
+    {
+      id: 'home',
+      label: 'Home',
+      icon: Home,
+      badge: null
+    },
+    {
+      id: 'search',
+      label: 'Search',
+      icon: Search,
+      badge: null
+    },
+    {
+      id: 'cart',
+      label: 'Cart',
+      icon: ShoppingCart,
+      badge: cartItems > 0 ? cartItems : null
+    },
+    {
+      id: 'account',
+      label: isAuthenticated ? 'Account' : 'Login',
+      icon: User,
+      badge: null
+    }
+  ];
 
-                {/* Floating effect container */}
-                <div className="relative px-2 py-1">
-                    <div className="flex justify-around items-center max-w-md mx-auto">
-                        {navItems.map((item) => {
-                            const Icon = item.icon;
-                            const isActive = activeTab === item.id;
+  return (
+    <nav
+      className="lg:hidden mobile-nav-fixed bg-background/95 backdrop-blur-md border-t border-border pb-safe"
+      role="tablist"
+      aria-label="Main navigation"
+    >
+      <div className="flex justify-between items-center max-w-screen-sm mx-auto px-0 py-2 overflow-x-auto">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = activeTab === item.id;
 
-                            if (item.type === 'modal' && item.id === 'search') {
-                                return (
-                                    <div key={item.id} className="flex-1 flex flex-col items-center justify-center py-2 px-1 relative group">
-                                        <button
-                                            onClick={() => setActiveTab(item.id)}
-                                            className="relative flex items-center justify-center w-10 h-10 rounded-3xl bg-gradient-to-tr from-blue-500 to-purple-600 text-white shadow-lg transition-transform duration-300 ease-out hover:scale-110 active:scale-95"
-                                            aria-label="Open Search"
-                                        >
-                                            <Icon className="w-7 h-7" />
-                                            {isActive && (
-                                                <div className="absolute inset-0 rounded-3xl ring-2 ring-white animate-pulse"></div>
-                                            )}
-                                        </button>
-                                        <span className={`text-xs font-semibold mt-1 transition-all duration-300 ${isActive ? 'text-blue-600 scale-110' : 'text-gray-500 group-hover:text-gray-700'}`}>
-                                            Search
-                                        </span>
-                                        {isActive && <SearchModal isOpen={isActive} onClose={() => setActiveTab('home')} />}
-                                    </div>
-                                );
-                            }
-
-
-
-                            if (item.type === 'link') {
-                                if (item.id === 'chat') {
-                                    return (
-                                        <div key={item.id} className="flex-1 flex flex-col items-center justify-center py-2 px-1 relative group">
-                                            <a href={item.href} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
-                                                <button
-                                                    onClick={() => setActiveTab(item.id)}
-                                                    className="relative flex items-center justify-center w-10 h-10 rounded-3xl bg-gradient-to-tr from-cyan-500 to-blue-600 text-white shadow-lg transition-transform duration-300 ease-out hover:scale-110 active:scale-95"
-                                                    aria-label="Open WhatsApp Chat"
-                                                >
-                                                    <Icon className="w-7 h-7" />
-                                                    {isActive && (
-                                                        <div className="absolute inset-0 rounded-3xl ring-2 ring-white animate-pulse"></div>
-                                                    )}
-                                                </button>
-                                                <span className={`text-xs font-semibold mt-1 transition-all duration-300 ${isActive ? 'text-cyan-600 scale-110' : 'text-gray-500 group-hover:text-gray-700'}`}>
-                                                    WhatsApp
-                                                </span>
-                                            </a>
-                                        </div>
-                                    );
-                                } else if (item.id === 'account') {
-                                    return (
-                                        <div key={item.id} className="flex-1 flex flex-col items-center justify-center py-2 px-1 relative group">
-                                            <Link to={item.href ?? '/'} className="flex flex-col items-center">
-                                                <button
-                                                    onClick={() => setActiveTab(item.id)}
-                                                    className="relative flex items-center justify-center w-10 h-10 rounded-3xl bg-gradient-to-tr from-indigo-500 to-purple-600 text-white shadow-lg transition-transform duration-300 ease-out hover:scale-110 active:scale-95"
-                                                    aria-label="Go to Account"
-                                                >
-                                                    {user ? (
-                                                        <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-sm font-bold">
-                                                            {item.label}
-                                                        </div>
-                                                    ) : (
-                                                        <Icon className="w-7 h-7" />
-                                                    )}
-                                                    {isActive && (
-                                                        <div className="absolute inset-0 rounded-3xl ring-2 ring-white animate-pulse"></div>
-                                                    )}
-                                                </button>
-                                                <span className={`text-xs font-semibold mt-1 transition-all duration-300 ${isActive ? 'text-indigo-600 scale-110' : 'text-gray-500 group-hover:text-gray-700'}`}>
-                                                    {user ? 'Profile' : 'Account'}
-                                                </span>
-                                            </Link>
-                                        </div>
-                                    );
-                                } else {
-                                    return (
-                                        <div key={item.id} className="flex-1 flex flex-col items-center justify-center py-2 px-1 relative group">
-                                            <Link to={item.href ?? '/'} className="flex flex-col items-center">
-                                                <button
-                                                    onClick={() => setActiveTab(item.id)}
-                                                    className={`relative flex items-center justify-center w-10 h-10 rounded-3xl text-white shadow-lg transition-transform duration-300 ease-out hover:scale-110 active:scale-95 ${item.id === 'home' ? 'bg-gradient-to-tr from-gray-500 to-gray-700' : 'bg-gradient-to-tr from-gray-500 to-gray-700'}`}
-                                                    aria-label={`Go to ${item.label}`}
-                                                >
-                                                    <Icon className="w-7 h-7" />
-                                                    {isActive && (
-                                                        <div className="absolute inset-0 rounded-3xl ring-2 ring-white animate-pulse"></div>
-                                                    )}
-                                                </button>
-                                                <span className={`text-xs font-semibold mt-1 transition-all duration-300 ${isActive ? (item.id === 'home' ? 'text-gray-300 scale-110' : 'text-gray-300 scale-110') : 'text-gray-500 group-hover:text-gray-700'}`}>
-                                                    {item.label}
-                                                </span>
-                                            </Link>
-                                        </div>
-                                    );
-                                }
-                            }
-
-                            return null;
-                        })}
-                    </div>
-                </div>
-            </nav>
-        </>
-    );
+          return (
+            <Button
+              key={item.id}
+              variant="ghost"
+              size="sm"
+              className={`
+                mobile-nav-button flex flex-col items-center gap-0 h-auto py-2 px-1 min-w-0 flex-1 rounded-lg transition-all duration-300 min-h-[60px] touch-manipulation
+                ${isActive
+                  ? 'text-primary bg-primary/15 shadow-md scale-105 font-medium'
+                  : 'text-muted-foreground hover:text-primary hover:bg-primary/8 hover:scale-105 active:scale-95'
+                }
+              `}
+              onClick={() => handleNavClick(item.id)}
+              aria-label={`${item.label}${item.badge ? ` (${item.badge} items)` : ''}`}
+              role="tab"
+              aria-selected={isActive}
+            >
+              <div className="relative">
+                <Icon className={`transition-all duration-300 ${isActive ? 'h-6 w-6' : 'h-5 w-5'} ${isActive ? 'drop-shadow-sm' : ''}`} />
+                {item.badge && item.badge > 0 && (
+                  <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 text-xs bg-red-500 text-white font-bold border-2 border-background shadow-lg">
+                    {item.badge > 9 ? '9+' : item.badge}
+                  </Badge>
+                )}
+              </div>
+              <span className={`text-xs font-medium truncate transition-all duration-300 max-w-full ${isActive ? 'text-primary font-semibold' : ''}`}>
+                {item.label}
+              </span>
+            </Button>
+          );
+        })}
+      </div>
+    </nav>
+  );
 };
 
 export default MobileBottomNav;

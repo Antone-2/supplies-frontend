@@ -31,7 +31,7 @@ app.use(express.json());
 
 // Import and use auth routes directly
 const authController = require('../src/controllers/authController');
-const User = require('../Database/models/user.model');
+const User = require('../../Database/models/user.model');
 
 // Setup test routes
 app.post('/api/auth/register', authController.registerUser);

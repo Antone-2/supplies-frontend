@@ -1,10 +1,8 @@
-import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useCart } from '@/context/cartContext';
+import { useCart } from '@/context/CartContext';
 import {
   ShoppingCart,
   Heart,
@@ -12,19 +10,23 @@ import {
   Minus,
   Trash2,
   CreditCard,
-  ArrowLeft
+  ArrowLeft,
+  Loader2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
+import { useState } from 'react';
 
 const Cart = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [processingItems, setProcessingItems] = useState<Set<number>>(new Set());
   const {
-    items,
+    cart,
     wishlist,
-    total,
-    itemCount,
+    getTotalItems,
     removeFromCart,
-    updateQuantity,
+    updateCartQuantity,
     addToCart,
     removeFromWishlist,
     clearCart
@@ -38,17 +40,79 @@ const Cart = () => {
     }).format(price);
   };
 
-  const handleQuantityChange = (productId: string, newQuantity: number) => {
-    if (newQuantity <= 0) {
-      removeFromCart(productId);
-    } else {
-      updateQuantity(productId, newQuantity);
+  const handleQuantityChange = async (productId: number, newQuantity: number) => {
+    setProcessingItems(prev => new Set([...prev, productId]));
+
+    try {
+      // Simulate API delay for better UX demonstration
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      if (newQuantity <= 0) {
+        removeFromCart(productId);
+      } else {
+        updateCartQuantity(productId, newQuantity);
+      }
+    } finally {
+      setProcessingItems(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(productId);
+        return newSet;
+      });
     }
   };
 
-  const handleCheckout = () => {
-    // TODO: Implement checkout logic
-    console.log('Proceeding to checkout with items:', items);
+  const handleCheckout = async () => {
+    // Check if cart has items
+    if (cart.length === 0) {
+      toast.error('Cart is Empty', {
+        description: 'Please add items to your cart before checkout.',
+      });
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Calculate total
+      const total = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
+
+      console.log('Proceeding to checkout with items:', cart);
+      console.log('Total amount:', formatPrice(total));
+
+      // Show success toast
+      toast.success('Proceeding to Checkout', {
+        description: `${cart.length} item(s) for ${formatPrice(total)}`,
+      });
+
+      // Simulate processing time
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Navigate to checkout page
+      navigate('/checkout');
+    } catch (error) {
+      toast.error('Checkout Error', {
+        description: 'Unable to proceed to checkout. Please try again.',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleClearCart = () => {
+    if (cart.length === 0) {
+      toast.info('Cart Already Empty', {
+        description: 'There are no items to remove.',
+      });
+      return;
+    }
+
+    toast.success('Confirm Clear Cart', {
+      description: `Remove all ${getTotalItems()} items from cart?`,
+      action: {
+        label: 'Clear All',
+        onClick: clearCart,
+      },
+    });
   };
 
   return (
@@ -69,7 +133,7 @@ const Cart = () => {
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="cart" className="flex items-center gap-2">
             <ShoppingCart className="h-4 w-4" />
-            Cart ({itemCount})
+            Cart ({getTotalItems()})
           </TabsTrigger>
           <TabsTrigger value="wishlist" className="flex items-center gap-2">
             <Heart className="h-4 w-4" />
@@ -78,7 +142,7 @@ const Cart = () => {
         </TabsList>
 
         <TabsContent value="cart" className="space-y-6">
-          {items.length === 0 ? (
+          {cart.length === 0 ? (
             <Card>
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <ShoppingCart className="h-16 w-16 text-muted-foreground mb-4" />
@@ -96,25 +160,25 @@ const Cart = () => {
           ) : (
             <div className="grid gap-6 lg:grid-cols-3">
               <div className="lg:col-span-2 space-y-4">
-                {items.map((item: any) => (
-                  <Card key={item.product?._id || item._id}>
+                {cart.map((item) => (
+                  <Card key={item.product.id}>
                     <CardContent className="p-6">
                       <div className="flex gap-4">
                         <img
-                          src={item.product?.imageUrl || item.image}
-                          alt={item.product?.name || item.name}
+                          src={item.product.image}
+                          alt={item.product.name}
                           className="w-20 h-20 object-cover rounded-lg"
                         />
                         <div className="flex-1">
                           <div className="flex justify-between items-start mb-2">
                             <div>
-                              <h3 className="font-semibold text-medical-heading">{item.product?.name || item.name}</h3>
-                              <p className="text-sm text-muted-foreground">{item.product?.brand || item.brand}</p>
+                              <h3 className="font-semibold text-medical-heading">{item.product.name}</h3>
+                              <p className="text-sm text-muted-foreground">{item.product.brand}</p>
                             </div>
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => removeFromCart(item.product?._id || item._id)}
+                              onClick={() => removeFromCart(item.product.id)}
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
@@ -125,25 +189,37 @@ const Cart = () => {
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => handleQuantityChange(item.product?._id || item._id, item.quantity - 1)}
+                                disabled={processingItems.has(item.product.id)}
+                                onClick={() => handleQuantityChange(item.product.id, item.quantity - 1)}
                               >
-                                <Minus className="h-3 w-3" />
+                                {processingItems.has(item.product.id) ? (
+                                  <Loader2 className="h-3 w-3 animate-spin" />
+                                ) : (
+                                  <Minus className="h-3 w-3" />
+                                )}
                               </Button>
-                              <span className="w-8 text-center">{item.quantity}</span>
+                              <span className="w-8 text-center font-medium">
+                                {item.quantity}
+                              </span>
                               <Button
                                 variant="outline"
                                 size="sm"
-                                onClick={() => handleQuantityChange(item.id, item.quantity + 1)}
+                                disabled={processingItems.has(item.product.id)}
+                                onClick={() => handleQuantityChange(item.product.id, item.quantity + 1)}
                               >
-                                <Plus className="h-3 w-3" />
+                                {processingItems.has(item.product.id) ? (
+                                  <Loader2 className="h-3 w-3 animate-spin" />
+                                ) : (
+                                  <Plus className="h-3 w-3" />
+                                )}
                               </Button>
                             </div>
                             <div className="text-right">
                               <p className="font-semibold text-primary">
-                                {formatPrice(item.price * item.quantity)}
+                                {formatPrice(item.product.price * item.quantity)}
                               </p>
                               <p className="text-sm text-muted-foreground">
-                                {formatPrice(item.price)} each
+                                {formatPrice(item.product.price)} each
                               </p>
                             </div>
                           </div>
@@ -165,8 +241,8 @@ const Cart = () => {
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div className="flex justify-between">
-                      <span>Subtotal ({itemCount} items)</span>
-                      <span>{formatPrice(total)}</span>
+                      <span>Subtotal ({getTotalItems()} items)</span>
+                      <span>{formatPrice(cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0))}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Shipping</span>
@@ -175,7 +251,7 @@ const Cart = () => {
                     <Separator />
                     <div className="flex justify-between font-semibold text-lg">
                       <span>Total</span>
-                      <span className="text-primary">{formatPrice(total)}</span>
+                      <span className="text-primary">{formatPrice(cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0))}</span>
                     </div>
 
                     <div className="space-y-2">
@@ -183,14 +259,25 @@ const Cart = () => {
                         className="w-full"
                         size="lg"
                         onClick={handleCheckout}
+                        disabled={cart.length === 0 || loading}
                       >
-                        <CreditCard className="mr-2 h-4 w-4" />
-                        Proceed to Checkout
+                        {loading ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <CreditCard className="mr-2 h-4 w-4" />
+                            Proceed to Checkout ({getTotalItems()} items)
+                          </>
+                        )}
                       </Button>
                       <Button
                         variant="outline"
                         className="w-full"
-                        onClick={clearCart}
+                        onClick={handleClearCart}
+                        disabled={cart.length === 0}
                       >
                         Clear Cart
                       </Button>
@@ -220,7 +307,7 @@ const Cart = () => {
             </Card>
           ) : (
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {wishlist.map((item: any) => (
+              {wishlist.map((item) => (
                 <Card key={item.id} className="group hover:shadow-lg transition-shadow">
                   <div className="relative">
                     <img

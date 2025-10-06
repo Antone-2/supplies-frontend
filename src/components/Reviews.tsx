@@ -1,386 +1,340 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '../components/ui/textarea';
-import { LuStar, LuUser, LuMessageSquare, LuChevronLeft, LuChevronRight } from 'react-icons/lu';
-import { useToast } from '../hooks/use-toast';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
+import { Star, User, Calendar, MessageSquare } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { generalReviewService, GeneralReview, CreateGeneralReviewData } from '@/services/generalReviewService';
+import { Link } from 'react-router-dom';
 
 const Reviews = () => {
-    const [showForm, setShowForm] = useState(false);
-    const [currentReview, setCurrentReview] = useState(0);
-    const [currentDesktopSlide, setCurrentDesktopSlide] = useState(0);
-    const [formData, setFormData] = useState({
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    rating: 5,
+    title: '',
+    comment: ''
+  });
+  const [reviews, setReviews] = useState<GeneralReview[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [averageRating, setAverageRating] = useState(0);
+  const [totalReviews, setTotalReviews] = useState(0);
+
+  const { toast } = useToast();
+
+
+  useEffect(() => {
+    fetchReviews();
+  }, []);
+
+  const fetchReviews = async () => {
+    try {
+      setLoading(true);
+      // Get recent reviews for homepage
+      const response = await generalReviewService.getGeneralReviews(1, 4); // Show 4 recent reviews
+      setReviews(response.reviews);
+
+      // Calculate average rating from reviews
+      const avgRating = response.reviews.length > 0
+        ? response.reviews.reduce((acc, review) => acc + review.rating, 0) / response.reviews.length
+        : 0;
+      setAverageRating(avgRating);
+      setTotalReviews(response.pagination.totalReviews);
+    } catch (error) {
+      console.error('Error fetching reviews:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load reviews",
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.name || !formData.email || !formData.title || !formData.comment) {
+      toast({
+        title: "Missing Information",
+        description: "Please fill in all required fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const reviewData: CreateGeneralReviewData = {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        rating: formData.rating,
+        title: formData.title.trim(),
+        comment: formData.comment.trim()
+      };
+
+      await generalReviewService.createGeneralReview(reviewData);
+
+      toast({
+        title: "Review Submitted!",
+        description: "Thank you for your feedback. Your review will appear on our website shortly.",
+      });
+
+      // Reset form
+      setFormData({
         name: '',
         email: '',
         rating: 5,
         title: '',
         comment: ''
+      });
+      setShowForm(false);
+
+      // Refresh reviews
+      fetchReviews();
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      toast({
+        title: "Submission Failed",
+        description: error instanceof Error ? error.message : "Failed to submit review. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const renderStars = (rating: number) => {
+    return Array.from({ length: 5 }, (_, i) => (
+      <Star
+        key={i}
+        className={`h-4 w-4 ${i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+          }`}
+      />
+    ));
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
     });
-    const { toast } = useToast();
+  };
 
-    const nextReview = () => {
-        setCurrentReview((prev) => (prev + 1) % reviews.length);
-    };
-
-    const prevReview = () => {
-        setCurrentReview((prev) => (prev - 1 + reviews.length) % reviews.length);
-    };
-
-    const nextDesktopSlide = () => {
-        setCurrentDesktopSlide((prev) => (prev + 1) % Math.ceil(reviews.length / 2));
-    };
-
-    const prevDesktopSlide = () => {
-        setCurrentDesktopSlide((prev) => (prev - 1 + Math.ceil(reviews.length / 2)) % Math.ceil(reviews.length / 2));
-    };
-
-    // Sample reviews data
-    const reviews = [
-        {
-            id: 1,
-            name: "Dr. Sarah Mwangi",
-            date: "January 2025",
-            rating: 5,
-            title: "Excellent Medical Equipment",
-            comment: "Outstanding quality medical supplies. Fast delivery and excellent customer service. Our clinic has been ordering from MEDHELM for over a year and we're very satisfied.",
-            verified: true
-        },
-        {
-            id: 2,
-            name: "James Kimani",
-            date: "December 2024",
-            rating: 5,
-            title: "Reliable Healthcare Partner",
-            comment: "MEDHELM has been our trusted supplier for the past 2 years. Their products are genuine and delivery is always on time. Highly recommended for healthcare facilities.",
-            verified: true
-        },
-        {
-            id: 3,
-            name: "Grace Achieng",
-            date: "December 2024",
-            rating: 4,
-            title: "Good Service",
-            comment: "Great customer support and quality products. The only suggestion would be to expand the product range for specialized equipment.",
-            verified: false
-        },
-        {
-            id: 4,
-            name: "Dr. Michael Ochieng",
-            date: "November 2024",
-            rating: 5,
-            title: "Professional Service",
-            comment: "Professional handling of orders and excellent quality control. The team is knowledgeable about medical equipment specifications.",
-            verified: true
-        }
-    ];
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-
-        // Here you would typically send the review to your backend
-        toast("Review Submitted! Thank you for your feedback. Your review will be published after verification.");
-
-        setFormData({
-            name: '',
-            email: '',
-            rating: 5,
-            title: '',
-            comment: ''
-        });
-        setShowForm(false);
-    };
-
-    const renderStars = (rating: number) => {
-        return Array.from({ length: 5 }, (_, i) => (
-            <LuStar
-                key={i}
-                className={`h-4 w-4 ${i < rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-                    }`}
-            />
-        ));
-    };
-
-    const averageRating = reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
-    const totalReviews = reviews.length;
-
+  if (loading) {
     return (
-        <section className="py-16 bg-muted/50">
-            <div className="container mx-auto px-4">
-                {/* Header */}
-                <div className="text-center mb-12">
-                    <h2 className="text-3xl md:text-4xl font-bold mb-4 text-medical-heading font-['Roboto']">
-                        Client Reviews
-                    </h2>
-                    <p className="text-medical-body text-lg max-w-2xl mx-auto mb-6 font-['Roboto']">
-                        See what healthcare professionals say about our medical supplies and services
-                    </p>
-
-                    {/* Rating Summary */}
-                    <div className="flex items-center justify-center gap-4 mb-8">
-                        <div className="text-center">
-                            <div className="flex items-center gap-2 mb-2">
-                                <span className="text-3xl font-bold text-primary">{averageRating.toFixed(1)}</span>
-                                <div className="flex">
-                                    {renderStars(Math.round(averageRating))}
-                                </div>
-                            </div>
-                            <p className="text-sm text-muted-foreground">
-                                Based on {totalReviews} reviews
-                            </p>
-                        </div>
-                    </div>
-
-                    <Button
-                        onClick={() => setShowForm(!showForm)}
-                        className="bg-secondary hover:bg-secondary-light text-secondary-foreground"
-                    >
-                        <LuMessageSquare className="mr-2 h-4 w-4" />
-                        Write a Review
-                    </Button>
-                </div>
-
-                {/* Review Form */}
-                {showForm && (
-                    <Card className="max-w-2xl mx-auto mb-12">
-                        <CardHeader>
-                            <CardTitle className="flex items-center gap-2">
-                                <LuMessageSquare className="h-5 w-5 text-primary" />
-                                Share Your Experience
-                            </CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium mb-2">Name *</label>
-                                        <Input
-                                            value={formData.name}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                                            required
-                                            placeholder="Enter Your Name"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium mb-2">Email *</label>
-                                        <Input
-                                            type="email"
-                                            value={formData.email}
-                                            onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                                            required
-                                            placeholder="Your Email Address"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">Rating *</label>
-                                    <div className="flex gap-1">
-                                        {Array.from({ length: 5 }, (_, i) => (
-                                            <button
-                                                key={i}
-                                                type="button"
-                                                onClick={() => setFormData(prev => ({ ...prev, rating: i + 1 }))}
-                                                className="p-1"
-                                            >
-                                                <LuStar
-                                                    className={`h-6 w-6 ${i < formData.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-                                                        }`}
-                                                />
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium mb-2">Review Title *</label>
-                                    <Input
-                                        value={formData.title}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
-                                        required
-                                        placeholder="Brief title for your review"
-                                    />
-                                </div>
-
-                                <div className="w-full">
-                                    <label className="block text-sm font-medium mb-2">Your Review *</label>
-                                    <Textarea
-                                        value={formData.comment}
-                                        onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFormData(prev => ({ ...prev, comment: e.target.value }))}
-                                        required
-                                        placeholder="Share your experience with our products and services..."
-                                        rows={4}
-                                        className="rounded-lg shadow-sm focus:ring-2 focus:ring-primary focus:border-primary transition-all p-3 text-base placeholder:text-gray-500 w-full"
-                                        style={{ minHeight: '80px', resize: 'vertical' }}
-                                    />
-                                </div>
-
-                                <div className="flex gap-3 mt-2">
-                                    <Button type="submit" className="bg-primary hover:bg-primary-light rounded-lg shadow-md text-base py-2 transition-all">
-                                        Submit Review
-                                    </Button>
-                                    <Button
-                                        type="button"
-                                        variant="outline"
-                                        className="rounded-lg"
-                                        onClick={() => setShowForm(false)}
-                                    >
-                                        Cancel
-                                    </Button>
-                                </div>
-                            </form>
-                        </CardContent>
-                    </Card>
-                )}
-
-                {/* Desktop Carousel - Two Reviews at a Time */}
-                <div className="hidden md:block relative">
-                    <div className="overflow-hidden">
-                        <div
-                            className="flex transition-transform duration-300 ease-in-out"
-                            style={{ transform: `translateX(-${currentDesktopSlide * 100}%)` }}
-                        >
-                            {Array.from({ length: Math.ceil(reviews.length / 2) }, (_, slideIndex) => (
-                                <div key={slideIndex} className="flex-shrink-0 w-full">
-                                    <div className="grid grid-cols-2 gap-6 px-4">
-                                        {reviews.slice(slideIndex * 2, slideIndex * 2 + 2).map((review) => (
-                                            <Card key={review.id} className="hover:shadow-md transition-shadow">
-                                                <CardContent className="p-6">
-                                                    <div className="flex items-start justify-between mb-4">
-                                                        <div className="flex items-center gap-3">
-                                                            <div className="bg-primary/10 p-1 rounded-full">
-                                                                <LuUser className="h-4 w-4 text-primary" />
-                                                            </div>
-                                                            <div>
-                                                                <h4 className="font-semibold text-foreground font-['Roboto']">{review.name}</h4>
-                                                            </div>
-                                                        </div>
-                                                        <div className="flex">
-                                                            {renderStars(review.rating)}
-                                                        </div>
-                                                    </div>
-
-                                                    <h5 className="font-medium text-foreground mb-2 font-['Roboto']">{review.title}</h5>
-                                                    <p className="text-muted-foreground leading-relaxed font-['Roboto']">{review.comment}</p>
-                                                </CardContent>
-                                            </Card>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Desktop Navigation Arrows */}
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white shadow-md"
-                        onClick={prevDesktopSlide}
-                        disabled={currentDesktopSlide === 0}
-                    >
-                        <LuChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white shadow-md"
-                        onClick={nextDesktopSlide}
-                        disabled={currentDesktopSlide === Math.ceil(reviews.length / 2) - 1}
-                    >
-                        <LuChevronRight className="h-4 w-4" />
-                    </Button>
-
-                    {/* Desktop Scroll Indicator */}
-                    <div className="flex justify-center mt-6 gap-2">
-                        {Array.from({ length: Math.ceil(reviews.length / 2) }, (_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => setCurrentDesktopSlide(index)}
-                                className={`w-3 h-3 rounded-full transition-colors ${index === currentDesktopSlide ? 'bg-primary' : 'bg-primary/30'
-                                    }`}
-                            />
-                        ))}
-                    </div>
-                </div>
-
-                {/* Mobile Horizontal Slider - One Review at a Time */}
-                <div className="md:hidden relative">
-                    <div className="overflow-hidden">
-                        <div
-                            className="flex transition-transform duration-300 ease-in-out"
-                            style={{ transform: `translateX(-${currentReview * 100}%)` }}
-                        >
-                            {reviews.map((review) => (
-                                <div key={review.id} className="flex-shrink-0 w-full px-4">
-                                    <Card className="hover:shadow-md transition-shadow mx-auto w-fit max-w-sm">
-                                        <CardContent className="p-4 flex flex-col">
-                                            <div className="flex items-start justify-between mb-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="bg-primary/10 p-1 rounded-full">
-                                                        <LuUser className="h-4 w-4 text-primary" />
-                                                    </div>
-                                                    <div>
-                                                        <h4 className="font-semibold text-foreground font-['Roboto']">{review.name}</h4>
-                                                    </div>
-                                                </div>
-                                                <div className="flex">
-                                                    {renderStars(review.rating)}
-                                                </div>
-                                            </div>
-
-                                            <h5 className="font-medium text-foreground mb-2 font-['Roboto']">{review.title}</h5>
-                                            <p className="text-muted-foreground leading-relaxed text-sm font-['Roboto']">{review.comment}</p>
-                                        </CardContent>
-                                    </Card>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Navigation Arrows */}
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white shadow-md"
-                        onClick={prevReview}
-                        disabled={currentReview === 0}
-                    >
-                        <LuChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <Button
-                        variant="outline"
-                        size="icon"
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-white/80 hover:bg-white shadow-md"
-                        onClick={nextReview}
-                        disabled={currentReview === reviews.length - 1}
-                    >
-                        <LuChevronRight className="h-4 w-4" />
-                    </Button>
-
-                    {/* Scroll Indicator */}
-                    <div className="flex justify-center mt-6 gap-2">
-                        {reviews.map((_, index) => (
-                            <button
-                                key={index}
-                                onClick={() => setCurrentReview(index)}
-                                className={`w-3 h-3 rounded-full transition-colors ${index === currentReview ? 'bg-primary' : 'bg-primary/30'
-                                    }`}
-                            />
-                        ))}
-                    </div>
-                </div>
-
-                {/* View More Reviews */}
-                <div className="text-center mt-8">
-                    <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground" asChild>
-                        <Link to="/reviews">View All Reviews</Link>
-                    </Button>
-                </div>
+      <section className="py-16 bg-muted/50">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-300 rounded w-3/4 mx-auto mb-4"></div>
+              <div className="h-4 bg-gray-300 rounded w-2/3 mx-auto"></div>
             </div>
-        </section >
+          </div>
+        </div>
+      </section>
     );
+  }
+
+  return (
+    <section className="py-16 bg-muted/50">
+      <div className="container mx-auto px-4">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-medical-heading">
+            Client Reviews
+          </h2>
+          <p className="text-medical-body text-lg max-w-2xl mx-auto mb-6">
+            See what healthcare professionals say about our medical supplies and services
+          </p>
+
+          {/* Rating Summary */}
+          {totalReviews > 0 && (
+            <div className="flex items-center justify-center gap-4 mb-8">
+              <div className="text-center">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-3xl font-bold text-primary">{averageRating.toFixed(1)}</span>
+                  <div className="flex">
+                    {renderStars(Math.round(averageRating))}
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  Based on {totalReviews} reviews
+                </p>
+              </div>
+            </div>
+          )}
+
+          <Button
+            onClick={() => setShowForm(!showForm)}
+            className="bg-secondary hover:bg-secondary-light text-secondary-foreground"
+          >
+            <MessageSquare className="mr-2 h-4 w-4" />
+            Write a Review
+          </Button>
+        </div>
+
+        {/* Review Form */}
+        {showForm && (
+          <Card className="max-w-2xl mx-auto mb-12">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <MessageSquare className="h-5 w-5 text-primary" />
+                Share Your Experience
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Name *</label>
+                    <Input
+                      value={formData.name}
+                      onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                      required
+                      placeholder="Your full name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Email *</label>
+                    <Input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                      required
+                      placeholder="your@email.com"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Rating *</label>
+                  <div className="flex gap-1">
+                    {Array.from({ length: 5 }, (_, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setFormData(prev => ({ ...prev, rating: i + 1 }))}
+                        className="p-1"
+                      >
+                        <Star
+                          className={`h-6 w-6 ${i < formData.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+                            }`}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Review Title *</label>
+                  <Input
+                    value={formData.title}
+                    onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+                    required
+                    placeholder="Brief title for your review"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Your Review *</label>
+                  <Textarea
+                    value={formData.comment}
+                    onChange={(e) => setFormData(prev => ({ ...prev, comment: e.target.value }))}
+                    required
+                    placeholder="Share your experience with our products and services..."
+                    rows={4}
+                  />
+                </div>
+
+                <div className="flex gap-3">
+                  <Button
+                    type="submit"
+                    className="bg-primary hover:bg-primary-light"
+                    disabled={submitting}
+                  >
+                    {submitting ? "Submitting..." : "Submit Review"}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowForm(false)}
+                    disabled={submitting}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Reviews Grid */}
+        {reviews.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {reviews.slice(0, 4).map((review) => (
+              <Card key={review._id} className="hover:shadow-md transition-shadow">
+                <CardContent className="p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-primary/10 p-2 rounded-full">
+                        <User className="h-5 w-5 text-primary" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-semibold text-foreground">{review.name}</h4>
+                          {review.isApproved && (
+                            <Badge variant="secondary" className="text-xs">
+                              Verified
+                            </Badge>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Calendar className="h-3 w-3" />
+                          {formatDate(review.createdAt)}
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex">
+                      {renderStars(review.rating)}
+                    </div>
+                  </div>
+
+                  <h5 className="font-medium text-foreground mb-2">{review.title}</h5>
+                  <p className="text-muted-foreground leading-relaxed">{review.comment}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <MessageSquare className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 mb-2">No Reviews Yet</h3>
+            <p className="text-gray-500">Be the first to share your experience!</p>
+          </div>
+        )}
+
+        {/* View More Reviews */}
+        {reviews.length > 4 && (
+          <div className="text-center mt-8">
+            <Link to="/reviews">
+              <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-primary-foreground">
+                View All Reviews ({reviews.length})
+              </Button>
+            </Link>
+          </div>
+        )}
+      </div>
+    </section>
+  );
 };
 
 export default Reviews;

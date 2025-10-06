@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Inter:wght@300;400;500;600;700&family=Dancing+Script:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -68,45 +70,8 @@
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
-  .dark {
-    /* Dark mode with medical theme */
-    --background: 220 20% 8%;
-    --foreground: 0 0% 95%;
-
-    --card: 220 20% 10%;
-    --card-foreground: 0 0% 95%;
-
-    --popover: 220 20% 10%;
-    --popover-foreground: 0 0% 95%;
-
-    --primary: 142 60% 35%;
-    --primary-foreground: 220 20% 8%;
-
-    --secondary: 0 70% 55%;
-    --secondary-foreground: 220 20% 8%;
-
-    --accent: 220 70% 40%;
-    --accent-foreground: 0 0% 95%;
-
-    --muted: 220 15% 15%;
-    --muted-foreground: 220 10% 65%;
-
-    --destructive: 0 70% 55%;
-    --destructive-foreground: 0 0% 95%;
-
-    --border: 220 15% 20%;
-    --input: 220 15% 20%;
-    --ring: 142 60% 35%;
-
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
+  /* .dark mode removed */
+  /* Removed orphaned dark mode variables */
 }
 
 @layer base {
@@ -117,7 +82,26 @@
   body {
     @apply bg-background text-foreground;
     font-feature-settings: "rlig" 1, "calt" 1;
-    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Cool fonts for hero titles */
+  .font-hero-title {
+    font-family: 'Dancing Script', cursive;
+    font-weight: 700;
+    font-display: swap;
+  }
+
+  .font-hero-subtitle {
+    font-family: 'Playfair Display', serif;
+    font-weight: 600;
+    font-display: swap;
+  }
+
+  .font-hero-subsub {
+    font-family: 'Playfair Display', serif;
+    font-weight: 500;
+    font-display: swap;
   }
 
   /* Medical-grade typography */
@@ -129,41 +113,174 @@
     @apply text-muted-foreground leading-relaxed;
   }
 
-  /* Mobile-specific utilities */
+  /* Mobile-first responsive utilities */
   .safe-area-pb {
-    padding-bottom: env(safe-area-inset-bottom, 0);
-  }
-}
-
-/* Custom animations for medical precision */
-@keyframes pulse-gentle {
-
-  0%,
-  100% {
-    opacity: 1;
+    padding-bottom: env(safe-area-inset-bottom, 0.5rem);
   }
 
-  50% {
-    opacity: 0.8;
-  }
-}
-
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
+  .safe-area-pt {
+    padding-top: env(safe-area-inset-top, 0);
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  /* Mobile containers */
+  .mobile-container {
+    @apply px-4 mx-auto max-w-5xl;
   }
-}
 
-.animate-pulse-gentle {
-  animation: pulse-gentle 2s ease-in-out infinite;
-}
+  .mobile-section {
+    @apply py-8 sm:py-12 md:py-16 lg:py-20;
+  }
 
-.animate-slide-up {
-  animation: slide-up 0.6s ease-out;
+  /* Mobile typography scale */
+  .text-mobile-xs {
+    @apply text-xs leading-4;
+  }
+
+  .text-mobile-sm {
+    @apply text-sm leading-5;
+  }
+
+  .text-mobile-base {
+    @apply text-base leading-6;
+  }
+
+  .text-mobile-lg {
+    @apply text-lg leading-7 sm:text-xl sm:leading-8;
+  }
+
+  .text-mobile-xl {
+    @apply text-xl leading-8 sm:text-2xl sm:leading-9;
+  }
+
+  .text-mobile-2xl {
+    @apply text-2xl leading-9 sm:text-3xl sm:leading-10;
+  }
+
+  .text-mobile-3xl {
+    @apply text-3xl leading-10 sm:text-4xl sm:leading-none;
+  }
+
+  .text-mobile-4xl {
+    @apply text-4xl leading-none sm:text-5xl;
+  }
+
+  /* Mobile touch targets */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+
+  /* Mobile spacing */
+  .mobile-spacing-xs {
+    @apply space-y-2 sm:space-y-3;
+  }
+
+  .mobile-spacing-sm {
+    @apply space-y-3 sm:space-y-4;
+  }
+
+  .mobile-spacing-md {
+    @apply space-y-4 sm:space-y-6;
+  }
+
+  /* Removed empty ruleset .mobile-spacing-lg */
+
+  /* Custom animations for medical precision */
+  @keyframes pulse-gentle {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.8;
+    }
+  }
+
+  @keyframes slide-up {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-pulse-gentle {
+    animation: pulse-gentle 2s ease-in-out infinite;
+  }
+
+  .animate-slide-up {
+    animation: slide-up 0.6s ease-out;
+  }
+
+  /* Mobile Navigation Styles */
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .mb-mobile-nav {
+    margin-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Touch target improvements */
+  .touch-manipulation {
+    touch-action: manipulation;
+  }
+
+  /* Mobile-first responsive design */
+  @media (max-width: 1023px) {
+    body {
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    main {
+      padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+    }
+  }
+
+  /* Prevent iOS bounce scrolling on mobile nav */
+  .mobile-nav-fixed {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+  }
+
+  /* Enhanced mobile button styles */
+  .mobile-nav-button {
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+  }
+
+  /* Line clamp utilities for text truncation */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+  }
 }

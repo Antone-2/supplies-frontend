@@ -1,8 +1,9 @@
 // Seed script for products
-const mongoose = require('mongoose');
-require('dotenv').config({ path: './.env' });
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+dotenv.config({ path: './.env' });
 
-const Product = require('./Database/models/product.model');
+import Product from './Database/models/product.model.js';
 
 const products = [
     {
