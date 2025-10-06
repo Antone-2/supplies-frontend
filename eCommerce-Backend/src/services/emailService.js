@@ -21,14 +21,14 @@ const createTransporter = () => {
             // Don't fail on invalid certificates (for development)
             rejectUnauthorized: false
         },
-        debug: process.env.NODE_ENV === 'development', // Enable debug in development
-        logger: process.env.NODE_ENV === 'development' // Enable logging in development
+        debug: process.env.NODE_ENV, // Enable debug in development
+        logger: process.env.NODE_ENV  // Enable logging in development
     });
 };
 
 // Base email template
 const getEmailTemplate = (title, content) => {
-    const logoUrl = process.env.LOGO_URL || 'https://medhelmsupplies.co.ke/logo.png';
+    const logoUrl = process.env.LOGO_URL;
     return `
     <!DOCTYPE html>
     <html lang="en">
@@ -58,7 +58,7 @@ const getEmailTemplate = (title, content) => {
             </div>
             <div class="footer">
                 <p>&copy; 2025 Medhelm Supplies. All rights reserved.</p>
-                <p>Contact: ${process.env.COMPANY_EMAIL || 'info@medhelmsupplies.co.ke'} | ${process.env.COMPANY_PHONE || '+254 123 456 789'}</p>
+                <p>Contact: ${process.env.COMPANY_EMAIL} | ${process.env.COMPANY_PHONE}</p>
             </div>
         </div>
     </body>
@@ -71,14 +71,14 @@ const sendEmail = async (toEmail, subject, htmlContent) => {
     try {
         // Try Brevo first - only if API key is valid (not placeholder)
         if (process.env.BREVO_API_KEY &&
-            process.env.BREVO_API_KEY !== 'xkeysib-2ZDmSPEnOXKMIVA0-xyz123' &&
+            process.env.BREVO_API_KEY &&
             !process.env.BREVO_API_KEY.includes('xyz')) {
             console.log('🔑 Attempting Brevo API with key:', process.env.BREVO_API_KEY.substring(0, 20) + '...');
             const apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
             const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
             sendSmtpEmail.subject = subject;
             sendSmtpEmail.htmlContent = htmlContent;
-            sendSmtpEmail.sender = { name: process.env.COMPANY_NAME || 'Medhelm Supplies', email: process.env.EMAIL_FROM || 'no-reply@medhelmsupplies.co.ke' };
+            sendSmtpEmail.sender = { name: process.env.COMPANY_NAME || 'Medhelm Supplies', email: process.env.EMAIL_FROM };
             sendSmtpEmail.to = [{ email: toEmail }];
             console.log('📧 Sending email via Brevo API to:', toEmail);
             await apiInstance.sendTransacEmail(sendSmtpEmail);

@@ -48,9 +48,9 @@ const ForgotPassword = () => {
     return (
         <>
             <SEOHead
-                title="Forgot Password - MEDHELM Supplies Ltd"
-                description="Reset your MEDHELM Supplies account password."
-                keywords="forgot password, reset password, MEDHELM supplies"
+                title="Forgot Password - Medhelm Supplies"
+                description="Reset your Medhelm Supplies account password."
+                keywords="forgot password, reset password, Medhelm Supplies"
             />
 
             <div className="min-h-screen flex items-center justify-center bg-gradient-subtle p-4">

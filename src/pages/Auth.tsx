@@ -52,7 +52,7 @@ const Auth = () => {
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.email || !formData.password) {
       toast.error('Please fill in all fields');
       return;
@@ -65,7 +65,7 @@ const Auth = () => {
       });
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Please check your credentials and try again.';
-      
+
       // Special handling for unverified email
       if (errorMessage.includes('verify your email')) {
         toast.error('Account Not Verified', {
@@ -81,19 +81,19 @@ const Auth = () => {
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!formData.fullName || !formData.email || !formData.password || !formData.confirmPassword) {
       toast.error('Please fill in all fields');
       return;
     }
-    
+
     if (formData.password !== formData.confirmPassword) {
       toast.error('Passwords do not match', {
         description: 'Please make sure both passwords are identical.',
       });
       return;
     }
-    
+
     try {
       await register({
         email: formData.email,
@@ -156,9 +156,9 @@ const Auth = () => {
   return (
     <>
       <SEOHead
-        title="Sign In - MEDHELM Supplies Ltd"
-        description="Sign in to your MEDHELM Supplies account to access your orders, wishlist, and account settings."
-        keywords="sign in, login, account, MEDHELM supplies"
+        title="Sign In - Medhelm Supplies"
+        description="Sign in to your Medhelm Supplies account to access your orders, wishlist, and account settings."
+        keywords="sign in, login, account, Medhelm Supplies"
       />
 
       <div className="min-h-screen flex items-center justify-center bg-gradient-subtle p-4">

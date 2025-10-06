@@ -33,7 +33,7 @@ if (config.SENTRY.DSN &&
     Sentry.init({
         dsn: config.SENTRY.DSN,
         environment: config.SENTRY.ENVIRONMENT,
-        tracesSampleRate: config.NODE_ENV === 'production' ? 0.1 : 1.0,
+        tracesSampleRate: config.NODE_ENV ? 0.1 : 1.0,
     });
     app.use(Sentry.Handlers.requestHandler());
     app.use(Sentry.Handlers.tracingHandler());
@@ -163,7 +163,7 @@ app.get('/api/health', async (req, res) => {
             timestamp: new Date().toISOString(),
             uptime: Math.floor(uptime),
             responseTime: `${responseTime}ms`,
-            version: config.NODE_ENV === 'production' ? '1.0.0' : process.env.npm_package_version || '1.0.0',
+            version: config.NODE_ENV ? '1.0.0' : process.env.npm_package_version || '1.0.0',
             environment: config.NODE_ENV,
             checks
         });
@@ -214,7 +214,7 @@ const { getMetrics, requestMetrics } = require('./src/middleware/monitoring');
 // Metrics endpoint (protected in production)
 app.get('/api/metrics', (req, res) => {
     // In production, add authentication middleware here
-    if (config.NODE_ENV === 'production') {
+    if (config.NODE_ENV) {
         // Basic protection - use proper auth in real production
         const authHeader = req.headers.authorization;
         if (!authHeader || authHeader !== `Bearer ${process.env.METRICS_TOKEN || 'metrics-secret'}`) {
@@ -232,8 +232,8 @@ const MONGO_URI = config.MONGO_URI;
 // Security & parsing middleware
 app.set('trust proxy', 1); // if behind nginx / load balancer
 app.use(helmet({
-    contentSecurityPolicy: config.NODE_ENV === 'production' ? undefined : false,
-    crossOriginEmbedderPolicy: config.NODE_ENV === 'production' ? undefined : false
+    contentSecurityPolicy: config.NODE_ENV ? undefined : false,
+    crossOriginEmbedderPolicy: config.NODE_ENV ? undefined : false
 }));
 
 // Production-ready CORS policy
@@ -260,7 +260,7 @@ app.use('/api/v1/payment', rateLimit({
 }));
 
 // Enforce HTTPS in production
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV) {
     app.use((req, res, next) => {
         if (req.method !== 'OPTIONS' && req.headers['x-forwarded-proto'] !== 'https') {
             return res.redirect('https://' + req.headers.host + req.url);
@@ -275,9 +275,9 @@ app.use(session({
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: config.MONGO_URI }),
     cookie: {
-        secure: config.NODE_ENV === 'production',
+        secure: config.NODE_ENV,
         httpOnly: true,
-        sameSite: config.NODE_ENV === 'production' ? 'strict' : 'lax',
+        sameSite: config.NODE_ENV ? 'strict' : 'lax',
         maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     }
 }));
@@ -298,7 +298,7 @@ const limiter = rateLimit({
     max: config.RATE_LIMIT.MAX_REQUESTS,
     standardHeaders: true,
     legacyHeaders: false,
-    skip: (req, res) => config.NODE_ENV === 'test', // Skip rate limiting in tests
+    skip: (req, res) => config.NODE_ENV, // Skip rate limiting in tests
     handler: (req, res) => {
         logger.warn('Rate limit exceeded', { ip: req.ip, path: req.path });
         res.status(429).json({

@@ -149,7 +149,7 @@ const Profile = () => {
                   <Input
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
-                    placeholder="+254712345678"
+                    placeholder="Your phone number"
                   />
                 </div>
 

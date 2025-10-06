@@ -75,7 +75,7 @@ const Footer = () => {
                   className="hover:bg-white/10 p-2"
                   asChild
                 >
-                  <a href={import.meta.env.VITE_SOCIAL_FACEBOOK || "https://facebook.com/medhelmsupplies"} target="_blank" rel="noopener noreferrer">
+                  <a href={import.meta.env.VITE_SOCIAL_FACEBOOK} target="_blank" rel="noopener noreferrer">
                     <Facebook className="h-4 w-4" />
                   </a>
                 </Button>
@@ -85,7 +85,7 @@ const Footer = () => {
                   className="hover:bg-white/10 p-2"
                   asChild
                 >
-                  <a href={import.meta.env.VITE_SOCIAL_TWITTER || "https://twitter.com/medhelmsupplies"} target="_blank" rel="noopener noreferrer">
+                  <a href={import.meta.env.VITE_SOCIAL_TWITTER} target="_blank" rel="noopener noreferrer">
                     <XIcon className="h-4 w-4" />
                   </a>
                 </Button>
@@ -95,7 +95,7 @@ const Footer = () => {
                   className="hover:bg-white/10 p-2"
                   asChild
                 >
-                  <a href={import.meta.env.VITE_SOCIAL_INSTAGRAM || "https://instagram.com/medhelmsupplies"} target="_blank" rel="noopener noreferrer">
+                  <a href={import.meta.env.VITE_SOCIAL_INSTAGRAM} target="_blank" rel="noopener noreferrer">
                     <Instagram className="h-4 w-4" />
                   </a>
                 </Button>
@@ -105,7 +105,7 @@ const Footer = () => {
                   className="hover:bg-white/10 p-2"
                   asChild
                 >
-                  <a href={import.meta.env.VITE_SOCIAL_LINKEDIN || "https://linkedin.com/company/medhelmsupplies"} target="_blank" rel="noopener noreferrer">
+                  <a href={import.meta.env.VITE_SOCIAL_LINKEDIN} target="_blank" rel="noopener noreferrer">
                     <Linkedin className="h-4 w-4" />
                   </a>
                 </Button>
