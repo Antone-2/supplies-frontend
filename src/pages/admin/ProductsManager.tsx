@@ -63,7 +63,7 @@ const ProductsManager = () => {
   };
 
   const getStatusBadge = (product: Product) => {
-    if (!product.inStock && product.countInStock <= 0) {
+    if (!product.inStock) {
       return <Badge variant="destructive">Out of Stock</Badge>;
     }
     if (product.isNew) {
@@ -176,7 +176,7 @@ const ProductsManager = () => {
               <div>
                 <p className="text-sm text-muted-foreground">In Stock</p>
                 <p className="text-2xl font-bold text-success">
-                  {products.filter(p => p.countInStock > 0).length}
+                  {products.filter(p => p.inStock).length}
                 </p>
               </div>
               <Badge variant="secondary" className="bg-success/10 text-success">
@@ -191,7 +191,7 @@ const ProductsManager = () => {
               <div>
                 <p className="text-sm text-muted-foreground">Out of Stock</p>
                 <p className="text-2xl font-bold text-destructive">
-                  {products.filter(p => p.countInStock <= 0).length}
+                  {products.filter(p => !p.inStock).length}
                 </p>
               </div>
               <Badge variant="destructive">
@@ -298,14 +298,9 @@ const ProductsManager = () => {
                     <TableCell>
                       <div className="space-y-1">
                         <p className="font-medium">{formatCurrency(product.price)}</p>
-                        {product.originalPrice && product.originalPrice > product.price && (
+                        {product.originalPrice > product.price && (
                           <p className="text-xs text-muted-foreground line-through">
                             {formatCurrency(product.originalPrice)}
-                          </p>
-                        )}
-                        {product.discount > 0 && (
-                          <p className="text-xs text-green-600">
-                            -{product.discount}% off
                           </p>
                         )}
                       </div>
@@ -379,9 +374,9 @@ const ProductsManager = () => {
                               />
                               <input
                                 type="number"
-                                placeholder="Stock Count"
-                                value={formData.countInStock || ''}
-                                onChange={e => setFormData(f => ({ ...f, countInStock: Number(e.target.value) }))}
+                                placeholder="Original Price"
+                                value={formData.originalPrice || ''}
+                                onChange={e => setFormData(f => ({ ...f, originalPrice: Number(e.target.value) }))}
                                 className="w-full border rounded p-2"
                               />
                               <input
@@ -389,13 +384,6 @@ const ProductsManager = () => {
                                 placeholder="Discount (%)"
                                 value={formData.discount || ''}
                                 onChange={e => setFormData(f => ({ ...f, discount: Number(e.target.value) }))}
-                                className="w-full border rounded p-2"
-                              />
-                              <input
-                                type="text"
-                                placeholder="SKU"
-                                value={formData.sku || ''}
-                                onChange={e => setFormData(f => ({ ...f, sku: e.target.value }))}
                                 className="w-full border rounded p-2"
                               />
                               <input
@@ -414,10 +402,10 @@ const ProductsManager = () => {
                               <label className="flex items-center gap-2">
                                 <input
                                   type="checkbox"
-                                  checked={formData.isFeatured || false}
-                                  onChange={e => setFormData(f => ({ ...f, isFeatured: e.target.checked }))}
+                                  checked={formData.inStock || false}
+                                  onChange={e => setFormData(f => ({ ...f, inStock: e.target.checked }))}
                                 />
-                                Featured Product
+                                In Stock
                               </label>
                               <label className="flex items-center gap-2">
                                 <input
@@ -484,9 +472,9 @@ const ProductsManager = () => {
                               />
                               <input
                                 type="number"
-                                placeholder="Stock Count"
-                                value={formData.countInStock || ''}
-                                onChange={e => setFormData(f => ({ ...f, countInStock: Number(e.target.value) }))}
+                                placeholder="Original Price"
+                                value={formData.originalPrice || ''}
+                                onChange={e => setFormData(f => ({ ...f, originalPrice: Number(e.target.value) }))}
                                 className="w-full border rounded p-2"
                               />
                               <input
@@ -494,13 +482,6 @@ const ProductsManager = () => {
                                 placeholder="Discount (%)"
                                 value={formData.discount || ''}
                                 onChange={e => setFormData(f => ({ ...f, discount: Number(e.target.value) }))}
-                                className="w-full border rounded p-2"
-                              />
-                              <input
-                                type="text"
-                                placeholder="SKU"
-                                value={formData.sku || ''}
-                                onChange={e => setFormData(f => ({ ...f, sku: e.target.value }))}
                                 className="w-full border rounded p-2"
                               />
                               <input
@@ -519,10 +500,10 @@ const ProductsManager = () => {
                               <label className="flex items-center gap-2">
                                 <input
                                   type="checkbox"
-                                  checked={formData.isFeatured || false}
-                                  onChange={e => setFormData(f => ({ ...f, isFeatured: e.target.checked }))}
+                                  checked={formData.inStock || false}
+                                  onChange={e => setFormData(f => ({ ...f, inStock: e.target.checked }))}
                                 />
-                                Featured Product
+                                In Stock
                               </label>
                               <label className="flex items-center gap-2">
                                 <input

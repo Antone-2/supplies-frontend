@@ -157,7 +157,7 @@ const Footer = () => {
 
                 <div className="flex items-center gap-3">
                   <Mail className="h-5 w-5 text-white" />
-                  <p className="text-primary-foreground/80">{import.meta.env.VITE_COMPANY_EMAIL || "info@medhelmsupplies.co.ke"}</p>
+                  <p className="text-primary-foreground/80">{import.meta.env.VITE_COMPANY_EMAIL}</p>
                 </div>
 
                 <div className="flex items-start gap-3">

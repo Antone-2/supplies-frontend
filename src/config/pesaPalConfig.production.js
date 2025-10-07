@@ -2,7 +2,7 @@
 const pesaPalConfig = {
     // API Configuration
     api: {
-        baseUrl: process.env.PESAPAL_BASE_URL || 'https://pay.pesapal.com/v3/api',
+        baseUrl: process.env.PESAPAL_BASE_URL,
         consumerKey: process.env.PESAPAL_CONSUMER_KEY,
         consumerSecret: process.env.PESAPAL_CONSUMER_SECRET
     },
@@ -28,50 +28,50 @@ const pesaPalConfig = {
 
     // Environment Detection
     environment: process.env.NODE_ENV === 'production' ? 'live' : 'sandbox',
-    
+
     // Production/Development specific settings
-    isProduction: function() {
+    isProduction: function () {
         return process.env.NODE_ENV === 'production';
     },
 
     // Get appropriate URLs based on environment
-    getCallbackUrl: function() {
+    getCallbackUrl: function () {
         if (this.isProduction()) {
             if (!process.env.BACKEND_URL) {
                 throw new Error('BACKEND_URL environment variable is required in production');
             }
             return this.payment.callbackUrl || `${process.env.BACKEND_URL}/api/v1/payments/pesapal/callback`;
         } else {
-            return this.payment.callbackUrl || `${process.env.BACKEND_URL || 'http://localhost:5000'}/api/v1/payments/pesapal/callback`;
+            return this.payment.callbackUrl || `${process.env.BACKEND_URL}/api/v1/payments/pesapal/callback`;
         }
     },
 
-    getNotificationUrl: function() {
+    getNotificationUrl: function () {
         if (this.isProduction()) {
             if (!process.env.BACKEND_URL) {
                 throw new Error('BACKEND_URL environment variable is required in production');
             }
             return this.payment.notificationUrl || `${process.env.BACKEND_URL}/api/v1/payments/pesapal/ipn`;
         } else {
-            return this.payment.notificationUrl || `${process.env.BACKEND_URL || 'http://localhost:5000'}/api/v1/payments/pesapal/ipn`;
+            return this.payment.notificationUrl || `${process.env.BACKEND_URL}/api/v1/payments/pesapal/ipn`;
         }
     },
 
-    getRedirectUrl: function() {
+    getRedirectUrl: function () {
         if (this.isProduction()) {
             if (!process.env.FRONTEND_URL) {
                 throw new Error('FRONTEND_URL environment variable is required in production');
             }
             return this.payment.redirectUrl || `${process.env.FRONTEND_URL}/payment-success`;
         } else {
-            return this.payment.redirectUrl || `${process.env.FRONTEND_URL || 'http://localhost:3000'}/payment-success`;
+            return this.payment.redirectUrl || `${process.env.FRONTEND_URL}/payment-success`;
         }
     },
 
     // Validation helper
-    validateConfig: function() {
+    validateConfig: function () {
         const errors = [];
-        
+
         // Required environment variables
         if (!this.api.consumerKey) {
             errors.push('PESAPAL_CONSUMER_KEY environment variable is required');
@@ -88,12 +88,12 @@ const pesaPalConfig = {
             if (!this.payment.ipnId) {
                 errors.push('PESAPAL_IPN_ID is required for production environment');
             }
-            
+
             // Validate HTTPS URLs in production
             const callbackUrl = this.getCallbackUrl();
             const notificationUrl = this.getNotificationUrl();
             const redirectUrl = this.getRedirectUrl();
-            
+
             if (callbackUrl && !callbackUrl.startsWith('https://')) {
                 errors.push('PESAPAL_CALLBACK_URL must use HTTPS in production');
             }
@@ -113,7 +113,7 @@ const pesaPalConfig = {
         if (errors.length > 0) {
             console.error('❌ Pesapal Configuration Errors:');
             errors.forEach(error => console.error(`   - ${error}`));
-            
+
             if (this.isProduction()) {
                 // In production, throw error to prevent startup with invalid config
                 throw new Error('Invalid PesaPal configuration for production environment');
@@ -127,12 +127,12 @@ const pesaPalConfig = {
         console.log(`   Base URL: ${this.api.baseUrl}`);
         console.log(`   Callback URL: ${this.getCallbackUrl()}`);
         console.log(`   IPN URL: ${this.getNotificationUrl()}`);
-        
+
         return true;
     },
 
     // Amount validation
-    validateAmount: function(amount) {
+    validateAmount: function (amount) {
         const numAmount = Number(amount);
         if (isNaN(numAmount) || numAmount <= 0) {
             return { valid: false, error: 'Amount must be a positive number' };
@@ -147,9 +147,9 @@ const pesaPalConfig = {
     },
 
     // Build PesaPal order object
-    buildOrderRequest: function(orderData) {
+    buildOrderRequest: function (orderData) {
         const { orderId, amount, description, email, phone, firstName, lastName } = orderData;
-        
+
         // Validate amount
         const amountValidation = this.validateAmount(amount);
         if (!amountValidation.valid) {

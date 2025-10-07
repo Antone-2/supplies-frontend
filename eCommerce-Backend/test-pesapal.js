@@ -15,7 +15,7 @@ async function testPesaPal() {
         console.log('Token length:', token ? token.length : 'null');
 
         console.log('\n💳 Testing Payment Initiation...');
-        const result = await initiatePesapalPayment(
+        const firstResult = await initiatePesapalPayment(
             'test_order_123',
             100,
             '+254712345678',

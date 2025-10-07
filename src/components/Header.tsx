@@ -39,7 +39,7 @@ const Header = () => {
             </div>
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4" />
-              <span className="hidden md:inline">{import.meta.env.VITE_COMPANY_EMAIL || "info@medhelmsupplies.co.ke"}</span>
+              <span className="hidden md:inline">{import.meta.env.VITE_COMPANY_EMAIL}</span>
               <span className="md:hidden">Email Us</span>
             </div>
           </div>

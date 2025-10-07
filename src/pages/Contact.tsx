@@ -31,7 +31,7 @@ const Contact = () => {
       icon: Mail,
       title: "Email",
       description: "Email us",
-      contact: import.meta.env.VITE_COMPANY_EMAIL || "info@medhelmsupplies.co.ke",
+      contact: import.meta.env.VITE_COMPANY_EMAIL,
       availability: "Reply in 24h"
     },
     {

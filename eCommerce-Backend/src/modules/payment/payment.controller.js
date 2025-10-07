@@ -147,7 +147,7 @@ exports.createPesapalPayment = async (req, res) => {
         res.status(statusCode).json({
             success: false,
             message: userMessage,
-            error: process.env.NODE_ENV === 'development' ? err.message : undefined
+            error: process.env.NODE_ENV ? err.message : undefined
         });
     }
 };
@@ -237,8 +237,8 @@ exports.paymentCallback = async (req, res) => {
 
         // Get transaction status
         const baseUrl = process.env.PESAPAL_TEST_MODE === 'true'
-            ? (process.env.PESAPAL_SANDBOX_URL || 'https://cybqa.pesapal.com/pesapalv3/api')
-            : (process.env.PESAPAL_PRODUCTION_URL || 'https://pay.pesapal.com/v3/api');
+            ? (process.env.PESAPAL_SANDBOX_URL)
+            : (process.env.PESAPAL_PRODUCTION_URL);
         const response = await axios.get(
             `${baseUrl}/Transactions/GetTransactionStatus?orderTrackingId=${orderTrackingId}`,
             {

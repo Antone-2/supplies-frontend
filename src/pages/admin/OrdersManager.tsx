@@ -415,7 +415,7 @@ const OrdersManager = () => {
               <div><strong>Items:</strong>
                 <ul className="list-disc pl-5">
                   {selectedOrder.items.map((item, idx) => (
-                    <li key={idx}>{item.name} x {item.quantity} ({formatCurrency(item.price)})</li>
+                    <li key={idx}>{item.productName} x {item.quantity} ({formatCurrency(item.price)})</li>
                   ))}
                 </ul>
               </div>

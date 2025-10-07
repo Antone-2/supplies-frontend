@@ -13,7 +13,7 @@ require('dotenv').config();
  */
 const config = {
     // ======================== ENVIRONMENT ========================
-    NODE_ENV: process.env.NODE_ENV || 'production',
+    NODE_ENV: process.env.NODE_ENV,
 
     // ======================== SERVER CONFIG ========================
     PORT: parseInt(process.env.PORT) || 5000,
@@ -78,7 +78,7 @@ const config = {
     // ======================== MONITORING CONFIG ========================
     SENTRY: {
         DSN: process.env.SENTRY_DSN,
-        ENVIRONMENT: process.env.NODE_ENV || 'development'
+        ENVIRONMENT: process.env.NODE_ENV
     },
 
     // ======================== RATE LIMITING ========================
@@ -112,7 +112,7 @@ function validateConfig() {
     ];
 
     // Additional production requirements
-    if (config.NODE_ENV === 'production') {
+    if (config.NODE_ENV) {
         required.push(
             'EMAIL_HOST',
             'EMAIL_PORT',
