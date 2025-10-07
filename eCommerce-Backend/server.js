@@ -1,3 +1,5 @@
+// Load environment variables from main folder
+require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env') });
 // server.js - Production-ready eCommerce backend
 const express = require('express');
 const mongoose = require('mongoose');

@@ -2,9 +2,9 @@ const axios = require('axios');
 require('dotenv').config();
 
 async function testPesaPalCredentials() {
-    const PESAPAL_BASE_URL = process.env.PESAPAL_TEST_MODE === 'true'
-        ? (process.env.PESAPAL_SANDBOX_URL || 'https://cybqa.pesapal.com/pesapalv3/api')
-        : (process.env.PESAPAL_PRODUCTION_URL || 'https://pay.pesapal.com/v3/api'); const CONSUMER_KEY = process.env.PESAPAL_CONSUMER_KEY;
+    const PESAPAL_BASE_URL = process.env.PESAPAL_TEST_MODE
+        ? (process.env.PESAPAL_SANDBOX_URL)
+        : (process.env.PESAPAL_PRODUCTION_URL); const CONSUMER_KEY = process.env.PESAPAL_CONSUMER_KEY;
     const CONSUMER_SECRET = process.env.PESAPAL_CONSUMER_SECRET;
 
     console.log('🔍 Testing PesaPal Credentials...');

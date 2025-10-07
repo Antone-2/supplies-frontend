@@ -1,6 +1,6 @@
 const fetch = require('node-fetch');
 
-const API_BASE_URL = process.env.API_BASE_URL || 'http://localhost:5000/api/v1';
+const API_BASE_URL = process.env.API_BASE_URL;
 
 async function testNewsletterAPI() {
     console.log('🧪 Enhanced Newsletter Subscription API Testing\n');

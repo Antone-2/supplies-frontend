@@ -27,11 +27,11 @@ const pesaPalConfig = {
     },
 
     // Environment Detection
-    environment: process.env.NODE_ENV === 'production' ? 'live' : 'sandbox',
+    environment: process.env.NODE_ENV ? 'live' : 'sandbox',
 
     // Production/Development specific settings
     isProduction: function () {
-        return process.env.NODE_ENV === 'production';
+        return process.env.NODE_ENV;
     },
 
     // Get appropriate URLs based on environment

@@ -157,7 +157,7 @@ const trackError = (error, context = {}) => {
         timestamp: new Date().toISOString(),
         message: error.message,
         type: errorType,
-        stack: config.NODE_ENV === 'development' ? error.stack : undefined,
+        stack: config.NODE_ENV ? error.stack : undefined,
         context
     };
 
@@ -231,7 +231,7 @@ const monitorHealth = () => {
             const memPercentage = (memUsage.heapUsed / memUsage.heapTotal) * 100;
 
             // Memory usage alert - only in production
-            if (config.NODE_ENV === 'production') {
+            if (config.NODE_ENV) {
                 const memoryThreshold = 85;
                 if (memPercentage > memoryThreshold) {
                     recordAlert('high_memory_usage', {

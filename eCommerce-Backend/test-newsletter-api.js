@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const API_BASE = process.env.API_BASE_URL || 'http://localhost:5000/api/v1';
+const API_BASE = process.env.API_BASE_URL;
 
 async function testNewsletterSubscription() {
     console.log('🧪 Testing Newsletter Subscription API\n');

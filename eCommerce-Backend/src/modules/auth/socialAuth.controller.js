@@ -15,12 +15,13 @@ const googleCallback = [
     async (req, res) => {
         try {
             if (!req.user) throw new Error('No user from Google OAuth');
+            if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET not set in environment');
             const token = jwt.sign(
                 { userId: req.user._id, email: req.user.email, role: req.user.role },
                 process.env.JWT_SECRET,
                 { expiresIn: '7d' }
             );
-            const frontendUrl = process.env.FRONTEND_URL || 'https://medhelmsupplies.co.ke';
+            const frontendUrl = process.env.FRONTEND_URL;
             // Always redirect to homepage with token and provider info
             res.redirect(`${frontendUrl}/?token=${token}&provider=google`);
         } catch (error) {

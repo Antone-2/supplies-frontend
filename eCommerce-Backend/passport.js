@@ -49,7 +49,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
                         avatar: avatar,
                         role: 'customer',
                         isEmailVerified: true,
-                        authProvider: 'google',
+                        authProvider: 'google', // Google OAuth credentials should be loaded from process.env in strategy config
                         createdAt: new Date(),
                         lastLogin: new Date()
                     });

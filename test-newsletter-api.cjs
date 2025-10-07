@@ -8,7 +8,7 @@
 const https = require('https');
 const http = require('http');
 
-const BASE_URL = 'http://localhost:5000'; // Adjust if your server runs on different port
+const BASE_URL = ; // Adjust if your server runs on different port
 const API_ENDPOINT = '/api/v1/newsletter/subscribe';
 
 const testData = {
@@ -20,7 +20,7 @@ const testData = {
 function makeRequest(data) {
     return new Promise((resolve, reject) => {
         const postData = JSON.stringify(data);
-        
+
         const options = {
             hostname: 'localhost',
             port: 5000,
@@ -34,11 +34,11 @@ function makeRequest(data) {
 
         const req = http.request(options, (res) => {
             let responseData = '';
-            
+
             res.on('data', (chunk) => {
                 responseData += chunk;
             });
-            
+
             res.on('end', () => {
                 try {
                     const parsed = JSON.parse(responseData);
@@ -69,18 +69,18 @@ function makeRequest(data) {
 
 async function testNewsletterAPI() {
     console.log('🧪 Testing Newsletter Subscription API...\n');
-    
+
     try {
         console.log('📧 Testing newsletter subscription...');
         console.log('Endpoint:', `${BASE_URL}${API_ENDPOINT}`);
         console.log('Test data:', JSON.stringify(testData, null, 2));
         console.log('');
-        
+
         const response = await makeRequest(testData);
-        
+
         console.log('📊 Response Status:', response.statusCode);
         console.log('📄 Response Data:', JSON.stringify(response.data, null, 2));
-        
+
         if (response.statusCode === 200 || response.statusCode === 201) {
             console.log('✅ Newsletter subscription test PASSED');
         } else if (response.statusCode === 409) {
@@ -92,11 +92,11 @@ async function testNewsletterAPI() {
                 console.log('Raw Response:', response.data);
             }
         }
-        
+
     } catch (error) {
         console.error('❌ Test failed with error:');
         console.error(error.message);
-        
+
         if (error.code === 'ECONNREFUSED') {
             console.log('\n💡 Make sure your backend server is running on port 5000');
             console.log('   Try: cd eCommerce-Backend && npm start');

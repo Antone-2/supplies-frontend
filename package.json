@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && npm run zip",
     "preview": "vite preview",
+    "zip": "powershell Compress-Archive -Path ./dist/* -DestinationPath ./dist.zip",
     "postinstall": "node -e \"try{require('fs').chmodSync('node_modules/.bin/vite',0o755)}catch(e){}\""
   },
   "dependencies": {

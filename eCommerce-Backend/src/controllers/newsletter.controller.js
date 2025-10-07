@@ -121,7 +121,7 @@ exports.subscribe = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Failed to subscribe to newsletter. Please try again.',
-            error: process.env.NODE_ENV === 'development' ? error.message : undefined
+            error: process.env.NODE_ENV ? error.message : undefined
         });
     }
 };
@@ -368,8 +368,8 @@ exports.sendCampaign = async (req, res) => {
 
 // Welcome email function
 const sendWelcomeEmail = async (email, firstName) => {
-    const logoUrl = process.env.LOGO_URL || 'https://medhelmsupplies.co.ke/medhelm-logo.png';
-    const unsubscribeUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/newsletter/unsubscribe?email=${encodeURIComponent(email)}`;
+    const logoUrl = process.env.LOGO_URL;
+    const unsubscribeUrl = `${process.env.FRONTEND_URL}/newsletter/unsubscribe?email=${encodeURIComponent(email)}`;
 
     const welcomeContent = `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; border: 1px solid #eee; border-radius: 8px;">
@@ -399,7 +399,7 @@ const sendWelcomeEmail = async (email, firstName) => {
                 </div>
                 
                 <div style="text-align: center; margin: 30px 0;">
-                    <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/products" 
+                    <a href="${process.env.FRONTEND_URL}/products" 
                        style="display: inline-block; background: #2563eb; color: white; padding: 15px 30px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px;">
                         Browse Our Products
                     </a>
@@ -555,7 +555,7 @@ exports.sendTargetedNewsletter = async (req, res) => {
         const emailPromises = subscribers.map(async subscriber => {
             try {
                 const personalizedContent = content.replace(/\{firstName\}/g, subscriber.firstName || 'Valued Customer');
-                const unsubscribeUrl = `${process.env.FRONTEND_URL || 'http://localhost:3000'}/newsletter/unsubscribe?email=${encodeURIComponent(subscriber.email)}`;
+                const unsubscribeUrl = `${process.env.FRONTEND_URL}/newsletter/unsubscribe?email=${encodeURIComponent(subscriber.email)}`;
 
                 const emailTemplate = `
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto;">

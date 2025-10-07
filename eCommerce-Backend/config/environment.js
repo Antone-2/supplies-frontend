@@ -16,7 +16,7 @@ const config = {
     NODE_ENV: process.env.NODE_ENV,
 
     // ======================== SERVER CONFIG ========================
-    PORT: parseInt(process.env.PORT) || 5000,
+    PORT: parseInt(process.env.PORT),
     BACKEND_URL: process.env.BACKEND_URL,
     FRONTEND_URL: process.env.FRONTEND_URL,
 
@@ -32,8 +32,8 @@ const config = {
     JWT: {
         SECRET: process.env.JWT_SECRET,
         REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
-        EXPIRE: process.env.JWT_EXPIRE || '7d',
-        REFRESH_EXPIRE: process.env.JWT_REFRESH_EXPIRE || '30d'
+        EXPIRE: process.env.JWT_EXPIRE,
+        REFRESH_EXPIRE: process.env.JWT_REFRESH_EXPIRE
     },
 
     // ======================== SESSION CONFIG ========================
@@ -63,8 +63,8 @@ const config = {
         CALLBACK_URL: process.env.PESAPAL_CALLBACK_URL,
         REDIRECT_URL: process.env.PESAPAL_REDIRECT_URL,
         CANCEL_URL: process.env.PESAPAL_CANCEL_URL,
-        TEST_MODE: process.env.PESAPAL_TEST_MODE === 'true',
-        BASE_URL: process.env.PESAPAL_TEST_MODE === 'true'
+        TEST_MODE: process.env.PESAPAL_TEST_MODE,
+        BASE_URL: process.env.PESAPAL_TEST_MODE
             ? process.env.PESAPAL_SANDBOX_URL
             : process.env.PESAPAL_PRODUCTION_URL
     },

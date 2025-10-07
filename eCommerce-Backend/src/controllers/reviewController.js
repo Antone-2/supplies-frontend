@@ -55,12 +55,12 @@ exports.createReview = async (req, res) => {
                     <p><strong>Rating:</strong> ${'⭐'.repeat(rating)} (${rating}/5)</p>
                     <p><strong>Comment:</strong> ${comment}</p>
                 </div>
-                <p>Thank you for choosing MEDHELM!</p>
+                <p>Thank you for choosing Medhelm Supplies!</p>
             </div>
         `;
 
         try {
-            await sendEmail(userEmail, 'Review Submitted - MEDHELM', html);
+            await sendEmail(userEmail, 'Review Submitted - Medhelm Supplies', html);
         } catch (emailError) {
             console.error('Error sending review notification email:', emailError);
             // Don't fail the review creation if email fails

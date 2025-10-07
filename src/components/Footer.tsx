@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Link } from "react-router-dom";
 import {
   Facebook,
   Instagram,
@@ -116,10 +117,10 @@ const Footer = () => {
             <div>
               <h4 className="text-lg font-semibold mb-6 text-white font-playfair">Quick Links</h4>
               <ul className="space-y-3">
-                <li><a href="/" className="text-primary-foreground/80 hover:text-white transition-colors">Home</a></li>
-                <li><a href="/products" className="text-primary-foreground/80 hover:text-white transition-colors">Products</a></li>
-                <li><a href="/categories" className="text-primary-foreground/80 hover:text-white transition-colors">Categories</a></li>
-                <li><a href="/reviews" className="text-primary-foreground/80 hover:text-white transition-colors">Reviews</a></li>
+                <li><Link to="/" className="text-primary-foreground/80 hover:text-white transition-colors">Home</Link></li>
+                <li><Link to="/products" className="text-primary-foreground/80 hover:text-white transition-colors">Products</Link></li>
+                <li><Link to="/categories" className="text-primary-foreground/80 hover:text-white transition-colors">Categories</Link></li>
+                <li><Link to="/reviews" className="text-primary-foreground/80 hover:text-white transition-colors">Reviews</Link></li>
               </ul>
             </div>
 
@@ -127,12 +128,12 @@ const Footer = () => {
             <div>
               <h4 className="text-lg font-semibold mb-6 text-white font-playfair">Customer Service</h4>
               <ul className="space-y-3">
-                <li><a href="/track-order" className="text-primary-foreground/80 hover:text-white transition-colors">Track Your Order</a></li>
-                <li><a href="/returns" className="text-primary-foreground/80 hover:text-white transition-colors">Returns & Refunds</a></li>
-                <li><a href="/delivery-policy" className="text-primary-foreground/80 hover:text-white transition-colors">Delivery Policy</a></li>
-                <li><a href="/terms" className="text-primary-foreground/80 hover:text-white transition-colors">Terms & Conditions</a></li>
-                <li><a href="/privacy" className="text-primary-foreground/80 hover:text-white transition-colors">Privacy Policy</a></li>
-                <li><a href="/cookies" className="text-primary-foreground/80 hover:text-white transition-colors">Cookie Notice</a></li>
+                <li><Link to="/track-order" className="text-primary-foreground/80 hover:text-white transition-colors">Track Your Order</Link></li>
+                <li><Link to="/returns" className="text-primary-foreground/80 hover:text-white transition-colors">Returns & Refunds</Link></li>
+                <li><Link to="/delivery-policy" className="text-primary-foreground/80 hover:text-white transition-colors">Delivery Policy</Link></li>
+                <li><Link to="/terms" className="text-primary-foreground/80 hover:text-white transition-colors">Terms & Conditions</Link></li>
+                <li><Link to="/privacy" className="text-primary-foreground/80 hover:text-white transition-colors">Privacy Policy</Link></li>
+                <li><Link to="/cookies" className="text-primary-foreground/80 hover:text-white transition-colors">Cookie Notice</Link></li>
               </ul>
             </div>
 
