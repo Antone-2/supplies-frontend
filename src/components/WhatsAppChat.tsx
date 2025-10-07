@@ -40,7 +40,7 @@ const WhatsAppChat = () => {
   return (
     <>
       {/* Floating WhatsApp Button - Positioned higher on mobile to avoid bottom nav */}
-      <div className="fixed bottom-20 md:bottom-6 right-6 z-50">
+  <div className="fixed bottom-20 right-4 z-50" style={{ minWidth: '56px' }}>
         <div className="relative">
           {/* Animated ring background */}
           <div className="absolute inset-0 rounded-full bg-green-500/30 animate-ping"></div>

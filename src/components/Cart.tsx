@@ -14,6 +14,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/context/AuthContext';
 import { toast } from 'sonner';
 import { useState } from 'react';
 
@@ -21,6 +22,7 @@ const Cart = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [processingItems, setProcessingItems] = useState<Set<number>>(new Set());
+  const { isAuthenticated } = useAuth();
   const {
     cart,
     wishlist,
@@ -69,24 +71,26 @@ const Cart = () => {
       });
       return;
     }
-
+    // Require authentication
+    if (!isAuthenticated) {
+      toast.error('Authentication Required', {
+        description: 'Please sign in to proceed to checkout.',
+      });
+      navigate('/auth');
+      return;
+    }
     setLoading(true);
-
     try {
       // Calculate total
       const total = cart.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
-
       console.log('Proceeding to checkout with items:', cart);
       console.log('Total amount:', formatPrice(total));
-
       // Show success toast
       toast.success('Proceeding to Checkout', {
         description: `${cart.length} item(s) for ${formatPrice(total)}`,
       });
-
       // Simulate processing time
       await new Promise(resolve => setTimeout(resolve, 1000));
-
       // Navigate to checkout page
       navigate('/checkout');
     } catch (error) {

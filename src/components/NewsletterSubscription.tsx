@@ -138,7 +138,9 @@ const NewsletterSubscription: React.FC<NewsletterSubscriptionProps> = ({
                         onChange={(e) => setEmail(e.target.value)}
                         required
                         disabled={isLoading}
-                        className="flex-1 bg-white"
+                        className="flex-1 bg-white text-black placeholder-gray-400"
+                        autoComplete="email"
+                        autoFocus
                     />
                     <Button
                         type="submit"

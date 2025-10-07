@@ -39,7 +39,7 @@ const Header = () => {
             </div>
             <div className="flex items-center gap-2">
               <Mail className="h-4 w-4" />
-              <span className="hidden md:inline">{import.meta.env.VITE_COMPANY_EMAIL}</span>
+              <span className="hidden md:inline">{import.meta.env.VITE_COMPANY_EMAIL || "info@medhelmsupplies.co.ke"}</span>
               <span className="md:hidden">Email Us</span>
             </div>
           </div>
@@ -57,7 +57,7 @@ const Header = () => {
         <div className="flex items-center justify-between md:hidden">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
-            <img src={medHelmLogo} alt="MEDHELM Supplies" className="h-20 w-20" />
+            <img src={medHelmLogo} alt="MEDHELM Supplies" className="h-14 w-14" />
             <div>
               <h1 className="text-xl font-bold text-primary">MEDHELM</h1>
               <p className="text-sm text-muted-foreground -mt-1">SUPPLIES</p>
@@ -95,7 +95,7 @@ const Header = () => {
         <div className="hidden md:flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3">
-            <img src={medHelmLogo} alt="MEDHELM Supplies" className="h-20 w-20 sm:h-24 sm:w-24" />
+            <img src={medHelmLogo} alt="MEDHELM Supplies" className="h-14 w-14 sm:h-16 sm:w-16" />
             <div className="hidden sm:block">
               <h1 className="text-xl font-bold text-primary">MEDHELM</h1>
               <p className="text-sm text-muted-foreground -mt-1">SUPPLIES</p>

@@ -116,32 +116,32 @@ const Hero = () => {
       <div className="relative z-10 min-h-[75svh] md:min-h-screen flex flex-col justify-center px-4 py-16 md:py-24 max-w-7xl mx-auto overflow-hidden">
         <div className="w-full max-w-full md:w-full ml-0 pr-4 md:pr-0">
           {/* Badge */}
-          <div className="mb-4 text-left ml-0">
+          <div className="mb-5 text-left ml-0">
             <span className="inline-block bg-white/95 backdrop-blur-sm rounded-full px-3 py-1.5 md:px-4 md:py-2 text-xs md:text-sm font-semibold text-gray-900 shadow-lg">
               {heroSlides[currentImageIndex].badge}
             </span>
           </div>
 
           {/* Content */}
-          <div className="animate-slide-up text-left space-y-3 md:space-y-4 ml-0 max-w-full overflow-hidden">
-            <h1 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight md:leading-tight lg:leading-tight ml-0 break-words">
-              <span className="bg-gradient-to-r from-white via-pink-400 to-red-500 bg-clip-text text-transparent drop-shadow-lg ml-0 block">
+          <div className="animate-slide-up text-left space-y-4 md:space-y-6 ml-0 max-w-full overflow-hidden">
+            <h1 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold leading-tight md:leading-tight lg:leading-tight ml-0 break-words mb-3">
+              <span className="bg-gradient-to-r from-white via-pink-400 to-red-500 bg-clip-text text-transparent drop-shadow-lg ml-0 block mb-2">
                 {heroSlides[currentImageIndex].heading}
               </span>
               {heroSlides[currentImageIndex].subheading.map((sub, i) => (
-                <span key={i} className="block bg-gradient-to-r from-red-500 via-pink-500 to-red-600 bg-clip-text text-transparent drop-shadow-md font-extrabold ml-0 break-words">
+                <span key={i} className="block bg-gradient-to-r from-red-500 via-pink-500 to-red-600 bg-clip-text text-transparent drop-shadow-md font-extrabold ml-0 break-words mb-2">
                   {sub}
                 </span>
               ))}
             </h1>
 
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/90 leading-relaxed md:leading-relaxed max-w-full md:max-w-2xl mb-4 md:mb-6 ml-0 break-words">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-white/90 leading-relaxed md:leading-relaxed max-w-full md:max-w-2xl mb-5 md:mb-8 ml-0 break-words">
               {heroSlides[currentImageIndex].description}
             </p>
 
             {/* CTA buttons */}
             {heroSlides[currentImageIndex].cta && (
-              <div className="mb-6 md:mb-8 ml-0">
+              <div className="mb-7 md:mb-10 ml-0">
                 <Button
                   size="default"
                   className="bg-white hover:bg-white/90 text-primary font-semibold px-5 py-2.5 sm:px-6 sm:py-3 md:px-8 md:py-4 rounded-full text-sm sm:text-base md:text-lg shadow-xl hover:shadow-2xl transition-all duration-300 max-w-full"
@@ -154,27 +154,24 @@ const Hero = () => {
             )}
           </div>
 
-          {/* Key features - Mobile: Show current icon only */}
-          <div className="block md:hidden mt-6">
-            <div className="flex items-center justify-center bg-white/12 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20 max-w-full">
-              {(() => {
-                const currentSlide = heroSlides[currentImageIndex];
-                const IconComponent = currentSlide.icon.component;
-                return (
-                  <div className="flex flex-col items-center gap-2 max-w-[120px]">
-                    <div className="bg-white/30 backdrop-blur-sm rounded-full p-4 w-16 h-16 flex items-center justify-center shadow-md">
-                      <IconComponent className="h-8 w-8 text-white" />
-                    </div>
-                    <p className="text-sm font-semibold text-white/95 text-center truncate max-w-full">
-                      {currentSlide.icon.title}
-                    </p>
-                    <p className="text-xs text-white/75 text-center truncate max-w-full">
-                      {currentSlide.icon.subtitle}
-                    </p>
-                  </div>
-                );
-              })()}
-            </div>
+          {/* Key features - Mobile: Show current icon only, no container/box, below carousel, with increased spacing */}
+          <div className="block md:hidden flex flex-col items-center justify-center" style={{ marginTop: '4rem' }}>
+            {(() => {
+              const currentSlide = heroSlides[currentImageIndex];
+              const IconComponent = currentSlide.icon.component;
+              return (
+                <>
+                  <div style={{ marginTop: '2.5rem' }}></div>
+                  <IconComponent className="h-10 w-10 text-white mb-2" />
+                  <p className="text-sm font-semibold text-white/95 text-center mb-0">
+                    {currentSlide.icon.title}
+                  </p>
+                  <p className="text-xs text-white/75 text-center mb-0">
+                    {currentSlide.icon.subtitle}
+                  </p>
+                </>
+              );
+            })()}
           </div>
         </div>
       </div>

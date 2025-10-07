@@ -36,20 +36,20 @@ const AdminLogin = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!formData.email || !formData.password) {
             toast.error('Please fill in all fields');
             return;
         }
 
         setLoginLoading(true);
-        
+
         try {
             await login(formData.email, formData.password);
             navigate(from, { replace: true });
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Login failed';
-            
+
             if (errorMessage.includes('Access denied')) {
                 toast.error('Access Denied', {
                     description: 'This login is for administrators only. Please use the main site login for customer access.',
@@ -110,7 +110,7 @@ const AdminLogin = () => {
                         <div>
                             <p className="text-sm font-medium text-amber-800">Administrator Access Only</p>
                             <p className="text-sm text-amber-700 mt-1">
-                                This portal is restricted to authorized administrators. 
+                                This portal is restricted to authorized administrators.
                                 Customers should use the main website login.
                             </p>
                         </div>
@@ -143,7 +143,7 @@ const AdminLogin = () => {
                                         autoComplete="email"
                                     />
                                 </div>
-                                
+
                                 <div className="space-y-2">
                                     <Label htmlFor="admin-password">Password</Label>
                                     <div className="relative">
@@ -166,8 +166,8 @@ const AdminLogin = () => {
                                             onClick={togglePasswordVisibility}
                                             disabled={loginLoading}
                                         >
-                                            {showPassword ? 
-                                                <EyeOff className="h-4 w-4" /> : 
+                                            {showPassword ?
+                                                <EyeOff className="h-4 w-4" /> :
                                                 <Eye className="h-4 w-4" />
                                             }
                                         </Button>
@@ -176,9 +176,9 @@ const AdminLogin = () => {
                             </CardContent>
 
                             <CardFooter className="flex flex-col space-y-4">
-                                <Button 
-                                    type="submit" 
-                                    className="w-full bg-blue-600 hover:bg-blue-700" 
+                                <Button
+                                    type="submit"
+                                    className="w-full bg-blue-600 hover:bg-blue-700"
                                     disabled={loginLoading}
                                 >
                                     {loginLoading ? (

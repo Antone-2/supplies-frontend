@@ -90,7 +90,7 @@ const MobileBottomNav = () => {
       role="tablist"
       aria-label="Main navigation"
     >
-      <div className="flex justify-between items-center max-w-screen-sm mx-auto px-0 py-2 overflow-x-auto">
+  <div className="grid grid-cols-5 items-center w-full max-w-full mx-auto px-0 py-1" style={{ minWidth: 0 }}>
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = activeTab === item.id;
@@ -101,26 +101,27 @@ const MobileBottomNav = () => {
               variant="ghost"
               size="sm"
               className={`
-                mobile-nav-button flex flex-col items-center gap-0 h-auto py-2 px-1 min-w-0 flex-1 rounded-lg transition-all duration-300 min-h-[60px] touch-manipulation
+                mobile-nav-button flex flex-col items-center gap-0 h-auto py-1 px-0 min-w-0 flex-1 transition-all duration-300 min-h-[56px] touch-manipulation
                 ${isActive
-                  ? 'text-primary bg-primary/15 shadow-md scale-105 font-medium'
-                  : 'text-muted-foreground hover:text-primary hover:bg-primary/8 hover:scale-105 active:scale-95'
+                  ? 'text-primary scale-105 font-medium'
+                  : 'text-muted-foreground hover:text-primary hover:scale-105 active:scale-95'
                 }
               `}
+              style={{ minWidth: '0', width: '100%', margin: '0', justifySelf: 'center', padding: '0 0.5px' }}
               onClick={() => handleNavClick(item.id)}
               aria-label={`${item.label}${item.badge ? ` (${item.badge} items)` : ''}`}
               role="tab"
               aria-selected={isActive}
             >
               <div className="relative">
-                <Icon className={`transition-all duration-300 ${isActive ? 'h-6 w-6' : 'h-5 w-5'} ${isActive ? 'drop-shadow-sm' : ''}`} />
+                <Icon className={`transition-all duration-300 h-5 w-5 ${isActive ? 'drop-shadow-sm' : ''}`} />
                 {item.badge && item.badge > 0 && (
                   <Badge className="absolute -top-2 -right-2 h-5 w-5 rounded-full p-0 text-xs bg-red-500 text-white font-bold border-2 border-background shadow-lg">
                     {item.badge > 9 ? '9+' : item.badge}
                   </Badge>
                 )}
               </div>
-              <span className={`text-xs font-medium truncate transition-all duration-300 max-w-full ${isActive ? 'text-primary font-semibold' : ''}`}>
+              <span className={`text-[10px] font-medium truncate transition-all duration-300 max-w-full ${isActive ? 'text-primary font-semibold' : ''}`}>
                 {item.label}
               </span>
             </Button>

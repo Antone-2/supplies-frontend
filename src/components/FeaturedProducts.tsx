@@ -10,15 +10,37 @@ import {
   Shield
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { getFeaturedProducts, Product } from '@/data/products';
+import { Product } from '@/data/products';
+import { useEffect, useState } from 'react';
 import { useCart } from '@/context/CartContext';
 import { toast } from 'sonner';
 
 const FeaturedProducts = () => {
   const navigate = useNavigate();
   const { addToCart, addToWishlist, removeFromWishlist, isInWishlist } = useCart();
-  const featuredProducts = getFeaturedProducts();
-  
+  const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    // Only load products from server
+    setLoading(true);
+    fetch('/api/products/featured/all')
+      .then(res => {
+        if (!res.ok) throw new Error('Server error');
+        return res.json();
+      })
+      .then(data => {
+        setFeaturedProducts(data.products || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setFeaturedProducts([]);
+        setLoading(false);
+        setError(true);
+      });
+  }, []);
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-KE', {
       style: 'currency',
@@ -56,8 +78,14 @@ const FeaturedProducts = () => {
           </p>
         </div>
 
+        {loading && (
+          <div className="text-center text-medical-body py-8">Loading featured products...</div>
+        )}
+        {error && (
+          <div className="text-center text-red-500 py-8">Could not load featured products from the database.</div>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {featuredProducts.map((product) => (
+          {featuredProducts.length > 0 && featuredProducts.map((product) => (
             <Card key={product.id} className="group hover:shadow-xl transition-all duration-300 border-0 bg-white overflow-hidden">
               <div className="relative">
                 <img 
@@ -182,6 +210,10 @@ const FeaturedProducts = () => {
             View All Products
           </Button>
         </div>
+
+        {(!loading && !error && featuredProducts.length === 0) && (
+          <div className="text-center text-medical-body py-8">No featured products found in the database.</div>
+        )}
       </div>
     </section>
   );
