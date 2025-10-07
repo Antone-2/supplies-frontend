@@ -1,4 +1,4 @@
-﻿// Simple imports - no lazy loading complications
+// Simple imports - no lazy loading complications
 // import React from 'react';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { CartProvider } from './context/CartContext';
@@ -60,6 +60,7 @@ function App() {
               <Route path="/cart" element={<CartPage />} />
               <Route path="/wishlist" element={<Wishlist />} />
               <Route path="/orders" element={<Orders />} />
+              {/* Keep AllReviews route */}
               <Route path="/reviews" element={<AllReviews />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/payment-demo" element={<PaymentDemo />} />
@@ -71,9 +72,9 @@ function App() {
               <Route path="/returns" element={<Returns />} />
               <Route path="/terms" element={<Terms />} />
               <Route path="/track-order" element={<TrackOrder />} />
+              {/* Keep Products route */}
               <Route path="/categories" element={<Products />} />
-              <Route path="/reviews" element={<Index />} />
-              {/* Admin Routes */}
+              {/* Remove conflicting Index route for reviews */}
               <Route path="/admin/*" element={<AdminRoutes />} />
               {/* Catch all route for 404 */}
               <Route path="*" element={<NotFound />} />
